@@ -5,6 +5,11 @@ No. The bar runs as a plugin inside Omarchy's shell engine (`qs.Ui`, `qs.Commons
 shell. Omarchy on Arch Linux with Hyprland is the supported setup. Most widgets talk to the machine directly through
 `ito-host`, so they are not tied to Omarchy's commands, but the bar needs the Omarchy host.
 
+**Does it work on light themes?**
+Yes. In *Follow theme* mode the shell places every colour of its art between the theme's background and its foreground, so a
+dark theme gets light lines on a dark plate and a light theme gets dark lines on a light plate, with the theme's accent for
+the blood. It switches by itself when you change theme. The *Ito-verse* palette (Colors page) is always dark.
+
 **Will it break my current setup?**
 No. Installing keeps the shell you are on as its own entry (Setup → Shells), and `scripts/shell-switch <name>` (or the
 **Switch** button) returns to it. The colour theme is reversible with `omarchy theme set <previous theme>`. Nothing

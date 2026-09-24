@@ -261,7 +261,7 @@ ColumnLayout {
             width: parent.width - 20
             height: 34
             radius: 17
-            color: Qt.rgba(0, 0, 0, 0.45)
+            color: Qt.rgba(page.pal.ink.r, page.pal.ink.g, page.pal.ink.b, 0.55)
             border.width: 1
             border.color: Qt.rgba(page.bone.r, page.bone.g, page.bone.b, 0.2)
 

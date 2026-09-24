@@ -149,9 +149,6 @@ KNOWN = [
      "why": "Something in the host shell (not an Ito-verse widget: none of ours use QtMultimedia) tried to open a video or audio file that is not a valid container. No Ito-verse file appears in this log line.", "fix": "", "fixId": ""},
     {"id": "dbusmenu", "re": r"quickshell\.dbus\.dbusmenu|No such object path '/MenuBar'", "title": "A tray application's menu went away", "where": "noise",
      "why": "A background application (the one in the tray) closed or restarted while the shell was asking it for its menu. It is that application's menu, not an Ito-verse file, and it clears by itself.", "fix": "", "fixId": ""},
-    {"id": "menu-unknown", "re": r"summon: unknown plugin omarchy\.menu", "title": "The menu button could not open Omarchy's menu", "where": "ours",
-     "why": "Omarchy's menu is a plugin of the shell and it is switched off, so the menu button had nothing to open.",
-     "fix": "Fix switches the menu plugin on. The button does it by itself on its next click.", "fixId": "menu"},
     {"id": "qt-atob", "re": r"Qt\.atob\(string\)", "title": "A deprecated Qt call in Omarchy's own shell", "where": "noise",
      "why": "Omarchy's shell (Commons/Util.qml, shell.qml) uses an older Qt call that newer Qt versions warn about. It is not an Ito-verse file and changes nothing on screen.", "fix": "", "fixId": ""},
     {"id": "font-size", "re": r"Both point size and pixel size set", "title": "A font resolved two sizes at once", "where": "noise",
@@ -410,19 +407,6 @@ def all_checks():
                      why="A value like that can blank colours or glows. The shell clamps most of them, but the panel and the bar can then disagree.",
                      fix="Fix puts those sliders back to their defaults; the rest of your look is kept.", fixId="lookreset"))
 
-    # ---- Omarchy's own menu, which the menu button opens
-    try:
-        plug = json.loads(sh(["omarchy", "plugin", "list", "--json"]) or "[]")
-        menu = next((x for x in plug if x.get("id") == "omarchy.menu"), None)
-    except ValueError:
-        menu = None
-    if menu is not None:
-        out.append(check("menu", "Application menu", menu.get("enabled") is True,
-                         "Omarchy's menu plugin is on, so the menu button opens it.",
-                         "Omarchy's menu plugin is switched off.",
-                         why="The menu button at the left of the bar does nothing (the log says 'unknown plugin omarchy.menu').",
-                         fix="Fix switches the plugin on (the button also does it on its first click).", fixId="menu", level="warn"))
-
     # ---- the programs the panel calls on
     import importlib.util
     missing_tools = []
@@ -629,7 +613,6 @@ FIXES = {
     "settings": "rewrite ito-style.json with the defaults",
     "state": "apply the default design (writes the state block)",
     "switch": "switch the shell back to Ito-verse when the engine fell back to another bar",
-    "menu": "switch Omarchy's menu plugin on so the menu button opens it",
     "lookreset": "put the sliders that are outside their range (glow, vibrance, speed, strength, icon size...) back to default",
     "pictures": "rebuild your pictures' adapted copies; go back to the default for any that are gone",
     "deploy": "copy the repository's files back into the live folder (scripts/deploy.sh)",
@@ -688,9 +671,6 @@ def fix(fid: str):
             return False, "shell-switch was not found; run scripts/shell-switch ito from the repository."
         run([tool, "ito"], detached=True)
         return True, "Switching back to Ito-verse; the bar returns in a few seconds."
-    if fid == "menu":
-        ok, msg = run(["omarchy", "plugin", "enable", "omarchy.menu"])
-        return ok, "Omarchy's menu plugin is on." if ok else (msg or "omarchy plugin enable failed.")
     if fid == "lookreset":
         try:
             data = json.loads((MODULES / "ito-style.json").read_text())

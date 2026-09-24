@@ -22,6 +22,10 @@ The first public version.
 - Setup: named setups (`ito-profile`), switching between Omarchy's default bar, Shibumi, Caelestia and Ito-verse.
 - `omarchy-shell ito.controlcenter toggle|open|close|page <name>` from a key or a script.
 
+**Themes**
+- Works on light and dark themes alike: the art is mapped between the theme's background and foreground (it used to keep a black
+  plate under a light theme, which made the text unreadable), and the accent follows the theme.
+
 **Health**
 - Checks for the engine, the state, settings, fonts, themes, widgets, the seal, duplicate bars, virtual screens, the engine's
   signature, the active bar, art files, your pictures, slider ranges, helper programs and the log.

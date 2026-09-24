@@ -36,12 +36,12 @@ launcher() {
 case "${1:-}" in
   menu)
     if have omarchy-shell; then
-      # Omarchy's menu is a plugin of the shell. Its own bar loads it; with another bar it can be switched off, and the
-      # call then only logs "unknown plugin". So the first click switches it on, once.
-      if have omarchy && have jq && ! omarchy plugin list --json 2>/dev/null | jq -e '.[] | select(.id=="omarchy.menu" and .enabled==true)' >/dev/null 2>&1; then
-        omarchy plugin enable omarchy.menu >/dev/null 2>&1 && sleep 1
+      # Omarchy's menu is a plugin that only exists while it sits in the bar's layout (Omarchy's own bar puts it there).
+      # With Ito-verse's bar it is not loaded, and asking for it only logs "unknown plugin". Placing it in the layout
+      # would add a second menu button, so when it is not loaded the launcher opens instead.
+      if have omarchy && have jq && omarchy plugin list --json 2>/dev/null | jq -e '.[] | select(.id=="omarchy.menu" and .enabled==true)' >/dev/null 2>&1; then
+        exec omarchy-shell shell toggle omarchy.menu '{"menu":"root"}'
       fi
-      exec omarchy-shell shell toggle omarchy.menu '{"menu":"root"}'
     fi
     case "$(launcher)" in
       fuzzel) exec fuzzel ;;

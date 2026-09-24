@@ -11,6 +11,7 @@ ShaderEffect {
   // what the art is drawn in, and what it should become
   property color fg: palette ? palette.bone : "#c7ccd1"
   property color accent: palette ? palette.blood : "#c4162a"
+  property color bg: palette ? palette.ink : "#050607"
   property color baseFg: "#c7ccd1"
   property color baseAccent: "#c4162a"
 
