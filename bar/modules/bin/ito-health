@@ -266,7 +266,7 @@ def all_checks():
     out.append(check("fonts", "Fonts", "Noto Serif CJK" in fonts and "Noto Serif" in fonts,
                      "Noto Serif and Noto Serif CJK are installed.", "Noto Serif or Noto Serif CJK is missing.",
                      why="The numbers, the clock and the kanji seal fall back to another face and look wrong.",
-                     fix="Install the packages noto-fonts and noto-fonts-cjk (Arch: pacman -S noto-fonts noto-fonts-cjk)."))
+                     fix="Install the noto-fonts and noto-fonts-cjk packages with your package manager."))
 
     out.append(check("icons", "Icon theme", (HOME / ".local/share/icons/Ito-verse-icons/index.theme").exists(),
                      "Ito-verse-icons is installed for Nautilus and other GTK apps.", "Ito-verse-icons is not installed.",
@@ -438,7 +438,7 @@ def all_checks():
     out.append(check("tools", "Helper programs", not missing_tools, "The programs the panel calls on are installed.",
                      "Missing: " + "; ".join(missing_tools) + ".",
                      why="The buttons that need them do nothing.",
-                     fix="Arch: sudo pacman -S zenity wl-clipboard python-pillow python-numpy rsync jq", level="warn"))
+                     fix="Install zenity, wl-clipboard, python-pillow, python-numpy, rsync and jq with your package manager.", level="warn"))
 
     exe = [f.name for f in BIN.iterdir() if f.is_file() and not os.access(f, os.X_OK)]
     out.append(check("perms", "Tools are executable", not exe, "Every Ito-verse tool can be run.",

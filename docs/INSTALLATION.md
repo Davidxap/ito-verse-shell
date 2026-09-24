@@ -12,9 +12,8 @@ Requires an existing Omarchy install running Hyprland. There is no installer scr
   pictures), `zenity` (or `kdialog`/`yad`, the file dialog), `wl-clipboard` (to copy the Health report), `librsvg` (only for SVG
   pictures).
 
-```bash
-sudo pacman -S --needed noto-fonts noto-fonts-cjk rsync jq python-pillow python-numpy zenity wl-clipboard librsvg
-```
+Install them with your package manager. On Arch the packages are named `noto-fonts`, `noto-fonts-cjk`, `rsync`, `jq`,
+`python-pillow`, `python-numpy`, `zenity`, `wl-clipboard` and `librsvg`.
 
 `bar/modules/bin/ito-health` checks all of this and says what is missing.
 
@@ -25,12 +24,10 @@ Ito-verse Shell* widget on your bar, and click it. A terminal opens, says what i
 `~/.config/omarchy`, keep your own settings, keep the shell you use now as its own entry) and asks before it changes anything;
 it then offers to switch to Ito-verse Shell. It is the same as running `install.sh` from the plugin's folder.
 
-**Option B: by hand**, from a clone:
+**Option B: by hand.** Download the repository from GitHub (the green **Code** button, then **Download ZIP**), unzip it and open a
+terminal in the folder:
 
 ```bash
-git clone https://github.com/Davidxap/ito-verse-shell
-cd ito-verse-shell
-
 # 1. System colours (GTK, terminal, Hyprland borders, ...) via Omarchy's own theme switcher.
 cp -r themes/ito-verse ~/.config/omarchy/themes/ito-verse
 omarchy theme set ito-verse

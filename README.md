@@ -115,12 +115,10 @@ omarchy plugin add https://github.com/Davidxap/ito-verse-shell
 ```
 
 then enable the *Install Ito-verse Shell* widget, click it, and answer the questions in the terminal that opens: it says what
-it will do and asks before it changes anything. Or do it by hand:
+it will do and asks before it changes anything. Or do it by hand: download the repository from GitHub (the green **Code** button, then **Download ZIP**), unzip it and open a
+terminal in the folder:
 
 ```bash
-git clone https://github.com/Davidxap/ito-verse-shell
-cd ito-verse-shell
-
 # 1. the colour theme (GTK, terminal, Hyprland borders...) via Omarchy's own switcher
 cp -r themes/ito-verse ~/.config/omarchy/themes/ito-verse
 omarchy theme set ito-verse

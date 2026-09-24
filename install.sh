@@ -18,7 +18,7 @@ echo
 missing=()
 for tool in rsync jq python3; do command -v "$tool" >/dev/null 2>&1 || missing+=("$tool"); done
 if ((${#missing[@]})); then
-  echo "Missing: ${missing[*]}. On Arch: sudo pacman -S --needed rsync jq python"
+  echo "Missing: ${missing[*]}. Install them with your package manager and run this again."
   read -rp "Press Enter to close. " _
   exit 1
 fi
