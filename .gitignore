@@ -1,0 +1,26 @@
+# Transient / generated
+*.bak
+*.bak.*
+*.bak-*
+*~
+.DS_Store
+
+# Local scratch
+/tmp/
+*.log
+
+# Working notes and agent files live in dev/ (its own local git, never pushed).
+# The links below only exist so tools find them at the project root.
+/dev/
+/CLAUDE.md
+/openspec
+/.atl
+scripts/__pycache__/
+
+# third-party manga panels used locally as references; not redistributed
+bar/modules/ito-art/panels/
+bar/modules/ito-art/eyefx/eyes*.png
+bar/modules/ito-art/decor/eyes.png
+__pycache__/
+*.pyc
+variants/

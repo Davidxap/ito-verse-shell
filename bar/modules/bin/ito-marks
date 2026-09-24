@@ -1,0 +1,435 @@
+#!/usr/bin/env python3
+"""ito-marks — your own marks for the menu button, adapted to the shell.
+
+Any picture dropped in ~/.config/ito/marks/ (PNG, JPG, WebP, SVG) becomes a menu mark. It is adapted on the
+way in so it reads as part of the shell: line art becomes bone linework on a clear ground, red becomes the
+accent, and the colours then follow the installed theme like every other mark. The adapted copy lives in
+~/.cache/ito/marks/; the original is never touched.
+
+    ito-marks list                      JSON: every mark found, adapted on first sight
+    ito-marks import FILE [NAME] [options]
+                                        copy FILE into the folder and adapt it now
+    ito-marks remove NAME               delete a mark (and its adapted copy)
+    ito-marks pick-fx                   choose a picture or GIF as your own media effect (kept as it is)
+    ito-marks reset-fx                  remove it
+    ito-marks reset-ws                  forget the four pictures of the Custom workspace style
+    ito-marks pick [--as _deco|_seal|_ws-STATE]   choose a picture in a file dialog: as a menu mark, or (with --as) as the picture
+                                        that stands beside the seal (_deco), replaces its letters (_seal), or is one
+                                        state of the Custom workspace style (_ws-empty, _ws-occupied, _ws-active, _ws-urgent)
+
+    options for import:
+      --mode auto|dark|light|red|keep   what the picture is: dark lines on light paper, light lines on a dark
+                                        ground, red strokes, or leave the shading as it is. auto guesses.
+      --ink                             harden a shaded picture (a portrait, a scan) into black-and-white ink
+      --crop X,Y,SIZE                   use only this square of the picture (pixels: left, top, side)
+      --gamma G                         with --tone: below 1 brightens a dark picture (0.6), above 1 darkens
+      --tone                            keep the picture's shading (a manga panel, a portrait) and tint it
+                                        bone; combine with --disc for the round badge
+
+    A mark named like a built-in one (remina, tomie, amigara, halo…) replaces that built-in on this machine.
+      --disc                            set it in a round badge, like the built-in marks
+      --nodisc                          never set it in a badge (for a decoration or the seal's picture)
+"""
+
+from __future__ import annotations
+
+import json
+import shutil
+import subprocess
+import sys
+from pathlib import Path
+
+import numpy as np
+from PIL import Image, ImageDraw, ImageFilter, ImageOps
+
+HOME = Path.home()
+SRC = HOME / ".config" / "ito" / "marks"
+CACHE = HOME / ".cache" / "ito" / "marks"
+EXT = {".png", ".jpg", ".jpeg", ".webp", ".svg", ".bmp", ".gif"}
+BONE = np.array([199, 204, 209], float)
+BLOOD = np.array([196, 22, 42], float)
+N = 512
+BUILTIN = {"uzumaki", "tomie", "remina", "amigara", "metatron", "metatron-mini", "halo", "flauros", "spiral"}
+INDEX = CACHE / "index.json"
+
+
+def load(path: Path) -> Image.Image:
+    if path.suffix.lower() == ".svg":
+        tmp = CACHE / f"{path.stem}.raster.png"
+        CACHE.mkdir(parents=True, exist_ok=True)
+        subprocess.run(["rsvg-convert", "-w", str(N), "-h", str(N), "--keep-aspect-ratio", str(path), "-o", str(tmp)],
+                       check=True)
+        return Image.open(tmp).convert("RGBA")
+    return Image.open(path).convert("RGBA")
+
+
+def fit(img: Image.Image, pad: float = 0.04) -> Image.Image:
+    """Into a square, centred, keeping its proportions."""
+    box = int(N * (1 - 2 * pad))
+    img = ImageOps.contain(img, (box, box), Image.LANCZOS)
+    out = Image.new("RGBA", (N, N), (0, 0, 0, 0))
+    out.paste(img, ((N - img.width) // 2, (N - img.height) // 2))
+    return out
+
+
+def otsu(gray: np.ndarray) -> float:
+    hist, _ = np.histogram(gray, bins=256, range=(0, 1))
+    total = gray.size
+    sum_all = np.dot(np.arange(256), hist)
+    best, weight_b, sum_b, thr = 0.0, 0, 0.0, 128
+    for i in range(256):
+        weight_b += hist[i]
+        if weight_b == 0:
+            continue
+        weight_f = total - weight_b
+        if weight_f == 0:
+            break
+        sum_b += i * hist[i]
+        var = weight_b * weight_f * (sum_b / weight_b - (sum_all - sum_b) / weight_f) ** 2
+        if var > best:
+            best, thr = var, i
+    return thr / 255.0
+
+
+def adapt(path: Path, mode="auto", ink=False, disc=None, crop=None, tone=False, gamma=1.0) -> Image.Image:
+    img = load(path)
+    if crop:
+        x, y, side = crop
+        img = img.crop((x, y, x + side, y + side))
+    has_alpha = np.array(img)[..., 3].min() < 240
+    if tone:
+        # screentone dots alias when brought down; a light blur first, in proportion to the reduction
+        img = img.filter(ImageFilter.GaussianBlur(max(0.6, img.width / N * 0.55)))
+        disc = True if disc is None else disc
+    rgba = np.array(fit(img, 0.0 if tone else 0.04)).astype(float) / 255.0
+    a, rgb = rgba[..., 3], rgba[..., :3]
+    lum = rgb @ np.array([0.299, 0.587, 0.114])
+    red = np.clip((rgb[..., 0] - np.maximum(rgb[..., 1], rgb[..., 2]) - 0.15) / 0.35, 0, 1)
+
+    inside = a > 0.5
+    if tone:
+        return badge_tone(rgb, lum, disc, gamma)
+    if mode == "auto":
+        drawn = inside & (lum < 0.8)
+        if drawn.sum() > 50 and red[drawn].mean() > 0.5:
+            mode = "red"
+        elif has_alpha:
+            mode = "keep"
+        else:
+            # the ground is the commonest tone of the picture; lines are the rarer, opposite one
+            mode = "dark" if np.median(lum[inside]) > 0.5 else "light"
+
+    if mode == "keep":
+        strength = a * (0.25 + 0.75 * lum)
+    elif mode == "red":
+        strength = np.clip((rgb[..., 0] - rgb[..., 1] - 0.08) * 1.6, 0, 1) * a
+        red = np.maximum(red, strength > 0.2)
+    else:
+        base = 1 - lum if mode == "dark" else lum
+        base = base * a                                            # the margin the fit added is not ink
+        lo, hi = np.percentile(base[inside], [4, 99])
+        strength = np.clip((base - lo) / max(hi - lo, 1e-3), 0, 1) ** 1.2
+        if not has_alpha:
+            # a photo or scan has a ground: whatever is not the drawing is not part of the mark
+            pass
+    if ink:
+        thr = otsu(strength[inside])
+        strength = np.clip((strength - thr) * 9 + 0.5, 0, 1)
+    strength = np.maximum(strength, red * a)
+
+    colour = BONE[None, None, :] * (1 - red[..., None]) + BLOOD[None, None, :] * red[..., None]
+    out = np.dstack([colour, strength * 255.0]).clip(0, 255).astype(np.uint8)
+    result = Image.fromarray(out, "RGBA")
+
+    if disc is None:
+        disc = not has_alpha and mode in ("dark", "light")
+    if disc:
+        canvas = Image.new("RGBA", (N, N), (0, 0, 0, 0))
+        d = ImageDraw.Draw(canvas)
+        d.ellipse((24, 24, N - 24, N - 24), fill=(8, 9, 10, 255))
+        mask = Image.new("L", (N, N), 0)
+        ImageDraw.Draw(mask).ellipse((30, 30, N - 30, N - 30), fill=255)
+        result = Image.composite(result, Image.new("RGBA", (N, N), (0, 0, 0, 0)), mask)
+        canvas.alpha_composite(result)
+        ImageDraw.Draw(canvas).ellipse((24, 24, N - 24, N - 24), outline=(199, 204, 209, 255), width=12)
+        result = canvas
+    result = result.filter(ImageFilter.UnsharpMask(1.2, 60, 2))
+    if path.stem.startswith("_"):
+        # a slot picture (beside the seal, or in place of its letters) is cut to its ink, so it fills its slot and is
+        # not a small drawing floating in a square
+        box = result.getchannel("A").point(lambda v: 255 if v > 12 else 0).getbbox()
+        if box:
+            pad = 6
+            result = result.crop((max(0, box[0] - pad), max(0, box[1] - pad),
+                                  min(result.width, box[2] + pad), min(result.height, box[3] + pad)))
+    return result
+
+
+def badge_tone(rgb, lum, disc, gamma=1.0) -> Image.Image:
+    """Keep the shading of a panel or portrait and make it bone: what was white is bone, what was black is
+    the plate. Made to read at bar size: contrast is stretched to the picture's own range and pushed through
+    an S curve, local detail is sharpened, and a thin accent ring sets it apart from the plate. The picture is
+    softened a little before it is brought down, so screentone does not moiré."""
+    lo, hi = np.percentile(lum, [3, 97])
+    x = np.clip((lum - lo) / max(hi - lo, 1e-3), 0, 1)
+    shade = 1 / (1 + np.exp(-(x - 0.5) * 6.0))                 # S curve: blacks go black, paper goes bone
+    shade = (shade - shade.min()) / max(shade.max() - shade.min(), 1e-3)
+    shade = shade ** gamma
+    body = BONE[None, None, :] * (0.06 + 0.94 * shade[..., None])
+    out = np.dstack([body, np.full(lum.shape, 255.0)]).clip(0, 255).astype(np.uint8)
+    img = Image.fromarray(out, "RGBA").filter(ImageFilter.UnsharpMask(2.5, 70, 4))
+    canvas = Image.new("RGBA", (N, N), (0, 0, 0, 0))
+    d = ImageDraw.Draw(canvas)
+    d.ellipse((24, 24, N - 24, N - 24), fill=(8, 9, 10, 255))
+    mask = Image.new("L", (N, N), 0)
+    ImageDraw.Draw(mask).ellipse((30, 30, N - 30, N - 30), fill=255)
+    canvas.alpha_composite(Image.composite(img, Image.new("RGBA", (N, N), (0, 0, 0, 0)), mask))
+    d = ImageDraw.Draw(canvas)
+    d.ellipse((24, 24, N - 24, N - 24), outline=(199, 204, 209, 255), width=14)
+    d.ellipse((42, 42, N - 42, N - 42), outline=(196, 22, 42, 255), width=6)     # the accent, like the other marks
+    return canvas
+
+
+def adapted_path(src: Path) -> Path:
+    return CACHE / f"{src.stem}.png"
+
+
+def ensure(src: Path, **opts) -> Path:
+    """The adapted copy of one mark, made again only when the original is newer. The options an import was
+    made with are remembered, so the copy can be rebuilt the same way if the cache is ever cleared."""
+    dst = adapted_path(src)
+    saved = CACHE / f"{src.stem}.opts.json"
+    forced = bool(opts)
+    if opts:
+        CACHE.mkdir(parents=True, exist_ok=True)
+        saved.write_text(json.dumps(opts))
+    elif saved.exists():
+        opts = {k: (tuple(v) if k == "crop" and v else v) for k, v in json.loads(saved.read_text()).items()}
+    fresh = dst.exists() and dst.stat().st_mtime >= src.stat().st_mtime
+    if forced or not fresh:
+        CACHE.mkdir(parents=True, exist_ok=True)
+        adapt(src, **opts).save(dst)
+    return dst
+
+
+def write_index(custom, overrides) -> None:
+    CACHE.mkdir(parents=True, exist_ok=True)
+    INDEX.write_text(json.dumps({"custom": custom, "overrides": overrides}))
+
+
+def cmd_list() -> int:
+    SRC.mkdir(parents=True, exist_ok=True)
+    out, overrides = [], {}
+    for f in sorted(SRC.iterdir()):
+        if f.suffix.lower() not in EXT or f.name.endswith(".raster.png"):
+            continue
+        try:
+            dst = ensure(f)
+            if f.stem.startswith("_"):
+                continue
+        except Exception as exc:                                  # a broken picture must not hide the others
+            print(f"ito-marks: {f.name}: {exc}", file=sys.stderr)
+            continue
+        if f.stem in BUILTIN:                                     # replaces the built-in of that name
+            overrides[f.stem] = f"{dst}?v={int(dst.stat().st_mtime)}"      # the stamp makes the bar reload a redone picture
+            continue
+        out.append({"key": "custom:" + f.stem, "name": f.stem.replace("-", " ").replace("_", " ").title(),
+                    "file": f"{dst}?v={int(dst.stat().st_mtime)}"})
+    write_index(out, overrides)
+    json.dump(out, sys.stdout)
+    return 0
+
+
+def cmd_list_quiet() -> None:
+    import io
+    real, sys.stdout = sys.stdout, io.StringIO()
+    try:
+        cmd_list()
+    finally:
+        sys.stdout = real
+
+
+def cmd_import(argv) -> int:
+    opts = {"mode": "auto", "ink": False, "disc": None, "crop": None, "tone": False, "gamma": 1.0}
+    rest = []
+    it = iter(argv)
+    for a in it:
+        if a == "--mode":
+            opts["mode"] = next(it)
+        elif a == "--ink":
+            opts["ink"] = True
+        elif a == "--disc":
+            opts["disc"] = True
+        elif a == "--nodisc":
+            opts["disc"] = False
+        elif a == "--tone":
+            opts["tone"] = True
+        elif a == "--gamma":
+            opts["gamma"] = float(next(it))
+        elif a == "--crop":
+            opts["crop"] = tuple(int(v) for v in next(it).split(","))
+        else:
+            rest.append(a)
+    if not rest:
+        print(__doc__)
+        return 2
+    src = Path(rest[0]).expanduser()
+    if not src.is_file():
+        print(f"no such file: {src}", file=sys.stderr)
+        return 1
+    name = rest[1] if len(rest) > 1 else src.stem
+    SRC.mkdir(parents=True, exist_ok=True)
+    dst = SRC / (name + src.suffix.lower())
+    if src.resolve() != dst.resolve():
+        shutil.copy(src, dst)
+    path = ensure(dst, **opts)
+    cmd_list_quiet()
+    print(json.dumps({"key": name if name in BUILTIN else "custom:" + name, "file": str(path)}))
+    return 0
+
+
+def cmd_remove(name: str) -> int:
+    for f in SRC.glob(name + ".*"):
+        f.unlink()
+    (CACHE / f"{name}.png").unlink(missing_ok=True)
+    cmd_list_quiet()
+    return 0
+
+
+# What a picture may be, so nothing heavy or absurd reaches the bar (the numbers are also on the panel's how-to cards).
+MAX_PICTURE_BYTES = 25 * 1024 * 1024
+MAX_PICTURE_SIDE = 8000
+MAX_EFFECT_BYTES = 8 * 1024 * 1024
+MAX_EFFECT_SIDE = 2400
+
+
+def picture_problem(src: Path, effect: bool = False) -> str:
+    """Why this file should not be used, in a sentence the user can act on; empty when it is fine."""
+    try:
+        size = src.stat().st_size
+    except OSError:
+        return "That file cannot be read."
+    limit = MAX_EFFECT_BYTES if effect else MAX_PICTURE_BYTES
+    if size > limit:
+        return f"That file is {size / 1048576:.1f} MB; the most allowed here is {limit // 1048576} MB. Make it smaller and try again."
+    if src.suffix.lower() == ".svg":
+        return ""
+    try:
+        with Image.open(src) as im:
+            w, h = im.size
+    except Exception:
+        return "That file is not a picture the shell can read (use PNG, JPG, WebP, GIF or SVG)."
+    side = MAX_EFFECT_SIDE if effect else MAX_PICTURE_SIDE
+    if max(w, h) > side:
+        return f"That picture is {w}×{h} px; the most allowed here is {side} px on a side."
+    return ""
+
+
+WS_STATES = ("empty", "occupied", "active", "urgent")
+# a state the user did not draw borrows from the nearest one they did
+WS_FALLBACK = {"empty": ("occupied", "active", "urgent"), "occupied": ("active", "empty", "urgent"),
+               "active": ("occupied", "empty", "urgent"), "urgent": ("active", "occupied", "empty")}
+
+
+def fill_workspace_states() -> None:
+    """Custom workspace style: four pictures (empty, occupied, active, urgent). Any the user has not chosen is
+    copied from the nearest one they have, so choosing just one picture already gives a working style."""
+    CACHE.mkdir(parents=True, exist_ok=True)
+    own = {st for st in WS_STATES if any(SRC.glob(f"_ws-{st}.*"))}
+    if not own:
+        return
+    for st in WS_STATES:
+        if st in own:
+            continue
+        for alt in WS_FALLBACK[st]:
+            if alt in own:
+                shutil.copy(CACHE / f"_ws-{alt}.png", CACHE / f"_ws-{st}.png")
+                break
+
+
+def cmd_pick(argv=()) -> int:
+    slot, extra = None, []
+    it = iter(argv)
+    for a in it:
+        if a == "--as":
+            slot = next(it)
+    if slot:
+        extra = [slot, "--nodisc"]
+    for cmd in (["zenity", "--file-selection", "--title=Pick a picture for a menu mark",
+                 "--file-filter=Pictures | *.png *.jpg *.jpeg *.webp *.svg"],
+                ["kdialog", "--getopenfilename", str(HOME / "Pictures"), "Images (*.png *.jpg *.jpeg *.webp *.svg)"],
+                ["yad", "--file", "--title=Pick a picture for a menu mark"]):
+        if shutil.which(cmd[0]):
+            r = subprocess.run(cmd, capture_output=True, text=True)
+            path = r.stdout.strip()
+            if r.returncode == 0 and path:
+                problem = picture_problem(Path(path).expanduser())
+                if problem:
+                    print(json.dumps({"error": problem}))
+                    return 0
+                rc = cmd_import([path] + extra)
+                if rc == 0 and slot and slot.startswith("_ws-"):
+                    fill_workspace_states()
+                return rc
+            return 0
+    print("no file dialog found (install zenity)", file=sys.stderr)
+    return 1
+
+
+FX_DIR = HOME / ".config" / "ito" / "effects"
+
+
+def cmd_pick_fx() -> int:
+    """Your own media effect: a picture or a GIF, used as it is (not adapted like a mark). It is kept as
+    ~/.config/ito/effects/custom and drawn behind the media buttons while something plays."""
+    for cmd in (["zenity", "--file-selection", "--title=Pick a picture or GIF for the media effect",
+                 "--file-filter=Pictures and GIFs | *.gif *.png *.webp *.apng *.jpg *.jpeg"],
+                ["kdialog", "--getopenfilename", str(HOME / "Pictures"), "Images (*.gif *.png *.webp *.apng *.jpg *.jpeg)"],
+                ["yad", "--file", "--title=Pick a picture or GIF for the media effect"]):
+        if shutil.which(cmd[0]):
+            r = subprocess.run(cmd, capture_output=True, text=True)
+            path = r.stdout.strip()
+            if r.returncode == 0 and path:
+                src = Path(path).expanduser()
+                if not src.is_file():
+                    return 1
+                problem = picture_problem(src, effect=True)
+                if problem:
+                    print(json.dumps({"error": problem}))
+                    return 0
+                FX_DIR.mkdir(parents=True, exist_ok=True)
+                shutil.copy(src, FX_DIR / "custom")
+                print(json.dumps({"file": str(FX_DIR / "custom")}))
+            return 0
+    print("no file dialog found (install zenity)", file=sys.stderr)
+    return 1
+
+
+def main() -> int:
+    args = sys.argv[1:]
+    if not args:
+        print(__doc__)
+        return 2
+    if args[0] == "list":
+        return cmd_list()
+    if args[0] == "import":
+        return cmd_import(args[1:])
+    if args[0] == "pick":
+        return cmd_pick(args[1:])
+    if args[0] == "pick-fx":
+        return cmd_pick_fx()
+    if args[0] == "reset-fx":
+        (FX_DIR / "custom").unlink(missing_ok=True)
+        return 0
+    if args[0] == "reset-ws":
+        for st in WS_STATES:
+            cmd_remove(f"_ws-{st}")
+        return 0
+    if args[0] == "remove" and len(args) > 1:
+        return cmd_remove(args[1])
+    print(__doc__)
+    return 2
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

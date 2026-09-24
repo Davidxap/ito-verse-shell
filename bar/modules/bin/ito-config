@@ -1,0 +1,117 @@
+#!/usr/bin/env bash
+# ito-config — read and write Ito bar module settings.
+#
+# Settings live in ito-style.json next to the modules, NOT in shell.json. The
+# bar engine owns shell.json and rewrites it whenever a module is dragged or a
+# popup toggles, which used to revert our writes seconds after they landed --
+# the "the style changes by itself" bug. The old version of this script carried
+# a sleep-and-rewrite race guard to fight that; the sidecar removes the race, so
+# the guard is gone.
+#
+# Usage: ito-config get   <key> [fallback]
+#        ito-config set   <key> <value>
+#        ito-config reset
+#        ito-config setmany <key=value> [...]
+#        ito-config toggle <key>
+#        ito-config cycle <key> <v1> <v2> [...]
+#        ito-config list
+set -euo pipefail
+
+python3 - "$@" <<'PY'
+import json, os, sys
+
+PATH_ = os.path.expanduser("~/.config/omarchy/bar/modules/ito-style.json")
+INTS = {"size", "tomieSize", "workspaceCount", "barSize", "wsCustomVer", "fxCustomVer"}
+BOOLS = {"showValues", "surfacePlate", "surfaceBorder", "surfaceCorners", "fxPlate", "fxGlass", "fxPaper",
+         "fxBlood", "fxWood", "fxCalm", "fxGrain", "fxTone", "fxBorder", "fxPills", "barFloat", "barShadow",
+         "oneBar", "fxTorn", "fxFog", "valueLabels"}
+# What an unset flag means, so `toggle` flips what the bar is actually showing.
+DEFAULT_ON = {"valueLabels", "showValues", "fxPlate", "fxCalm", "fxGrain", "fxBorder", "oneBar"}
+FLOATS = {"surfacePill", "surfaceWood", "surfaceVeins", "surfaceGrain", "surfaceTone", "surfaceCalm",
+          "surfaceOpacity", "iconScale", "light", "vibrance", "fxSpeed", "fxStrength", "surfaceFog", "popupSeconds"}
+
+def load():
+    try:
+        with open(PATH_) as fh:
+            return json.load(fh) or {}
+    except (FileNotFoundError, json.JSONDecodeError):
+        return {}
+
+def save(data):
+    # Write through a temp file so a reader never sees a half-written sidecar.
+    tmp = PATH_ + ".tmp"
+    text = json.dumps(data, indent=2) + "\n"
+    with open(tmp, "w") as fh:
+        fh.write(text)
+    with open(tmp) as fh:
+        assert fh.read() == text, "readback mismatch"
+    os.replace(tmp, PATH_)
+
+def coerce(key, value):
+    if key in BOOLS:
+        return str(value).lower() in ("1", "true", "yes", "on")
+    if key in FLOATS:
+        try:
+            return float(value)
+        except ValueError:
+            return value
+    if key in INTS:
+        try:
+            return int(value)
+        except ValueError:
+            return value
+    return value
+
+args = sys.argv[1:]
+if not args:
+    sys.exit("usage: ito-config get|set|setmany|unset|toggle|reset|cycle|list ...")
+
+cmd = args[0]
+data = load()
+
+if cmd == "list":
+    for k, v in sorted(data.items()):
+        print(f"{k}={v}")
+elif cmd == "get":
+    key = args[1]
+    fallback = args[2] if len(args) > 2 else ""
+    print(data.get(key, fallback))
+elif cmd == "set":
+    key, value = args[1], args[2]
+    data[key] = coerce(key, value)
+    save(data)
+elif cmd == "reset":
+    # Back to how the bar ships: only the colours and the few choices the user made deliberately at
+    # install time survive, every layer, tuning and shape key goes.
+    keep = {"blood", "bloodLive"}
+    data = {k: v for k, v in data.items() if k in keep}
+    data.update({"style": "numerals", "seal": "tomie", "showValues": True})
+    save(data)
+elif cmd == "unset":
+    # unset key key ... : back to the default of each one
+    for key in args[1:]:
+        data.pop(key, None)
+    save(data)
+elif cmd == "setmany":
+    # setmany key=value key=value ... : one write, so a preset lands in the bar as a single change
+    for pair in args[1:]:
+        key, _, value = pair.partition("=")
+        data[key] = coerce(key, value)
+    save(data)
+elif cmd == "toggle":
+    key = args[1]
+    data[key] = not coerce(key, data.get(key, key in DEFAULT_ON))
+    save(data)
+    print(str(data[key]).lower())
+elif cmd == "cycle":
+    key, options = args[1], args[2:]
+    if not options:
+        sys.exit("cycle needs at least one value")
+    current = str(data.get(key, options[0]))
+    nxt = options[(options.index(current) + 1) % len(options)] if current in options else options[0]
+    data[key] = coerce(key, nxt)
+    save(data)
+    print(nxt)
+else:
+    sys.exit(f"unknown command: {cmd}")
+PY
