@@ -108,6 +108,15 @@ The bar does not depend on it: it follows whichever Omarchy theme is installed.
 
 Requires Omarchy already installed and running Hyprland.
 
+**From the Omarchy Marketplace** (once listed), or straight from GitHub:
+
+```bash
+omarchy plugin add https://github.com/Davidxap/ito-verse-shell
+```
+
+then enable the *Install Ito-verse Shell* widget, click it, and answer the questions in the terminal that opens: it says what
+it will do and asks before it changes anything. Or do it by hand:
+
 ```bash
 git clone https://github.com/Davidxap/ito-verse-shell
 cd ito-verse-shell

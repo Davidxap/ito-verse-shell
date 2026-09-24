@@ -20,6 +20,13 @@ sudo pacman -S --needed noto-fonts noto-fonts-cjk rsync jq python-pillow python-
 
 ## First install
 
+**Option A: the Omarchy plugin.** `omarchy plugin add https://github.com/Davidxap/ito-verse-shell`, enable the *Install
+Ito-verse Shell* widget on your bar, and click it. A terminal opens, says what it will do (copy the shell into
+`~/.config/omarchy`, keep your own settings, keep the shell you use now as its own entry) and asks before it changes anything;
+it then offers to switch to Ito-verse Shell. It is the same as running `install.sh` from the plugin's folder.
+
+**Option B: by hand**, from a clone:
+
 ```bash
 git clone https://github.com/Davidxap/ito-verse-shell
 cd ito-verse-shell
