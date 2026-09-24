@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "id": "davidxap.ito-verse-shell",
+  "name": "Ito-verse Shell",
+  "version": "0.1.0-beta",
+  "license": "PolyForm-Noncommercial-1.0.0",
+  "author": "davidxap",
+  "homepage": "https://github.com/Davidxap/ito-verse-shell",
+  "description": "A bar and Control Centre for Omarchy, inspired by Junji Ito and Silent Hill. This plugin installs the whole shell.",
+  "kinds": [
+    "bar-widget"
+  ],
+  "entryPoints": {
+    "barWidget": "BarWidget.qml"
+  },
+  "barWidget": {
+    "displayName": "Install Ito-verse Shell",
+    "description": "A button that installs Ito-verse Shell from this repository, after asking.",
+    "category": "Appearance",
+    "allowMultiple": false
+  }
+}
