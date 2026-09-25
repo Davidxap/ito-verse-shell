@@ -218,7 +218,7 @@ ColumnLayout {
 
         Repeater {
           model: ["workspaces/workspace-2.png", "status-eyes/eye-red.png", "status-eyes/eye-normal.png",
-                  "system/menu-metatron.png", "system/brain.png", "devices/drive.png"]
+                  "system/menu-metatron.png", "system/brain.png", "system/menu-uzumaki.png"]
 
           Ito.ItoImage {
             required property string modelData

@@ -105,7 +105,7 @@ Rectangle {
       Reading { source: root.art + "system/brain.png"; value: "35%" }
       Reading { source: root.art + "workspace-indicators/indicator-active.png"; value: "7%" }
       Reading { source: root.art + "status-eyes/eye-normal.png"; value: "22%" }
-      Reading { source: root.art + "devices/drive.png"; value: "44%" }
+      Reading { source: root.art + "system/brain.png"; value: "44%" }
     }
   }
 

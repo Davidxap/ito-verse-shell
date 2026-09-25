@@ -12,7 +12,7 @@ Rectangle {
     Row { anchors.centerIn: parent; spacing: 12
       ItoArt { size: 32; sources: [base + "status-eyes/eye-outline.png", base + "status-eyes/eye-normal.png", base + "status-eyes/eye-red.png"]; value: 0.5 }
       ItoArt { size: 32; sources: [base + "workspace-indicators/indicator-inactive.png", base + "workspace-indicators/indicator-active.png"]; value: 0.6 }
-      ItoLevelArt { size: 32; value: 0.5; blood: "#c4162a"; source: base + "devices/drive.png" }
+      ItoLevelArt { size: 32; value: 0.5; blood: "#c4162a"; source: base + "system/brain.png" }
       ItoArt { size: 27; sources: [base + "network/wifi.png"] }
       ItoArt { size: 27; sources: [base + "audio/volume.png"] }
       ItoArt { size: 27; sources: [base + "brightness/brightness-high.png"] }
