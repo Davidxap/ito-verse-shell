@@ -1,7 +1,9 @@
 # Installation
 
-Requires an existing Omarchy install running Hyprland. There is no installer script beyond
-`scripts/deploy.sh` and `scripts/shell-switch` — both are safe to run repeatedly.
+Requires an existing Omarchy install running Hyprland. `install.sh` (at the root) is
+interactive: it says what it will do and asks `[y/N]` before changing anything. It runs `scripts/deploy.sh`, which copies
+the plugin into `~/.config/omarchy`, records the folder in `~/.config/ito/repo` and restarts the shell once. It uses no
+sudo, no network and installs no packages. `scripts/deploy.sh` and `scripts/shell-switch` are safe to run repeatedly.
 
 ## Requirements
 
