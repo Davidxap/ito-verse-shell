@@ -1,5 +1,17 @@
 # Changelog
 
+## Unreleased
+
+- **Motion** setting (Effects): off, calm or lively. Labels, popups, the Control Centre and the workspace marks follow it;
+  numbers glide to their new value.
+- Popups are drawn as manga panels (ruled frame, torn corners, blood, screentone) with a burst of static on opening, an eye
+  that opens at the head, a crack when something is wrong and a short note at the foot. Switch: Bars > "Manga frame on popups".
+- Media player popup: right-click the media rings (or `omarchy-shell ito.player toggle`) for the cover, the title, a progress
+  line you can seek on, shuffle, repeat and the controls.
+- Labels over the bar follow the theme; "Tint labels with the accent" brings the accent back.
+- The idle cost of the shell dropped from about 3% to 0.5% of one core: the seal only breathes while an effect is on.
+- Removed old sheet-derived icons that carried text and were not used by the shell.
+
 ## 0.1.0-beta
 
 The first public version.

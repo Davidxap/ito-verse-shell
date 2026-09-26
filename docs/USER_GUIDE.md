@@ -110,6 +110,8 @@ How the shell moves and how much light it gives off. The cards run their effect 
   Sway, Glitch, Ripple.
 - **Media.** What moves behind the play buttons while something plays: Blood, Spiral, Eye, Fog, Static, or **Your own**
   (a picture or GIF). It only draws while something is playing, so an idle bar costs nothing.
+- **Motion.** How things appear: *Off* (instant), *Calm* (default) or *Lively*. Popups, labels, the Control Centre and
+  the workspace marks follow it.
 - **When.** Effects run only while the pointer is over the thing (*On hover*, free while idle) or all the time
   (*Always*).
 - **Light.** *Glow* (the bloom behind marks and active items; 0 turns every glow off), *Colour vibrance* (a quieter or
