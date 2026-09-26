@@ -162,7 +162,9 @@ Ui.BarWidget {
       horizontalItemAlignment: Grid.AlignHCenter
       verticalItemAlignment: Grid.AlignVCenter
 
+      Ito.ItoHover { parent: button; target: skyGlyph; hovered: button.tooltipHovered; kind: "lift"; amp: cfg.motionAmp; glow: cfg.blood; light: cfg.light }
       Ito.ItoImage {
+        id: skyGlyph
         visible: root.showIcon
         source: root.skyArt(root.kind)
         width: root.glyph

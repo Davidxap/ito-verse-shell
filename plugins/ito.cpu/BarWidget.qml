@@ -104,6 +104,7 @@ Ui.BarWidget {
       verticalItemAlignment: Grid.AlignVCenter
 
       // A chip with the spiral in it, filling with blood as the processor's load rises.
+      Ito.ItoHover { parent: button; target: icon; hovered: button.tooltipHovered; kind: "pulse"; amp: cfg.motionAmp; glow: cfg.blood; light: cfg.light }
       Ito.ItoFillArt {
         id: icon
         visible: root.showIcon

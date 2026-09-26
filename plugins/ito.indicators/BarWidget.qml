@@ -108,7 +108,12 @@ Ui.BarWidget {
         fixedHeight: root.vertical ? root.glyph + 8 : root.barSize
         onPressed: function(mouseButton) { if (mouseButton === Qt.LeftButton) root.flip(modelData.id) }
 
+        Ito.ItoHover {
+          target: glyphImg; hovered: item.tooltipHovered; amp: cfg.motionAmp; glow: cfg.blood; light: cfg.light
+          kind: modelData.id === "awake" ? "flicker" : (modelData.id === "night" ? "breathe" : "wiggle")
+        }
         Ito.ItoImage {
+          id: glyphImg
           palette: cfg
           anchors.centerIn: parent
           width: root.glyph
@@ -118,9 +123,7 @@ Ui.BarWidget {
           smooth: true
           mipmap: true
           opacity: item.on ? 1 : (item.tooltipHovered ? 0.9 : 0.68)
-          scale: item.tooltipHovered ? 1.1 : 1
           Behavior on opacity { NumberAnimation { duration: 200 } }
-          Behavior on scale { NumberAnimation { duration: 140; easing.type: Easing.OutCubic } }
         }
       }
     }

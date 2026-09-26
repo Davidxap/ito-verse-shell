@@ -105,7 +105,9 @@ Ui.BarWidget {
       }
     }
 
+    Ito.ItoHover { target: bell; hovered: button.tooltipHovered; kind: "ring"; amp: cfg.motionAmp; glow: cfg.blood; light: cfg.light }
     Ito.ItoImage {
+      id: bell
       palette: cfg
       anchors.centerIn: parent
       width: root.glyph
@@ -117,8 +119,6 @@ Ui.BarWidget {
       // the bell rings a little when something new arrives
       transformOrigin: Item.Top
       rotation: 0
-      scale: button.tooltipHovered ? 1.1 : 1
-      Behavior on scale { NumberAnimation { duration: 160; easing.type: Easing.OutCubic } }
     }
   }
 

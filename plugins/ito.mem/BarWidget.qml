@@ -105,6 +105,7 @@ Ui.BarWidget {
       verticalItemAlignment: Grid.AlignVCenter
 
       // A memory module with an eye on each chip, filling with blood as memory is used.
+      Ito.ItoHover { parent: button; target: icon; hovered: button.tooltipHovered; kind: "lift"; amp: cfg.motionAmp; glow: cfg.blood; light: cfg.light }
       Ito.ItoFillArt {
         id: icon
         visible: root.showIcon

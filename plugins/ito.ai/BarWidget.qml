@@ -114,7 +114,9 @@ Ui.BarWidget {
       horizontalItemAlignment: Grid.AlignHCenter
       verticalItemAlignment: Grid.AlignVCenter
 
+      Ito.ItoHover { parent: button; target: hoverIcon; hovered: button.tooltipHovered; kind: "pulse"; amp: cfg.motionAmp; glow: cfg.blood; light: cfg.light }
       Ito.ItoFillArt {
+        id: hoverIcon
         visible: root.showIcon
         art: root.art + root.aiArt
         inside: root.art + root.aiFill

@@ -89,7 +89,9 @@ Ui.BarWidget {
           else if (modelData.act === "toggle" && root.player.canTogglePlaying) root.player.togglePlaying()
         }
 
+        Ito.ItoHover { target: ring; hovered: control.tooltipHovered; kind: modelData.face === "playpause" ? "pulse" : "lift"; amp: cfg.motionAmp; glow: cfg.blood; light: cfg.light }
         Ito.ItoImage {
+          id: ring
           palette: cfg
           anchors.centerIn: parent
           width: root.glyph
@@ -101,8 +103,6 @@ Ui.BarWidget {
           smooth: true
           mipmap: true
           opacity: control.tooltipHovered ? 1 : 0.9
-          scale: control.tooltipHovered ? 1.1 : 1
-          Behavior on scale { NumberAnimation { duration: 140; easing.type: Easing.OutCubic } }
         }
       }
     }

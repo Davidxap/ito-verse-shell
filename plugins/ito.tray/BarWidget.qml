@@ -150,13 +150,12 @@ Ui.BarWidget {
 
             onWheelMoved: function(delta) { modelData.scroll(delta, false) }
 
+            Ito.ItoHover { target: appGlyph; hovered: trayButton.tooltipHovered; kind: "lift"; amp: cfg.motionAmp; glow: cfg.blood; light: cfg.light }
             Item {
+              id: appGlyph
               anchors.centerIn: parent
               width: root.itemSize
               height: root.itemSize
-              scale: trayButton.tooltipHovered ? 1.12 : 1
-
-              Behavior on scale { NumberAnimation { duration: 140; easing.type: Easing.OutCubic } }
 
               IconImage {
                 anchors.fill: parent

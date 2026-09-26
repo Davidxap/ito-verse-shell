@@ -98,6 +98,7 @@ Ui.BarWidget {
       verticalItemAlignment: Grid.AlignVCenter
 
       // A platter that fills with blood as the disk fills.
+      Ito.ItoHover { parent: button; target: icon; hovered: button.tooltipHovered; kind: "spin"; amp: cfg.motionAmp; glow: cfg.blood; light: cfg.light }
       Ito.ItoFillArt {
         id: icon
         visible: root.showIcon
