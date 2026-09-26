@@ -4,6 +4,7 @@ import Quickshell.Services.Mpris
 import qs.Ui as Ui
 import qs.Commons as Commons
 import "../../bar/modules" as Ito
+import "../../bar/modules/ItoLayout.js" as PopupSize
 
 // Ito media: previous, play or pause, next, for whatever is playing (any MPRIS player: Spotify, a browser,
 // mpv…). The play ring is blood while something plays. Nothing is drawn when there is no player, so it
@@ -144,8 +145,8 @@ Ui.BarWidget {
       open: popup.opened && root.player !== null
       focusTarget: keys
      
-      contentWidth: panel.fittedContentWidth(Commons.Style.space(380))
-      contentHeight: Math.round(104 + column.spacing + (popup.length > 0 ? 30 + column.spacing : 0) + 46 + panel.verticalContentInset + cfg.panelHeadroom)
+      contentWidth: PopupSize.popupWidth(panel, Commons.Style.space(380))
+      contentHeight: PopupSize.popupHeight(panel, 104 + column.spacing + (popup.length > 0 ? 30 + column.spacing : 0) + 46 + cfg.panelHeadroom + cfg.panelFootroom)
 
       // a see-through layer over the whole popup that only watches where the pointer is
       Item {
@@ -153,7 +154,7 @@ Ui.BarWidget {
         z: 1000
         HoverHandler { id: cardHover }
       }
-      Ito.ItoPanelFrame { cfg: cfg; opened: popup.opened; memo: "The song does not end." }
+      Ito.ItoPanelFrame { cfg: cfg; emblem: "spiral"; opened: popup.opened; memos: ["The song does not end.", "Round again. It is always round again.", "The record turns. So do you."] }
       Ito.ItoEnter { opened: popup.opened; amp: cfg.motionAmp }
       Ito.ItoAutoClose {
         opened: popup.opened

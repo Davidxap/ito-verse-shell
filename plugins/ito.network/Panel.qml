@@ -8,6 +8,7 @@ import qs.Ui
 import qs.Commons
 import "Model.js" as Model
 import "../../bar/modules" as Ito
+import "../../bar/modules/ItoLayout.js" as PopupSize
 
 Panel {
   id: root
@@ -1039,8 +1040,8 @@ Panel {
     bar: root.bar
     open: root.opened
     focusTarget: keyCatcher
-    contentWidth: panel.fittedContentWidth(Style.space(380))
-    contentHeight: panel.fittedContentHeight(column.implicitHeight + itoCfg.panelHeadroom)
+    contentWidth: PopupSize.popupWidth(panel, Style.space(380))
+    contentHeight: PopupSize.popupHeight(panel, column.implicitHeight + itoCfg.panelHeadroom + itoCfg.panelFootroom)
 
     // a see-through layer over the whole popup that only watches where the pointer is
     Item {
@@ -1048,7 +1049,7 @@ Panel {
       z: 1000
       HoverHandler { id: cardHover }
     }
-    Ito.ItoPanelFrame { cfg: itoCfg; opened: root.opened; alert: !!root.info && root.info.ip !== undefined && !root.info.ip; memo: "Something on the line is breathing." }
+    Ito.ItoPanelFrame { cfg: itoCfg; emblem: "web"; opened: root.opened; alert: !!root.info && root.info.ip !== undefined && !root.info.ip; memos: ["Something on the line is breathing.", "The signal goes round and round.", "Nobody answers. It answers anyway.", "Every road leads back to the water."] }
     Ito.ItoEnter { opened: root.opened; amp: itoCfg.motionAmp }
     Ito.ItoAutoClose {
         opened: root.opened

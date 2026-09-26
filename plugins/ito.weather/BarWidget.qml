@@ -190,16 +190,25 @@ Ui.BarWidget {
   }
 
   // ------------------------------------------------------------------ forecast
+  // The forecast sits at the corner of the screen that is nearest the bar, whichever edge the bar is on.
   PanelWindow {
     id: panel
+
+    readonly property string pos: root.bar && root.bar.position ? String(root.bar.position) : "top"
+    readonly property int edge: (root.bar ? root.bar.barSize : 46) + 8
+
     visible: root.popupOpen
-    anchors.top: true
-    anchors.right: true
-    margins.top: (root.bar ? root.bar.barSize : 46) + 8
-    margins.right: 12
+    anchors.top: pos !== "bottom"
+    anchors.bottom: pos === "bottom"
+    anchors.right: pos !== "left"
+    anchors.left: pos === "left"
+    margins.top: pos === "top" ? edge : 12
+    margins.bottom: pos === "bottom" ? edge : 0
+    margins.right: pos === "right" ? edge : 12
+    margins.left: pos === "left" ? edge : 0
     exclusiveZone: 0
-    implicitWidth: column.width + 36
-    implicitHeight: column.implicitHeight + 32
+    implicitWidth: card.width + 24
+    implicitHeight: card.height + 24
     color: "transparent"
 
     HoverHandler { id: panelHover }
@@ -210,220 +219,243 @@ Ui.BarWidget {
       onExpired: root.popupOpen = false
     }
 
-    Ito.ItoPlate {
-      palette: cfg
-      anchors.fill: parent
-      radius: 14
-      artBase: Qt.resolvedUrl("../../bar/modules/ito-art/")
-      veins: 0
-      calm: 0
-      grain: 0.10
-      tone: 0
-      border: false
+    // the range the days share, so their bars can be compared with each other
+    readonly property real lo: {
+      var m = 99
+      for (var i = 0; i < root.days.length; i++) m = Math.min(m, Number(root.days[i].mintempC))
+      return m
     }
-
-    Rectangle {
-      anchors.fill: parent
-      radius: 14
-      color: "transparent"
-      border.width: 1
-      border.color: Qt.rgba(root.blood.r, root.blood.g, root.blood.b, 0.45)
+    readonly property real hi: {
+      var m = -99
+      for (var i = 0; i < root.days.length; i++) m = Math.max(m, Number(root.days[i].maxtempC))
+      return m
     }
+    readonly property real span: Math.max(1, hi - lo)
 
-    ColumnLayout {
-      id: column
-      anchors.centerIn: parent
-      width: 440
-      spacing: 10
+    // a few lines for the foot, in the voice of the sky they describe; one is drawn each time it opens
+    readonly property var notes: ({
+      "fog": ["The fog does not lift.", "You have walked this street before.", "Something stands in the white, waiting."],
+      "rain": ["It has rained here for days.", "The rain draws circles. Then more circles.", "Every drop lands where the last one did."],
+      "storm": ["Something is walking in the storm.", "The thunder comes from below.", "The sky splits and shows the same sky."],
+      "snow": ["The snow keeps what it covers.", "Nothing has walked here. Then footprints."],
+      "sun": ["Even the sun looks wrong.", "The light is the wrong colour today."],
+      "suncloud": ["The light comes and goes.", "A cloud turns slowly over the town."],
+      "moon": ["The moon is watching.", "The same night, once more."],
+      "cloud": ["The sky is closed.", "The clouds curl in on themselves."]
+    })
+    readonly property var memos: notes[root.kind] || notes["cloud"]
 
-      // hero: where you are, what it is doing, how cold it is
-      RowLayout {
-        Layout.fillWidth: true
+    Item {
+      id: card
+      x: 12
+      y: 12
+      width: 396
+      height: body.implicitHeight + cfg.panelHeadroom + 84
+
+      Ito.ItoPanelFrame { cfg: cfg; target: card; emblem: root.kind; opened: root.popupOpen; memos: panel.memos }
+      Ito.ItoEnter {
+        opened: root.popupOpen
+        amp: cfg.motionAmp
+        origin: panel.pos === "bottom" ? Item.Bottom : Item.Top
+      }
+
+      ColumnLayout {
+        id: body
+        x: 24
+        y: 22 + cfg.panelHeadroom
+        width: card.width - 48
         spacing: 14
 
-        Ito.ItoImage {
-          source: root.skyArt(root.kind)
-          width: 76
-          height: 76
-          palette: cfg
-          }
-
-        ColumnLayout {
-          Layout.fillWidth: true
-          spacing: 2
-
-          Text {
-            text: root.current ? root.temp + "°" : "—"
-            color: root.bone
-            font.family: "Noto Serif"
-            font.pixelSize: 38
-            font.weight: Font.Light
-          }
-
-          Text {
-            Layout.fillWidth: true
-            text: root.describe
-            color: root.bone
-            opacity: 0.8
-            font.family: "Noto Serif"
-            font.pixelSize: 13
-            elide: Text.ElideRight
-          }
-
-          Text {
-            Layout.fillWidth: true
-            text: root.area
-            color: root.blood
-            opacity: 0.9
-            font.family: "Noto Serif"
-            font.pixelSize: 12
-            font.letterSpacing: 1
-            elide: Text.ElideRight
-          }
-        }
-
-        ColumnLayout {
-          spacing: 3
-
-          Text {
-            Layout.alignment: Qt.AlignRight
-            visible: !!root.current
-            text: root.current ? "feels " + Math.round(Number(root.current.FeelsLikeC)) + "°" : ""
-            color: root.bone
-            opacity: 0.6
-            font.family: "Noto Serif"
-            font.pixelSize: 11
-          }
-
-          Text {
-            Layout.alignment: Qt.AlignRight
-            visible: !!root.current
-            text: root.current ? root.current.humidity + "% humidity" : ""
-            color: root.bone
-            opacity: 0.6
-            font.family: "Noto Serif"
-            font.pixelSize: 11
-          }
-
-          Text {
-            Layout.alignment: Qt.AlignRight
-            visible: !!root.current
-            text: root.current ? root.current.windspeedKmph + " km/h wind" : ""
-            color: root.bone
-            opacity: 0.6
-            font.family: "Noto Serif"
-            font.pixelSize: 11
-          }
-        }
-      }
-
-      Rectangle { Layout.fillWidth: true; height: 1; color: root.blood; opacity: 0.35 }
-
-      // the hours ahead
-      RowLayout {
-        Layout.fillWidth: true
-        spacing: 0
-
-        Repeater {
-          model: root.slots
-
-          ColumnLayout {
-            required property var modelData
-            Layout.fillWidth: true
-            spacing: 4
-
-            Text {
-              Layout.alignment: Qt.AlignHCenter
-              text: Sky.pad(modelData.hour) + ":00"
-              color: root.bone
-              opacity: 0.6
-              font.family: "Noto Serif"
-              font.pixelSize: 11
-            }
-
-            Ito.ItoImage {
-              Layout.alignment: Qt.AlignHCenter
-              source: root.skyArt(modelData.kind)
-              width: 30
-              height: 30
-              palette: cfg
-              }
-
-            Text {
-              Layout.alignment: Qt.AlignHCenter
-              text: modelData.temp + "°"
-              color: root.bone
-              font.family: "Noto Serif"
-              font.pixelSize: 12
-            }
-          }
-        }
-      }
-
-      Rectangle { Layout.fillWidth: true; height: 1; color: root.blood; opacity: 0.35 }
-
-      // the days ahead, with the range each one covers
-      Repeater {
-        model: root.days
-
+        // now: the sky, the temperature, where
         RowLayout {
-          required property var modelData
-          required property int index
           Layout.fillWidth: true
-          spacing: 10
-
-          Text {
-            Layout.preferredWidth: 96
-            text: index === 0 ? "Today"
-              : Qt.formatDate(Date.fromLocaleDateString(Qt.locale(), modelData.date, "yyyy-MM-dd"), "dddd")
-            color: root.bone
-            opacity: index === 0 ? 0.95 : 0.75
-            font.family: "Noto Serif"
-            font.pixelSize: 12
-          }
+          spacing: 16
 
           Ito.ItoImage {
-            source: root.skyArt(modelData.hourly && modelData.hourly.length > 4
-              ? Sky.kind(modelData.hourly[4].weatherCode, false) : "cloud")
-            width: 26
-            height: 26
+            Layout.preferredWidth: 74
+            Layout.preferredHeight: 74
+            Layout.alignment: Qt.AlignVCenter
+            source: root.skyArt(root.kind)
+            fillMode: Image.PreserveAspectFit
             palette: cfg
-            }
-
-          Item { Layout.fillWidth: true }
-
-          Text {
-            text: Math.round(Number(modelData.mintempC)) + "°"
-            color: root.bone
-            opacity: 0.55
-            font.family: "Noto Serif"
-            font.pixelSize: 12
           }
 
-          // the day's range as a bar, hottest end in blood
-          Rectangle {
-            Layout.preferredWidth: 84
-            height: 3
-            radius: 1.5
-            color: Qt.rgba(root.bone.r, root.bone.g, root.bone.b, 0.18)
+          ColumnLayout {
+            Layout.fillWidth: true
+            spacing: 0
 
-            Rectangle {
-              anchors.left: parent.left
-              anchors.verticalCenter: parent.verticalCenter
-              width: parent.width * Math.max(0.1, Math.min(1,
-                (Number(modelData.maxtempC) + 10) / 45))
-              height: parent.height
-              radius: parent.radius
+            Text {
+              text: root.current ? root.temp + "°" : "—"
+              color: root.bone
+              font.family: "Noto Serif"
+              font.pixelSize: 50
+              font.weight: Font.Light
+            }
+            Text {
+              Layout.fillWidth: true
+              text: root.describe
+              color: root.bone
+              opacity: 0.85
+              font.family: "Noto Serif"
+              font.pixelSize: 14
+              elide: Text.ElideRight
+            }
+            Text {
+              Layout.fillWidth: true
+              text: root.area.toUpperCase()
               color: root.blood
-              opacity: 0.8
+              font.family: "Noto Serif"
+              font.pixelSize: 10
+              font.letterSpacing: 1.6
+              elide: Text.ElideRight
             }
           }
+        }
 
-          Text {
-            text: Math.round(Number(modelData.maxtempC)) + "°"
-            color: root.bone
-            font.family: "Noto Serif"
-            font.pixelSize: 12
+        // three small readings, each a third of the width
+        Row {
+          Layout.fillWidth: true
+          visible: !!root.current
+
+          Repeater {
+            model: root.current ? [
+              { "k": "FEELS", "v": Math.round(Number(root.current.FeelsLikeC)) + "°" },
+              { "k": "HUMIDITY", "v": root.current.humidity + "%" },
+              { "k": "WIND", "v": root.current.windspeedKmph + " km/h" }
+            ] : []
+
+            Column {
+              required property var modelData
+              width: body.width / 3
+              spacing: 2
+              Text {
+                text: modelData.k
+                color: root.bone
+                opacity: 0.5
+                font.family: "Noto Serif"
+                font.pixelSize: 9
+                font.letterSpacing: 1.6
+              }
+              Text {
+                text: modelData.v
+                color: root.bone
+                font.family: "Noto Serif"
+                font.pixelSize: 14
+              }
+            }
+          }
+        }
+
+        Rectangle { Layout.fillWidth: true; height: 1; color: root.bone; opacity: 0.16 }
+
+        // the hours ahead, in equal cells so none can spill past the edge
+        Row {
+          Layout.fillWidth: true
+
+          Repeater {
+            model: root.slots
+
+            Column {
+              required property var modelData
+              width: body.width / Math.max(1, root.slots.length)
+              spacing: 5
+
+              Text {
+                anchors.horizontalCenter: parent.horizontalCenter
+                text: Sky.pad(modelData.hour) + ":00"
+                color: root.bone
+                opacity: 0.55
+                font.family: "Noto Serif"
+                font.pixelSize: 10
+              }
+              Ito.ItoImage {
+                anchors.horizontalCenter: parent.horizontalCenter
+                width: 32
+                height: 32
+                source: root.skyArt(modelData.kind)
+                fillMode: Image.PreserveAspectFit
+                palette: cfg
+              }
+              Text {
+                anchors.horizontalCenter: parent.horizontalCenter
+                text: modelData.temp + "°"
+                color: root.bone
+                font.family: "Noto Serif"
+                font.pixelSize: 13
+              }
+            }
+          }
+        }
+
+        Rectangle { Layout.fillWidth: true; height: 1; color: root.bone; opacity: 0.16 }
+
+        // the days ahead, each with the range it covers on one shared scale
+        ColumnLayout {
+          Layout.fillWidth: true
+          spacing: 9
+
+          Repeater {
+            model: root.days
+
+            RowLayout {
+              required property var modelData
+              required property int index
+              Layout.fillWidth: true
+              spacing: 10
+
+              Text {
+                Layout.preferredWidth: 84
+                text: index === 0 ? "Today"
+                  : Qt.formatDate(Date.fromLocaleDateString(Qt.locale(), modelData.date, "yyyy-MM-dd"), "dddd")
+                color: root.bone
+                opacity: index === 0 ? 0.95 : 0.75
+                font.family: "Noto Serif"
+                font.pixelSize: 13
+                elide: Text.ElideRight
+              }
+              Ito.ItoImage {
+                Layout.preferredWidth: 26
+                Layout.preferredHeight: 26
+                source: root.skyArt(modelData.hourly && modelData.hourly.length > 4
+                  ? Sky.kind(modelData.hourly[4].weatherCode, false) : "cloud")
+                fillMode: Image.PreserveAspectFit
+                palette: cfg
+              }
+              Item { Layout.fillWidth: true }
+              Text {
+                Layout.preferredWidth: 28
+                horizontalAlignment: Text.AlignRight
+                text: Math.round(Number(modelData.mintempC)) + "°"
+                color: root.bone
+                opacity: 0.55
+                font.family: "Noto Serif"
+                font.pixelSize: 13
+              }
+              Item {
+                Layout.preferredWidth: 96
+                Layout.preferredHeight: 4
+                Rectangle {
+                  anchors.fill: parent
+                  radius: 2
+                  color: Qt.rgba(root.bone.r, root.bone.g, root.bone.b, 0.16)
+                }
+                Rectangle {
+                  height: parent.height
+                  radius: 2
+                  x: parent.width * (Number(modelData.mintempC) - panel.lo) / panel.span
+                  width: Math.max(6, parent.width * (Number(modelData.maxtempC) - Number(modelData.mintempC)) / panel.span)
+                  color: root.blood
+                  opacity: 0.85
+                }
+              }
+              Text {
+                Layout.preferredWidth: 28
+                text: Math.round(Number(modelData.maxtempC)) + "°"
+                color: root.bone
+                font.family: "Noto Serif"
+                font.pixelSize: 13
+              }
+            }
           }
         }
       }

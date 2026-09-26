@@ -16,6 +16,11 @@ Item {
   property bool opened: false
   property bool alert: false
   property string memo: ""
+  // Several notes: one is chosen each time the popup opens, so it does not always say the same thing.
+  property var memos: []
+  property string shownMemo: memo
+  // The sign at the head (see ItoCrest): eye, spiral, waves, web, rune, flame, hourglass, bell, or a kind of sky.
+  property string emblem: "eye"
   readonly property real amp: cfg && cfg.motionAmp !== undefined ? cfg.motionAmp : 1
   property url artBase: Qt.resolvedUrl("ito-art/")
   // A short popup (the player) has no free corner for the blood and the spiral.
@@ -25,21 +30,33 @@ Item {
   // The card the shell draws around a popup's content is two levels up: content holder -> card.
   // Found once, at start: binding `parent` to a value that itself reads `parent` is a loop.
   property var card: null
+  // Set `target` to frame any plain Item (the calendar, the forecast); left empty, the frame finds the card the
+  // shell paints around a popup's content.
+  property Item target: null
+  // Only the shell's card has these to take over (a see-through fill, square corners, headroom for the eye).
+  // Decided once at start: reading `topPadding` here while a Binding writes it would be a loop.
+  property bool hostCard: false
   anchors.fill: card
   Component.onCompleted: {
+    if (target) { parent = target; card = target; return }
     const holder = parent
-    if (holder && holder.parent) { const c = holder.parent; parent = c; card = c; holder.z = 1 }
+    if (holder && holder.parent) {
+      const c = holder.parent
+      parent = c; card = c; holder.z = 1
+      hostCard = ("topPadding" in c)
+    }
   }
+  Binding { target: root.card; property: "bottomPadding"; value: root.card ? root.card.padding + (root.cfg ? root.cfg.panelFootroom : 0) : 0; when: root.on && root.hostCard }
   z: 0
   visible: on
 
   readonly property color bone: cfg ? cfg.bone : "#c7ccd1"
   readonly property color ink: cfg ? cfg.ink : "#0b0d0e"
 
-  Binding { target: root.card; property: "color"; value: "transparent"; when: root.on && root.card }
-  Binding { target: root.card; property: "radius"; value: 3; when: root.on && root.card }
+  Binding { target: root.card; property: "color"; value: "transparent"; when: root.on && root.hostCard }
+  Binding { target: root.card; property: "radius"; value: 3; when: root.on && root.hostCard }
   // the content starts a little lower, so the eye at the top edge has room; the panel adds the same to its height
-  Binding { target: root.card; property: "topPadding"; value: root.card ? root.card.padding + (root.cfg ? root.cfg.panelHeadroom : 0) : 0; when: root.on && root.card }
+  Binding { target: root.card; property: "topPadding"; value: root.card ? root.card.padding + (root.cfg ? root.cfg.panelHeadroom : 0) : 0; when: root.on && root.hostCard }
 
   // the paper
   Rectangle {
@@ -73,8 +90,8 @@ Item {
     palette: root.cfg
     visible: root.roomy
     source: root.artBase + "misc/blood-splatter.png"
-    width: 52; height: 60
-    anchors { bottom: parent.bottom; left: parent.left; bottomMargin: 4; leftMargin: 4 }
+    width: 34; height: 40
+    anchors { bottom: parent.bottom; left: parent.left; bottomMargin: 3; leftMargin: 3 }
     opacity: 0.55
     smooth: true
   }
@@ -100,8 +117,8 @@ Item {
     palette: root.cfg
     visible: root.roomy
     source: root.artBase + "system/menu-uzumaki.png"
-    width: 34; height: 34
-    anchors { bottom: parent.bottom; right: parent.right; bottomMargin: 16; rightMargin: 16 }
+    width: 22; height: 22
+    anchors { bottom: parent.bottom; right: parent.right; bottomMargin: 4; rightMargin: 12 }
     opacity: 0.2
     smooth: true
   }
@@ -142,8 +159,8 @@ Item {
 
   // a note left at the foot
   Text {
-    visible: root.memo !== ""
-    text: root.memo
+    visible: root.shownMemo !== ""
+    text: root.shownMemo
     anchors { bottom: parent.bottom; horizontalCenter: parent.horizontalCenter; bottomMargin: 5 }
     color: Qt.rgba(root.bone.r, root.bone.g, root.bone.b, 0.38)
     font.family: "Noto Serif"
@@ -157,7 +174,7 @@ Item {
   ItoImage {
     palette: root.cfg
     source: root.artBase + "misc/corner.png"
-    width: 50; height: 60
+    width: 36; height: 43
     anchors { top: parent.top; left: parent.left }
     opacity: 0.9
     smooth: true
@@ -165,7 +182,7 @@ Item {
   ItoImage {
     palette: root.cfg
     source: root.artBase + "misc/corner.png"
-    width: 50; height: 60
+    width: 36; height: 43
     anchors { bottom: parent.bottom; right: parent.right }
     rotation: 180
     opacity: 0.9
@@ -188,27 +205,32 @@ Item {
     NumberAnimation { target: staticFlash; property: "opacity"; to: 0.28; duration: 40 }
     NumberAnimation { target: staticFlash; property: "opacity"; to: 0; duration: 110 }
   }
-  onOpenedChanged: if (opened && amp > 0 && on) flash.restart()
+  onOpenedChanged: {
+    if (opened && memos.length > 0) shownMemo = String(memos[Math.floor(Math.random() * memos.length)])
+    if (opened && amp > 0 && on) flash.restart()
+  }
+  onMemoChanged: if (memos.length === 0) shownMemo = memo
 
-  // An eye that watches from the top edge, half-lidded and dim; the pointer near the head of the popup opens it.
+  // The emblem at the top edge, dim; the pointer near the head of the popup brings it up.
   Item {
     id: eye
-    // 2.6 : 1, like the eye artwork, small enough to sit inside the frame without touching the rule
-    width: 84; height: 32
+    // small enough to sit inside the frame without touching the rule
+    width: 96; height: 32
     anchors { horizontalCenter: parent.horizontalCenter; top: parent.top; topMargin: 7 }
     readonly property bool awake: headHover.hovered && root.amp > 0
     opacity: awake ? 1 : 0.85
     Behavior on opacity { NumberAnimation { duration: 240 * Math.min(root.amp, 1.4) } }
-    // the lid: squashed from the middle while it sleeps, full height once it is looked at
+    // the eye's lid: squashed from the middle while it sleeps, full height once it is looked at
     transform: Scale {
       origin.x: eye.width / 2
       origin.y: eye.height / 2
-      yScale: eye.awake ? 1 : 0.86
+      yScale: (eye.awake || root.emblem !== "eye") ? 1 : 0.86
       Behavior on yScale { NumberAnimation { duration: 260 * Math.min(root.amp, 1.4); easing.type: Easing.OutCubic } }
     }
-    // Drawn as vector curves (ItoEye), so it stays sharp and takes the theme's colours.
-    ItoEye {
+    // Drawn as vector curves, so it stays sharp and takes the theme's colours.
+    ItoCrest {
       anchors.fill: parent
+      kind: root.emblem
       bone: root.bone
       blood: root.cfg ? root.cfg.blood : "#c4162a"
       ink: root.ink

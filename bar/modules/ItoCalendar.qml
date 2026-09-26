@@ -25,6 +25,8 @@ PanelWindow {
   // The Motion setting: 0 is instant, 1 the default, more is slower and wider.
   readonly property real amp: palette && palette.motionAmp !== undefined ? palette.motionAmp : 1
 
+  readonly property int headroom: palette ? palette.panelHeadroom : 0
+
   // 0 closed .. 1 open. The window stays alive until the close animation has finished.
   property real reveal: open ? 1 : 0
   Behavior on reveal {
@@ -35,9 +37,19 @@ PanelWindow {
     }
   }
 
+  // Beside the bar, whichever edge it is on: under it, above it, or next to it in the corner.
+  readonly property string pos: root.bar && root.bar.position ? String(root.bar.position) : "top"
+  readonly property int edge: (root.bar ? root.bar.barSize : 46) + 8
+
   visible: open || reveal > 0.01
-  anchors.top: true
-  margins.top: (root.bar ? root.bar.barSize : 46) + 8
+  anchors.top: pos !== "bottom"
+  anchors.bottom: pos === "bottom"
+  anchors.left: pos === "left"
+  anchors.right: pos === "right"
+  margins.top: pos === "top" ? edge : 12
+  margins.bottom: pos === "bottom" ? edge : 0
+  margins.left: pos === "left" ? edge : 0
+  margins.right: pos === "right" ? edge : 0
   exclusiveZone: 0
   implicitWidth: card.width + 24
   implicitHeight: card.height + 24
@@ -134,37 +146,20 @@ PanelWindow {
   Item {
     id: card
     width: 372
-    height: content.implicitHeight + 40
+    height: content.implicitHeight + headroom + 62
     anchors.horizontalCenter: parent.horizontalCenter
-    y: 12 - (1 - root.reveal) * 22
+    // it slides in from the bar, whichever side the bar is on
+    y: root.pos === "bottom" ? parent.height - height - 12 + (1 - root.reveal) * 22 : 12 - (1 - root.reveal) * 22
     opacity: Math.min(1, root.reveal * 1.6)
-    transformOrigin: Item.Top
+    transformOrigin: root.pos === "bottom" ? Item.Bottom : Item.Top
     scale: 0.95 + 0.05 * root.reveal
 
-    ItoPlate {
-      palette: root.palette
-      anchors.fill: parent
-      radius: 16
-      artBase: root.artBase
-      veins: 0
-      calm: 0
-      grain: 0.10
-      tone: 0
-      border: false
-    }
-
-    Rectangle {
-      anchors.fill: parent
-      radius: 16
-      color: "transparent"
-      border.width: 1
-      border.color: Qt.rgba(root.blood.r, root.blood.g, root.blood.b, 0.45)
-    }
+    ItoPanelFrame { cfg: root.palette; target: card; emblem: "hourglass"; opened: root.open; memos: ["Time keeps its own count.", "Today has happened before.", "Another lap of the same hour.", "The days turn, and you with them."] }
 
     ColumnLayout {
       id: content
       x: 22
-      y: 20
+      y: 20 + headroom
       width: parent.width - 44
       spacing: 12
 

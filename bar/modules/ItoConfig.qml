@@ -61,6 +61,8 @@ QtObject {
   readonly property real motionAmp: motion === "off" ? 0 : motion === "lively" ? 1.7 : 1
   // Room the popups leave above their content for the eye that watches from the top edge (0 with the frame off).
   readonly property int panelHeadroom: get("panelFrame", true) !== false ? 14 : 0
+  // ...and below it, for the note at the foot and the corner art, so neither lies over a control.
+  readonly property int panelFootroom: get("panelFrame", true) !== false ? 24 : 0
   readonly property real fxStrength: Math.max(0.2, Math.min(2.5, Number(get("fxStrength", 1))))
 
   // Push a colour towards more or less vivid. `c` may be a colour or the "#rrggbb" text the settings file holds: it

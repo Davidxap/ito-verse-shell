@@ -6,6 +6,7 @@ import qs.Commons
 import qs.Ui
 import "Model.js" as Model
 import "../../bar/modules" as Ito
+import "../../bar/modules/ItoLayout.js" as PopupSize
 
 Panel {
   id: root
@@ -357,8 +358,8 @@ Panel {
     bar: root.bar
     open: root.opened && root.batteryPresent
     focusTarget: keyCatcher
-    contentWidth: panel.fittedContentWidth(Style.space(380))
-    contentHeight: panel.fittedContentHeight(column.implicitHeight + itoCfg.panelHeadroom)
+    contentWidth: PopupSize.popupWidth(panel, Style.space(380))
+    contentHeight: PopupSize.popupHeight(panel, column.implicitHeight + itoCfg.panelHeadroom + itoCfg.panelFootroom)
 
     // a see-through layer over the whole popup that only watches where the pointer is
     Item {
@@ -366,7 +367,7 @@ Panel {
       z: 1000
       HoverHandler { id: cardHover }
     }
-    Ito.ItoPanelFrame { cfg: itoCfg; opened: root.opened; alert: root.batteryPresent && root.discharging && root.batteryFraction < 0.15; memo: "The light is going." }
+    Ito.ItoPanelFrame { cfg: itoCfg; emblem: "flame"; opened: root.opened; alert: root.batteryPresent && root.discharging && root.batteryFraction < 0.15; memos: ["The light is going.", "The lights flicker when it is close.", "The lamp dims. The fog does not."] }
     Ito.ItoEnter { opened: root.opened; amp: itoCfg.motionAmp }
     Ito.ItoAutoClose {
         opened: root.opened
