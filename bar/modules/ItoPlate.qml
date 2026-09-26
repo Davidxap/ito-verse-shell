@@ -45,6 +45,24 @@ Canvas {
   layer.effect: ItoThemeEffect { palette: root.palette }
   visible: plate > 0.01
 
+  // A plate is a Canvas: it is created empty and painted a few frames later. When the bar is laid out again (a widget moved,
+  // a design applied) every island is made anew, and for that moment the plates were simply not there and the widgets floated
+  // over the wallpaper. This solid fill, in the plate's own ink and shape, is there from the first frame; the Canvas paints
+  // over it as soon as it can.
+  Rectangle {
+    z: -1
+    anchors.fill: parent
+    radius: root.radius
+    color: root.ink
+  }
+  Rectangle {
+    z: -1
+    visible: root.flatTop
+    anchors { left: parent.left; right: parent.right; top: parent.top }
+    height: parent.height / 2
+    color: root.ink
+  }
+
   Image { id: veinsProbe; source: root.artBase + "surface/veins.png"; visible: false }
   Image { id: woodProbe; source: root.artBase + "surface/wood.png"; visible: false }
   Image { id: dirtProbe; source: root.artBase + "surface/dirt.png"; visible: false }

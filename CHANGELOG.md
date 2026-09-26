@@ -15,6 +15,7 @@
   `toggle`).
 
 **Icons and the bar**
+- Moving a widget (or applying a design) no longer makes the island plates vanish for a third of a second: every plate now has an instant fill under its canvas, which used to be created empty and painted a few frames later.
 - **Customising the bar:** drag a widget by its grip to any place in any column of Icons > Your bar (a line shows the drop). The rows show the whole widget name (in the narrow columns it was cut to one or two letters), and the ▲ ▼ arrows now trade places with the next widget you can see (they used to trade with the engine's hidden slots, so they often seemed to do nothing).
 - **Hover:** every icon gets a halo of the accent and a gesture that fits it (bell rings, chip beats, disk turns, volume dances,
   network beeps); the weather shows the sky (rain falls, lightning, rising heat, snow, mist). Follows the Motion setting.
