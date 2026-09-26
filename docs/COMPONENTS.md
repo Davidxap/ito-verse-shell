@@ -24,6 +24,7 @@ Native Ito-verse widgets, each talking to the machine directly (no Omarchy CLI i
 | `ito.tray` | The system tray, one sheet icon. |
 | `ito.notifications` | The bell: still when idle, blood when something is waiting, an eye when muted. Toggles Do Not Disturb (through `ito-host dnd`, so it works without Omarchy's notification service); right-click opens the history. |
 | `ito.media` | Previous/play-pause/next for whatever MPRIS player is active; draws nothing when none is. Right-click opens the player. |
+| `ito.awake`, `ito.nightlight`, `ito.recording` | Stay awake, night light and screen recording, one widget each so they can be placed apart. |
 | `ito.indicators` | Stay-awake, night light and screen-recording toggles, each with several drawn cameos to choose from. |
 | `ito.cpu`, `ito.mem`, `ito.disk` | Live load/RAM/disk usage, engraved chip/RAM/drive artwork. RAM and disk read as `17/32G` in the Amount style; the totals are detected from the machine. |
 | `ito.clock`, `ito.date` | The time and the date, plain serif numerals either side of the seal. |

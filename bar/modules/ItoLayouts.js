@@ -8,7 +8,7 @@
 // brings them all back exactly where they were.
 
 var all = ["ito.spiral", "ito.workspaces", "ito.clock", "ito.tomie", "ito.date", "ito.weather", "ito.tray",
-           "ito.notifications", "ito.indicators", "ito.media",
+           "ito.notifications", "ito.awake", "ito.nightlight", "ito.recording", "ito.media",
            "ito.network", "ito.bluetooth", "ito.audio", "ito.display", "ito.power",
            "ito.ai", "ito.cpu", "ito.mem", "ito.disk"]
 
@@ -23,7 +23,7 @@ var designs = [
     left: ["ito.spiral", "ito.workspaces", "ito.ai"],
     center: MIDDLE,
     right: ["ito.tray", "ito.audio", "ito.mem", "ito.cpu", "ito.disk", "ito.network", "ito.display",
-            "ito.bluetooth", "ito.power", "ito.notifications", "ito.indicators", "ito.media"]
+            "ito.bluetooth", "ito.power", "ito.notifications", "ito.awake", "ito.nightlight", "ito.recording", "ito.media"]
   },
   {
     key: "cluster", name: "Cluster", form: "fit",

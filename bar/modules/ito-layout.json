@@ -21,7 +21,9 @@
     "ito.bluetooth",
     "ito.power",
     "ito.notifications",
-    "ito.indicators",
+    "ito.awake",
+    "ito.nightlight",
+    "ito.recording",
     "ito.media"
   ],
   "hidden": [

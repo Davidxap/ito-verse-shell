@@ -48,7 +48,8 @@ The shape of the bar.
 - **Look.** The plate the bar is painted on. Every layer is its own switch and they combine: grain, paper, blood,
   wood, glass, screentone, calm, torn edge, fog, borders, pills. Sliders for opacity, blood strength, grain and pill
   opacity.
-- **Layout.** *Move widgets* enters an edit mode where you drag widgets on the bar itself. *Reset look* puts the
+- **Layout.** *Move widgets* enters an edit mode where you drag widgets on the bar itself: a line shows the gap it will go into,
+  and only the widget you hold moves. *Reset look* puts the
   plate, effects, seal, workspaces and readings back to the defaults. *Reset layout* puts every widget back where it
   started. (For a gentler way to move widgets, use the Icons page.)
 

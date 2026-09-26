@@ -119,6 +119,71 @@ def build(cfg, form, arrangement, everything):
     return used, hidden
 
 
+def state_entry(cfg):
+    entry = next((p for p in cfg.get("plugins", []) if isinstance(p, dict) and p.get("id") == "ito.state"), None)
+    if entry is None:
+        sys.exit("ito-design: the target has no ito.state plugin entry -- the live shell is not on Ito-verse.")
+    return entry.setdefault("ito", {"version": 1})
+
+
+def splice(cfg, old, news, side="right"):
+    """Change the bar in place, keeping everything else exactly as it is (the island cuts included).
+
+    `old` is replaced by `news` where it stands (news empty removes it); with `old` = "" the `news` are added at the end
+    of `side`. Rebuilding the whole state for one widget, as build() does, reset every cut between the islands."""
+    ito = state_entry(cfg)
+    order, roles, splits = ito.get("order", {}), ito.get("v1SlotRoles", {}), ito.get("splits", {})
+    v2, widgets = ito.get("v2Layout", {}), ito.setdefault("widgets", {})
+    layout = cfg.setdefault("bar", {}).setdefault("layout", {s: [] for s in SIDES})
+    news = [n for n in news if not any("G:" + n in order.get(s, []) for s in SIDES)]
+    touched = False
+    for s in SIDES:
+        slots = order.get(s, [])
+        key = "G:" + old if old else None
+        if key and key in slots:
+            i = slots.index(key)
+            slots[i:i + 1] = ["G:" + n for n in news]
+            if s in roles and len(roles[s]) >= i + 1:
+                roles[s][i:i + 1] = [roles[s][i]] * len(news)
+            sp = splits.get(s)
+            if sp is not None:
+                if news:
+                    sp[i:i] = [False] * (len(news) - 1)
+                elif sp:
+                    j = min(i, len(sp) - 1)
+                    keep = sp[j] or (j > 0 and sp[j - 1])
+                    del sp[j]
+                    if j > 0 and keep:
+                        sp[j - 1] = True
+            touched = True
+        elif not old and s == side and news:
+            slots.extend("G:" + n for n in news)
+            if s in roles:
+                roles[s].extend(["extra"] * len(news))
+            if splits.get(s) is not None:
+                splits[s].extend([False] * len(news))
+            touched = True
+        vs = v2.get(s)
+        if vs is not None:
+            if key and key in vs:
+                k = vs.index(key)
+                vs[k:k + 1] = ["G:" + n for n in news]
+            elif not old and s == side and news:
+                vs.extend("G:" + n for n in news)
+        entries = layout.setdefault(s, [])
+        ids = [e.get("id") if isinstance(e, dict) else e for e in entries]
+        if old and old in ids:
+            k = ids.index(old)
+            entries[k:k + 1] = [{"id": n, "shibumiModule": True} for n in news]
+        elif not old and s == side and news:
+            entries.extend({"id": n, "shibumiModule": True} for n in news)
+    was = widgets.get("G:" + old, {}) if old else {}
+    for n in news:
+        widgets["G:" + n] = {"enabledV1": was.get("enabledV1", True) is not False,
+                             "enabledV2": was.get("enabledV2", True) is not False}
+    return touched
+
+
 RESTART = Path(__file__).resolve().parent / "ito-restart"
 
 
@@ -152,6 +217,8 @@ def main() -> int:
     ap.add_argument("--add", help="put this plugin on the bar, keeping everything else where it is")
     ap.add_argument("--remove", help="take this plugin off the bar")
     ap.add_argument("--side", default="right", choices=SIDES, help="which side --add puts it on")
+    ap.add_argument("--split-indicators", action="store_true",
+                    help="replace the combined indicators widget by stay awake, night light and recording, in its place")
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--no-restart", action="store_true")
     ap.add_argument("--file", help="write this config instead of the live shell.json, and do not restart")
@@ -162,7 +229,7 @@ def main() -> int:
     except (OSError, ValueError) as e:
         sys.exit(f"ito-design: cannot read {LAYOUT_JSON}: {e}")
     everything = [i for s in SIDES for i in default[s]]
-    if a.add or a.remove:
+    if a.add or a.remove or a.split_indicators:
         pass
     elif a.classic:
         # the default: everything has a place, but what is listed as hidden is switched off until wanted
@@ -177,8 +244,30 @@ def main() -> int:
     except (OSError, ValueError) as e:
         sys.exit(f"ito-design: cannot read {target}: {e}")
 
-    if a.add or a.remove:
-        # Keep the bar exactly as it is and change one widget, so adding a plugin never rearranges the rest.
+    if a.add or a.remove or a.split_indicators:
+        # Keep the bar exactly as it is and change one widget, so adding a plugin never rearranges the rest
+        # (nor resets the cuts between the islands).
+        if a.split_indicators:
+            changed = splice(cfg, "ito.indicators", ["ito.awake", "ito.nightlight", "ito.recording"])
+        elif a.remove:
+            changed = splice(cfg, a.remove, [])
+        else:
+            changed = splice(cfg, "", [a.add], a.side)
+        print("changed" if changed else "nothing to change")
+        if a.dry_run or not changed:
+            return 0
+        live = target == SHELL_JSON and not a.no_restart
+        if live:
+            stop_shell()
+        tmp = target.with_suffix(".json.tmp")
+        tmp.write_text(json.dumps(cfg, indent=1))
+        os.replace(tmp, target)
+        print("wrote", target)
+        if live:
+            start_shell()
+        return 0
+
+    if False:
         layout = cfg.get("bar", {}).get("layout", {})
         arrangement = {s: [e if isinstance(e, str) else e.get("id", "") for e in layout.get(s, []) if e]
                        for s in SIDES}

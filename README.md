@@ -1,6 +1,6 @@
 # Ito-verse Shell
 
-**By [davidxap](https://github.com/Davidxap)** · v0.1.0-beta · [licence](#licence)
+**By [davidxap](https://github.com/Davidxap)** · v0.2.0-beta · [licence](#licence)
 
 **Ito-verse Shell** is a bar and Control Centre for [Omarchy](https://omarchy.org) (Arch Linux + Hyprland),
 **inspired by Junji Ito and Silent Hill**: ink, bone and blood. It replaces Omarchy's system colours and its bar

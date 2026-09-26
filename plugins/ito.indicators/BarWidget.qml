@@ -18,6 +18,17 @@ Ui.BarWidget {
     path: Qt.resolvedUrl("../../bar/modules/ito-style.json").toString().replace("file://", "")
   }
 
+  // Which indicators this copy shows: "" for all three (the original combined widget), or one id ("awake", "night",
+  // "record"). ito.awake, ito.nightlight and ito.recording are this same widget showing one each, so every one can be
+  // moved on its own.
+  property string only: ""
+  readonly property var shown: {
+    var out = []
+    for (var i = 0; i < Icons.indicators.length; i++)
+      if (only === "" || Icons.indicators[i].id === only) out.push(Icons.indicators[i])
+    return out
+  }
+
   readonly property string host: Qt.resolvedUrl("../../bar/modules/bin/ito-host").toString().replace("file://", "")
   readonly property url art: Qt.resolvedUrl("../../bar/modules/ito-art/")
   readonly property int glyph: Math.round(root.barSize * cfg.get("iconScale", 0.62))
@@ -59,7 +70,7 @@ Ui.BarWidget {
     onExited: nightSoon.restart()
   }
   Timer { id: nightSoon; interval: 700; onTriggered: if (!nightProbe.running) nightProbe.running = true }
-  Timer { interval: 4000; running: true; repeat: true; triggeredOnStart: true; onTriggered: if (!nightProbe.running) nightProbe.running = true }
+  Timer { interval: 4000; running: root.only === "" || root.only === "night"; repeat: true; triggeredOnStart: true; onTriggered: if (!nightProbe.running) nightProbe.running = true }
 
   Process {
     id: awakeProbe
@@ -71,7 +82,7 @@ Ui.BarWidget {
     onExited: awakeSoon.restart()
   }
   Timer { id: awakeSoon; interval: 700; onTriggered: if (!awakeProbe.running) awakeProbe.running = true }
-  Timer { interval: 4000; running: true; repeat: true; triggeredOnStart: true; onTriggered: if (!awakeProbe.running) awakeProbe.running = true }
+  Timer { interval: 4000; running: root.only === "" || root.only === "awake"; repeat: true; triggeredOnStart: true; onTriggered: if (!awakeProbe.running) awakeProbe.running = true }
 
   // Recording is a process, not a service: look for it now and then.
   Process {
@@ -79,7 +90,7 @@ Ui.BarWidget {
     command: ["pgrep", "--quiet", "-f", "^(gpu-screen-recorder|wf-recorder)"]
     onExited: function(code) { root.recording = code === 0 }
   }
-  Timer { interval: 4000; running: true; repeat: true; triggeredOnStart: true; onTriggered: if (!probe.running) probe.running = true }
+  Timer { interval: 4000; running: root.only === "" || root.only === "record"; repeat: true; triggeredOnStart: true; onTriggered: if (!probe.running) probe.running = true }
 
   implicitWidth: row.implicitWidth
   implicitHeight: row.implicitHeight
@@ -87,12 +98,12 @@ Ui.BarWidget {
   // Side by side on a horizontal bar, stacked on a vertical one.
   Grid {
     id: row
-    columns: root.vertical ? 1 : 3
+    columns: root.vertical ? 1 : Math.max(1, root.shown.length)
     horizontalItemAlignment: Grid.AlignHCenter
     verticalItemAlignment: Grid.AlignVCenter
 
     Repeater {
-      model: Icons.indicators
+      model: root.shown
 
       Ui.WidgetButton {
         id: item

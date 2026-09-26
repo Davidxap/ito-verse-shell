@@ -207,10 +207,13 @@ function insertGroupAt(value, sourceValue, targetRegionValue, targetIndexValue) 
     }
     if (free >= index) {
       for (var k = free; k > index; k--) slots[k] = slots[k - 1]
+      slots[index] = source.groupId
     } else {
-      for (var k2 = free; k2 < index; k2++) slots[k2] = slots[k2 + 1]
+      // The free slot is before the target (usually the one the widget just left): the widgets in between move back one
+      // and the widget lands just before the target. Landing on the target's own index put it one place too far.
+      for (var k2 = free; k2 < index - 1; k2++) slots[k2] = slots[k2 + 1]
+      slots[index - 1] = source.groupId
     }
-    slots[index] = source.groupId
   }
   return validOrder(result) ? result : null
 }

@@ -5,7 +5,7 @@ set -uo pipefail
 here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 omarchy="$HOME/.config/omarchy"
 
-echo "Ito-verse Shell 0.1.0-beta"
+echo "Ito-verse Shell 0.2.0-beta"
 echo
 echo "This will:"
 echo "  - copy the bar modules and the plugins/ito.* folders into $omarchy"

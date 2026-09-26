@@ -223,12 +223,9 @@ Item {
     if (!Number.isFinite(px) || !Number.isFinite(py)) return false
     ghostX = px - ghostWidth / 2
     ghostY = py - ghostHeight / 2
-    const hit = targetAt(px, py)
-    // Over the middle of a widget: trade places. Over its edges or the gaps and empty parts: insert there.
-    if (hit && hit.item && !edgeZone(hit.item, px)) {
-      clearInsert()
-      return updateTarget(hit)
-    }
+    // Ito-verse: dragging always moves the widget to the gap nearest the pointer; it never trades places. Trading when the
+    // pointer crossed the middle of a widget and inserting at its edges made the ghost and the marker switch back and
+    // forth as it travelled (a flicker), and dropping on a neighbour swapped the two instead of moving one.
     updateTarget(null)
     return computeInsert(px, py)
   }

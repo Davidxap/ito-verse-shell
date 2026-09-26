@@ -1,6 +1,20 @@
 # Changelog
 
-## Unreleased
+## 0.2.0-beta
+
+The second beta: popups drawn as manga panels, icons that answer the pointer, a bar you can rearrange freely, and a long list of fixes.
+
+**Moving widgets**
+- Dragging a widget on the bar (Bars > Layout > Move widgets) always moves that one widget to the gap nearest the pointer. It
+  used to trade places with a widget when the pointer crossed its middle and insert at its edges, so the guide switched back and
+  forth as it travelled (a flicker) and a drop on a neighbour swapped the two.
+- Fixed: a widget moved later along its own side landed one place past the guide.
+- **Stay awake, Night light and Recording are three widgets now** (`ito.awake`, `ito.nightlight`, `ito.recording`), so each one moves on
+  its own; before, the three were one widget and moving the coffee cup moved all of them. The combined `ito.indicators` is still
+  there for anyone who wants it. To split an existing bar in place (keeping every island cut):
+  `bar/modules/bin/ito-design --split-indicators`.
+- Adding or removing one widget no longer resets the cuts between the islands.
+
 
 **Popups**
 - Every popup is drawn as a manga panel: ruled double edge, torn corners, blood and screentone, a burst of static as it opens,
