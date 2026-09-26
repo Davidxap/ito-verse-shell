@@ -54,6 +54,11 @@ QtObject {
   readonly property real light: Math.max(0, Math.min(2.5, Number(get("light", 1))))
   readonly property real vibrance: Math.max(0.3, Math.min(2, Number(get("vibrance", 1))))
   readonly property real fxSpeed: Math.max(0.2, Math.min(3, Number(get("fxSpeed", 1))))
+  // How the shell moves when things appear: off (instant), calm (short and quiet, the default) or lively (longer
+  // and with more travel). `motionAmp` is 0, 1 or 1.7 so a caller only multiplies its own distance and time.
+  readonly property string motion: ["off", "calm", "lively"].indexOf(String(get("motion", "calm"))) >= 0
+    ? String(get("motion", "calm")) : "calm"
+  readonly property real motionAmp: motion === "off" ? 0 : motion === "lively" ? 1.7 : 1
   readonly property real fxStrength: Math.max(0.2, Math.min(2.5, Number(get("fxStrength", 1))))
 
   // Push a colour towards more or less vivid. `c` may be a colour or the "#rrggbb" text the settings file holds: it

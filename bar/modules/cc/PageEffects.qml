@@ -82,6 +82,7 @@ ColumnLayout {
     return out
   }
 
+  readonly property string motionKey: String(pal.get("motion", "calm"))
   readonly property string always: String(pal.get("fxWhen", "hover"))
   readonly property string markKey: String(pal.get("menuMark", "uzumaki"))
   readonly property string home: Quickshell.env("HOME")
@@ -368,6 +369,50 @@ ColumnLayout {
   }
 
 
+  // ---------------------------------------------------------------- motion
+  CcSection {
+    host: page.cc
+    Layout.topMargin: 8
+    pal: page.pal
+    label: "MOTION"
+    note: "How things appear on the bar: labels, and every entrance the shell adds later. Off makes them instant."
+
+    RowLayout {
+      Layout.fillWidth: true
+      spacing: 8
+
+      Repeater {
+        model: [
+          { "key": "off",    "label": "Off",    "tip": "No entrance animations at all." },
+          { "key": "calm",   "label": "Calm",   "tip": "Short and quiet. The default." },
+          { "key": "lively", "label": "Lively", "tip": "A little longer, with more travel." }
+        ]
+
+        CcCard {
+          required property var modelData
+          Layout.fillWidth: true
+          Layout.preferredHeight: 38
+          radius: 19
+          host: page.cc
+          pal: page.pal
+          showCaption: false
+          hint: modelData.tip
+          current: page.motionKey === modelData.key
+          onActivated: page.act.set("motion", modelData.key)
+
+          Text {
+            anchors.centerIn: parent
+            text: modelData.label
+            color: parent.current ? page.pal.lit : page.bone
+            font.family: "Noto Serif"
+            font.pixelSize: 12
+          }
+        }
+      }
+    }
+  }
+
+
   // ---------------------------------------------------------------- light
   CcSection {
     host: page.cc
@@ -402,7 +447,7 @@ ColumnLayout {
       pal: page.pal
       showCaption: false
       hint: "Put every effect and every light setting back to how they shipped."
-      onActivated: page.act.unset(["fxMark", "fxSeal", "fxVeins", "fxWhen", "mediaFx", "light", "vibrance", "fxSpeed", "fxStrength"])
+      onActivated: page.act.unset(["fxMark", "fxSeal", "fxVeins", "fxWhen", "mediaFx", "light", "vibrance", "fxSpeed", "fxStrength", "motion"])
 
       Text {
         anchors.centerIn: parent

@@ -24,6 +24,30 @@ Item {
       ? String(target.tooltipText) : String(bar ? bar.tooltipText || "" : "")
   }
 
+  // Entrance: a short fade and a small slide towards the bar. Both run on the render thread, and only when a
+  // label appears or moves to another target, so an idle bar costs nothing. Motion "off" makes it instant.
+  readonly property real amp: cfg.motionAmp
+  property real enter: 1
+  Connections {
+    target: root.bar
+    function onTooltipShownChanged() { if (root.bar && root.bar.tooltipShown) root.restartEnter() }
+    function onTooltipTargetChanged() { if (root.bar && root.bar.tooltipShown) root.restartEnter() }
+  }
+  function restartEnter() {
+    enterAnim.stop()
+    if (amp <= 0) { enter = 1; return }
+    enter = 0
+    enterAnim.start()
+  }
+  NumberAnimation {
+    id: enterAnim
+    target: root
+    property: "enter"
+    to: 1
+    duration: Math.round(150 * Math.min(root.amp, 1.4))
+    easing.type: Easing.OutCubic
+  }
+
   implicitWidth: bubble.implicitWidth
   implicitHeight: bubble.implicitHeight
 
@@ -31,6 +55,8 @@ Item {
     id: bubble
 
     anchors.fill: parent
+    opacity: root.enter
+    transform: Translate { y: (1 - root.enter) * -5 * root.amp }
     implicitWidth: label.implicitWidth + 2 * (root.tokens ? root.tokens.tooltipPaddingX : 10)
     implicitHeight: label.implicitHeight + 2 * (root.tokens ? root.tokens.tooltipPaddingY : 4)
     color: Qt.rgba(cfg.ink.r, cfg.ink.g, cfg.ink.b, 0.94)
