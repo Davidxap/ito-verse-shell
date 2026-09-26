@@ -51,7 +51,7 @@ SWEEP = [
  ("fxTorn", ["true","false"]), ("fxFog", ["true","false"]), ("fxPlate", ["false","true"]), ("fxBorder", ["true","false"]),
  ("fxGrain", ["true","false"]), ("fxPills", ["true","false"]), ("fxBlood", ["true","false"]), ("fxWood", ["true","false"]),
  ("fxPaper", ["true","false"]), ("fxGlass", ["true","false"]), ("fxTone", ["true","false"]), ("fxCalm", ["true","false"]),
- ("barShadow", ["true","false"]), ("barFloat", ["true","false"]),
+ ("barShadow", ["true","false"]), ("barFloat", ["true","false"]), ("tooltipBlood", ["true","false"]),
 ]
 seals = ["tomie","uzumaki","ito","silent","remina"]
 SWEEP += [("seal", seals)]

@@ -24,7 +24,7 @@ PATH_ = os.path.expanduser("~/.config/omarchy/bar/modules/ito-style.json")
 INTS = {"size", "tomieSize", "workspaceCount", "barSize", "wsCustomVer", "fxCustomVer"}
 BOOLS = {"showValues", "surfacePlate", "surfaceBorder", "surfaceCorners", "fxPlate", "fxGlass", "fxPaper",
          "fxBlood", "fxWood", "fxCalm", "fxGrain", "fxTone", "fxBorder", "fxPills", "barFloat", "barShadow",
-         "oneBar", "fxTorn", "fxFog", "valueLabels"}
+         "tooltipBlood", "oneBar", "fxTorn", "fxFog", "valueLabels"}
 # What an unset flag means, so `toggle` flips what the bar is actually showing.
 DEFAULT_ON = {"valueLabels", "showValues", "fxPlate", "fxCalm", "fxGrain", "fxBorder", "oneBar"}
 FLOATS = {"surfacePill", "surfaceWood", "surfaceVeins", "surfaceGrain", "surfaceTone", "surfaceCalm",

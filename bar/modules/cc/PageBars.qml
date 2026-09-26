@@ -276,6 +276,16 @@ ColumnLayout {
       onActivated: page.act.set("barShadow", on ? "false" : "true")
     }
 
+    CcToggle {
+      Layout.fillWidth: true
+      host: page.cc
+      pal: page.pal
+      label: "Tint labels with the accent"
+      hint: "The small labels that appear over the bar (workspace, seal...) take the accent colour. Off, they follow the theme."
+      on: page.pal.get("tooltipBlood", false) === true
+      onActivated: page.act.set("tooltipBlood", on ? "false" : "true")
+    }
+
 
     CcCard {
       Layout.preferredWidth: 170
@@ -285,7 +295,7 @@ ColumnLayout {
       pal: page.pal
       showCaption: false
       hint: "Put corners, height, spacing, shadow and floating back to how they shipped."
-      onActivated: page.act.unset(["barRadius", "barSize", "barGap", "barShadow", "barFloat"])
+      onActivated: page.act.unset(["barRadius", "barSize", "barGap", "barShadow", "barFloat", "tooltipBlood"])
 
       Text {
         anchors.centerIn: parent
