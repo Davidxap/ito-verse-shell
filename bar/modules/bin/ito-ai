@@ -77,7 +77,11 @@ def from_cache(data):
             continue
         stamp = int(data.get(reset) or 0)
         minutes = max(0, int((stamp - time.time()) // 60)) if stamp else None
-        limits.append({"label": label, "pct": pct, "minutes": minutes})
+        expired = bool(stamp) and stamp <= time.time()
+        # The reading is of a window that has since reset: what it said (often 100%) no longer holds, and the next
+        # reading will be of the new window. Show the reset, not the old number.
+        limits.append({"label": label, "pct": 0.0 if expired else pct, "minutes": None if expired else minutes,
+                       "expired": expired})
     models = []
     for m in data.get("_models") or []:
         models.append({"name": m.get("name", ""), "tokens": m.get("totalWithCacheRead") or m.get("total") or 0,
@@ -98,8 +102,10 @@ def from_state(data):
             pct = float(lim.get("percent") or 0)
         except (TypeError, ValueError):
             continue
-        limits.append({"label": str(lim.get("label", "")), "pct": pct,
-                       "minutes": iso_minutes_left(lim.get("resetsAt"))})
+        minutes = iso_minutes_left(lim.get("resetsAt"))
+        expired = lim.get("resetsAt") is not None and minutes == 0
+        limits.append({"label": str(lim.get("label", "")), "pct": 0.0 if expired else pct,
+                       "minutes": None if expired else minutes, "expired": expired})
     models = []
     for name, use in (data.get("modelUsage") or {}).items():
         total = sum(int(use.get(k) or 0) for k in
@@ -160,6 +166,15 @@ def main() -> int:
         info.setdefault("sessions", 0)
         if info["limits"] or info["models"] or info["todayTokens"]:
             out.append(info)
+
+    # A window that has just reset means the reading behind it is old: ask that provider for a new one now (not
+    # waiting for it), so the next poll of the bar shows the new window instead of the timer's five-minute lag.
+    for p in out:
+        if any(l.get("expired") for l in p["limits"]):
+            unit = next((svc for pid, _, _, _, svc in PROVIDERS if pid == p["id"] and svc), None)
+            if unit:
+                subprocess.Popen(["systemctl", "--user", "start", "--no-block", unit],
+                                 stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
     # Only a real quota counts towards the number on the bar. OpenCode's percentages are a local count of
     # its own messages ("local messages"), not a limit anyone is against, and taking them into account

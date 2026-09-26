@@ -23,5 +23,8 @@ function popupHeight(panel, implicitHeight, cap) {
   var edge = (pos === "top" || pos === "bottom") ? thickness(panel) + panel.gap + panel.margin : panel.margin * 2
   var avail = panel.screenH > 0 ? panel.screenH - edge : desired
   var most = cap !== undefined && Number(cap) > 0 ? Math.min(avail, Number(cap)) : avail
-  return Math.round(Math.min(desired, most))
+  // Never below 124 px: the bar engine "repairs" any popup of 120 px or less (Omarchy's own safety minimum) by
+  // rewriting its height from the content it measures, and the popup's frame counts as content, so a short popup
+  // (an empty notification list, Bluetooth with no adapter) grew every time it was measured.
+  return Math.round(Math.max(124, Math.min(desired, most)))
 }
