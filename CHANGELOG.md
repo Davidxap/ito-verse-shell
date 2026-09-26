@@ -23,6 +23,10 @@
 - Labels over the bar follow the theme; "Tint labels with the accent" brings the accent back.
 - Removed old sheet-derived icons that carried text and were not used by the shell. The "Eyes" decoration and effect now use
   original artwork committed to the repository instead of untracked third-party art.
+- The **Spiral** media effect is redrawn as Uzumaki ink: one heavy line in tight, even rings that swells as it goes out, with a blood
+  arm creeping from the centre. The **Eye** effect can use your own picture (`~/.config/ito/eyefx/`), and the built-in eye has a striated
+  iris and heavier lashes.
+- Seal decorations lie across the bar, above and below the seal, on a vertical bar (they used to shrink to a sliver).
 - The Control Centre footer credits the author with a link.
 
 **Compatibility**

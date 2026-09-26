@@ -1,4 +1,6 @@
 import QtQuick
+import Quickshell
+import Quickshell.Io
 
 // What moves behind the media controls while something plays. One kind is chosen on the Effects page:
 //
@@ -21,6 +23,17 @@ Item {
   property real radius: height / 2
   property real speed: 1
   property url customSource: ""        // the user's own picture or GIF, for kind "custom"
+
+  // Your own eye: put eyes.png and eyes-red.png (the same 640 x 246 shape as the ones in ito-art/eyefx) in
+  // ~/.config/ito/eyefx/ and the Eye effect draws those instead of the built-in ones.
+  readonly property string userEyeDir: Quickshell.env("HOME") + "/.config/ito/eyefx/"
+  property bool hasUserEyes: false
+  FileView {
+    path: root.userEyeDir + "eyes.png"
+    printErrors: false
+    onLoaded: root.hasUserEyes = true
+    onLoadFailed: root.hasUserEyes = false
+  }
 
   property real surge: 0
   function pulse() { surgeAnim.restart() }
@@ -106,39 +119,42 @@ Item {
     }
 
     // ------------------------------------------------------------------ spiral
-    // Not a clean mathematical curve: the wobble is what tells this from a logo. A third, faint arm keeps
-    // it from ever quite settling into a simple two-arm pattern, and a few dark growths sit on the ink the
-    // way the curse marks skin in Uzumaki -- small, uneven, not decoration.
-    function paintSpiral(ctx, w, h) {
-      var cx = w / 2, cy = h / 2, R = Math.max(w, h) * 0.62
-      var spin = root.t * 0.9 + root.surge * 3
-      var sx = w / Math.max(w, h) * 1.6
-      var arms = [
-        { off: 0, width: 3.0, col: rgba(root.blood, 0.8 * root.shown) },
-        { off: Math.PI, width: 2.2, col: rgba(root.bone, 0.34 * root.shown) },
-        { off: Math.PI * 0.55, width: 1.2, col: rgba(root.bone, 0.16 * root.shown) }
-      ]
-      for (var arm = 0; arm < arms.length; arm++) {
-        ctx.beginPath()
-        var growths = []
-        for (var i = 0; i <= 170; i++) {
-          var u = i / 170
-          var wob = Math.sin(u * 19 + arm * 3 + root.t * 1.3) * (1 - u) * 0.05
-          var a = spin + arms[arm].off + u * 4.4 * Math.PI + wob
-          var r = u * R * (1 + 0.02 * Math.sin(u * 11 - root.t))
-          var x = cx + Math.cos(a) * r * sx
-          var y = cy + Math.sin(a) * r * 0.9
-          if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y)
-          if (arm === 0 && i > 20 && i % 27 === 0) growths.push([x, y, 1.2 + hash(i + arm) * 1.6])
-        }
-        ctx.lineWidth = arms[arm].width + root.surge * 1.2
-        ctx.strokeStyle = arms[arm].col
-        ctx.stroke()
-        for (var gg = 0; gg < growths.length; gg++) {
-          ctx.beginPath(); ctx.arc(growths[gg][0], growths[gg][1], growths[gg][2], 0, Math.PI * 2)
-          ctx.fillStyle = rgba(root.blood, 0.55 * root.shown); ctx.fill()
-        }
+    // Uzumaki's swirl: one heavy ink line winding in tight, even rings, thin at the centre and swelling as it
+    // goes out, the way a pen leans into the stroke. Blood is a second arm that creeps out from the centre and
+    // stops part-way, as the curse does. Each arm is one filled ribbon (a single path), not hundreds of strokes,
+    // so it stays cheap while it turns.
+    function ribbon(ctx, cx, cy, R, sx, sy, spin, turns, uMax, widthOf, colour) {
+      var steps = 260, inner = []
+      ctx.beginPath()
+      for (var i = 0; i <= steps; i++) {
+        var u = i / steps * uMax
+        var a = spin + u * turns * 2 * Math.PI
+        var r = u * R
+        var hw = widthOf(u) * 0.5
+        var cs = Math.cos(a), sn = Math.sin(a)
+        var xo = cx + cs * (r + hw) * sx, yo = cy + sn * (r + hw) * sy
+        if (i === 0) ctx.moveTo(xo, yo); else ctx.lineTo(xo, yo)
+        inner.push(cx + cs * Math.max(0, r - hw) * sx, cy + sn * Math.max(0, r - hw) * sy)
       }
+      for (var j = inner.length - 2; j >= 0; j -= 2) ctx.lineTo(inner[j], inner[j + 1])
+      ctx.closePath()
+      ctx.fillStyle = colour
+      ctx.fill()
+    }
+
+    function paintSpiral(ctx, w, h) {
+      var cx = w / 2, cy = h / 2, R = Math.max(w, h) * 0.66
+      var spin = root.t * 0.7 + root.surge * 3
+      var sx = w / Math.max(w, h) * 1.7, sy = 0.9
+      var swell = 1 + root.surge * 0.5
+      // the ink: thin at the middle, heavy outside, drawn to a point at its end
+      ribbon(ctx, cx, cy, R, sx, sy, spin, 6.5, 1.0,
+             function(u) { return (0.9 + 2.3 * Math.pow(u, 0.75)) * swell * (u > 0.94 ? (1 - u) / 0.06 : 1) },
+             rgba(root.bone, 0.8 * root.shown))
+      // the blood: the same turn, half a ring behind, only part of the way
+      ribbon(ctx, cx, cy, R, sx, sy, spin + Math.PI, 6.5, 0.7,
+             function(u) { return (1.1 + 1.4 * u) * swell * (u > 0.62 ? (0.7 - u) / 0.08 : 1) },
+             rgba(root.blood, 0.85 * root.shown))
     }
 
     // ------------------------------------------------------------------ eyes
@@ -171,6 +187,15 @@ Item {
     // of them turn bloodshot.
     readonly property url eyeArt: Qt.resolvedUrl("ito-art/eyefx/")
     readonly property url fogArt: Qt.resolvedUrl("ito-art/misc/fog.png")
+    readonly property url userEyeArt: "file://" + root.userEyeDir
+    Connections {
+      target: root
+      function onHasUserEyesChanged() {
+        if (!root.hasUserEyes) return
+        canvas.loadImage(canvas.userEyeArt + "eyes.png"); canvas.loadImage(canvas.userEyeArt + "eyes-red.png")
+        canvas.requestPaint()
+      }
+    }
     Component.onCompleted: {
       loadImage(eyeArt + "eyes.png"); loadImage(eyeArt + "eyes-red.png")
       loadImage(fogArt)
@@ -186,7 +211,8 @@ Item {
         var open = eyeOpen(seed, root.t)
         var look = saccade(seed, root.t) * gap * 0.03
         var red = root.surge > 0.25 && k % 2 === 0
-        var src = eyeArt + style + (red ? "-red.png" : ".png")
+        var name = style + (red ? "-red.png" : ".png")
+        var src = (root.hasUserEyes && isImageLoaded(userEyeArt + name)) ? userEyeArt + name : eyeArt + name
         if (!isImageLoaded(src)) continue
         ctx.save()
         ctx.globalAlpha = Math.min(1, 0.95 * root.shown)

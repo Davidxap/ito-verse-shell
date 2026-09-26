@@ -101,6 +101,12 @@ def watcher(width: int = 640, red: bool = False) -> Image.Image:
     r = H * 0.29
     d.ellipse((cx - r, cy - r, cx + r, cy + r), fill=ink)
     d.ellipse((cx - r, cy - r, cx + r, cy + r), outline=accent, width=lw)
+    # fine radial strokes across the iris, the way a pen would shade it
+    for i in range(44):
+        ang = i * 2 * math.pi / 44 + 0.03 * math.sin(i * 3.1)
+        r0, r1 = r * (0.3 + 0.05 * ((i * 7) % 5)), r * (0.86 + 0.1 * ((i * 3) % 4) / 3)
+        d.line([(cx + math.cos(ang) * r0, cy + math.sin(ang) * r0), (cx + math.cos(ang) * r1, cy + math.sin(ang) * r1)],
+               fill=(BLOOD if red else BONE) + (110,), width=max(1, lw // 3))
     pts = []
     a = 0.0
     while a < 3.4 * 2 * math.pi:
@@ -115,11 +121,13 @@ def watcher(width: int = 640, red: bool = False) -> Image.Image:
     d.line(low, fill=ink, width=lw + 2, joint="curve")
     crease = [(x, y - H * 0.1 * math.sin((i / 80) * math.pi)) for i, (x, y) in enumerate(top)]
     d.line(crease[8:-8], fill=ink, width=max(2, lw - 1), joint="curve")
-    for i in range(7):
-        t = 0.62 + 0.05 * i
+    for i in range(26):
+        t = 0.10 + 0.86 * i / 25
         px, py = top[round(t * 80)]
-        d.line([(px, py), (px + W * 0.02 * (i + 1) * 0.5, py - H * (0.14 + 0.02 * i))], fill=ink, width=max(2, lw - 1))
-
+        ln = H * (0.06 + 0.14 * (t ** 2.2))                       # longer towards the outer corner
+        dx, dy = W * 0.012 * (0.5 + t), -ln
+        w0 = max(2, lw * 0.9)
+        d.polygon([(px - w0 / 2, py), (px + w0 / 2, py), (px + dx, py + dy)], fill=ink)
     if red:
         for sx, sgn in ((left, 1), (right, -1)):
             for j in range(5):
