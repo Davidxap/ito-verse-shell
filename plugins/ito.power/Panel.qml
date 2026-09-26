@@ -358,7 +358,7 @@ Panel {
     open: root.opened && root.batteryPresent
     focusTarget: keyCatcher
     contentWidth: panel.fittedContentWidth(Style.space(380))
-    contentHeight: panel.fittedContentHeight(column.implicitHeight)
+    contentHeight: panel.fittedContentHeight(column.implicitHeight + itoCfg.panelHeadroom)
 
     // a see-through layer over the whole popup that only watches where the pointer is
     Item {

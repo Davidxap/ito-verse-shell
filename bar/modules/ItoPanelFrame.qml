@@ -38,6 +38,8 @@ Item {
 
   Binding { target: root.card; property: "color"; value: "transparent"; when: root.on && root.card }
   Binding { target: root.card; property: "radius"; value: 3; when: root.on && root.card }
+  // the content starts a little lower, so the eye at the top edge has room; the panel adds the same to its height
+  Binding { target: root.card; property: "topPadding"; value: root.card ? root.card.padding + (root.cfg ? root.cfg.panelHeadroom : 0) : 0; when: root.on && root.card }
 
   // the paper
   Rectangle {
@@ -192,8 +194,8 @@ Item {
   Item {
     id: eye
     // 2.6 : 1, like the eye artwork, small enough to sit inside the frame without touching the rule
-    width: 68; height: 26
-    anchors { horizontalCenter: parent.horizontalCenter; top: parent.top; topMargin: 8 }
+    width: 84; height: 32
+    anchors { horizontalCenter: parent.horizontalCenter; top: parent.top; topMargin: 7 }
     readonly property bool awake: headHover.hovered && root.amp > 0
     opacity: awake ? 1 : 0.55
     Behavior on opacity { NumberAnimation { duration: 240 * Math.min(root.amp, 1.4) } }

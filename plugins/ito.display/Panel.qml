@@ -539,7 +539,7 @@ Panel {
     open: root.opened
     focusTarget: keyCatcher
     contentWidth: panel.fittedContentWidth(Style.space(380))
-    contentHeight: panel.fittedContentHeight(panelColumn.implicitHeight, Style.space(560))
+    contentHeight: panel.fittedContentHeight(panelColumn.implicitHeight + itoCfg.panelHeadroom, Style.space(560))
 
     // a see-through layer over the whole popup that only watches where the pointer is
     Item {

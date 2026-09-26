@@ -145,7 +145,7 @@ Ui.BarWidget {
       focusTarget: keys
      
       contentWidth: panel.fittedContentWidth(Commons.Style.space(380))
-      contentHeight: Math.round(104 + column.spacing + (popup.length > 0 ? 30 + column.spacing : 0) + 46 + panel.verticalContentInset)
+      contentHeight: Math.round(104 + column.spacing + (popup.length > 0 ? 30 + column.spacing : 0) + 46 + panel.verticalContentInset + cfg.panelHeadroom)
 
       // a see-through layer over the whole popup that only watches where the pointer is
       Item {
