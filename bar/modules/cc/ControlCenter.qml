@@ -64,12 +64,15 @@ PanelWindow {
 
   readonly property var formNames: ({ "shibumi": "Islands", "full": "Full", "fit": "Fit", "dock": "Dock" })
 
+  // The Motion setting: 0 is instant, 1 the default, more is slower and wider.
+  readonly property real amp: pal && pal.motionAmp !== undefined ? Math.min(pal.motionAmp, 1.4) : 1
+
   // 0 closed .. 1 open. The window stays alive until the close animation has finished.
   property real reveal: open ? 1 : 0
   // In, it arrives with a little spring; out, it leaves quickly and does not linger.
   Behavior on reveal {
     NumberAnimation {
-      duration: root.open ? Motion.slow : Motion.normal
+      duration: Math.round((root.open ? Motion.slow : Motion.normal) * root.amp)
       easing.type: Easing.BezierSpline
       easing.bezierCurve: root.open ? Motion.spring : Motion.accel
     }
@@ -104,7 +107,7 @@ PanelWindow {
     var travel = pageIndex >= previousIndex ? 1 : -1
     previousIndex = pageIndex
     pageLoader.opacity = 0
-    pageLoader.y = travel * 22
+    pageLoader.y = travel * 22 * root.amp
     pageLoader.setSource(Qt.resolvedUrl(pageInfo(page).file), { "cc": root })
     pageIn.restart()
     flick.contentY = 0
@@ -112,9 +115,9 @@ PanelWindow {
 
   ParallelAnimation {
     id: pageIn
-    NumberAnimation { target: pageLoader; property: "opacity"; to: 1; duration: Motion.normal
+    NumberAnimation { target: pageLoader; property: "opacity"; to: 1; duration: Math.round(Motion.normal * root.amp)
                       easing.type: Easing.BezierSpline; easing.bezierCurve: Motion.decel }
-    NumberAnimation { target: pageLoader; property: "y"; to: 0; duration: Motion.slow
+    NumberAnimation { target: pageLoader; property: "y"; to: 0; duration: Math.round(Motion.slow * root.amp)
                       easing.type: Easing.BezierSpline; easing.bezierCurve: Motion.decel }
   }
 
@@ -348,7 +351,7 @@ PanelWindow {
         border.width: 1
         border.color: Qt.rgba(root.pal.blood.r, root.pal.blood.g, root.pal.blood.b, 0.7)
         Behavior on y {
-          NumberAnimation { duration: Motion.slow; easing.type: Easing.BezierSpline; easing.bezierCurve: Motion.spring }
+          NumberAnimation { duration: Math.round(Motion.slow * root.amp); easing.type: Easing.BezierSpline; easing.bezierCurve: Motion.spring }
         }
       }
 

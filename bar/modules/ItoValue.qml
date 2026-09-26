@@ -26,8 +26,16 @@ Text {
   readonly property string mode: String(cfg.get("valueStyle", "percent"))
 
   readonly property bool named: label !== "" && !vertical && cfg.get("valueLabels", true) !== false
+  // The number glides to its new value instead of jumping. It only runs when the reading changes (every few
+  // seconds), for a fraction of a second, and not at all when Motion is off or the value is not a number.
+  property real glide: Number(value) || 0
+  Behavior on glide {
+    enabled: cfg.motionAmp > 0 && !isNaN(Number(root.value))
+    NumberAnimation { duration: Math.round(320 * Math.min(cfg.motionAmp, 1.4)); easing.type: Easing.OutCubic }
+  }
+  readonly property var counted: isNaN(Number(value)) ? value : Math.round(glide)
   readonly property string shown: mode === "amount" && detail !== "" ? detail
-    : value + (percent && mode !== "number" ? "%" : "")
+    : counted + (percent && mode !== "number" ? "%" : "")
   readonly property color quiet: Qt.rgba(cfg.bone.r * 0.6, cfg.bone.g * 0.6, cfg.bone.b * 0.6, 1)
 
   textFormat: Text.RichText
