@@ -22,11 +22,14 @@ PanelWindow {
   readonly property color bone: palette ? palette.bone : "#c7ccd1"
   property url artBase: Qt.resolvedUrl("ito-art/")
 
+  // The Motion setting: 0 is instant, 1 the default, more is slower and wider.
+  readonly property real amp: palette && palette.motionAmp !== undefined ? palette.motionAmp : 1
+
   // 0 closed .. 1 open. The window stays alive until the close animation has finished.
   property real reveal: open ? 1 : 0
   Behavior on reveal {
     NumberAnimation {
-      duration: root.open ? Motion.slow : Motion.normal
+      duration: Math.round((root.open ? Motion.slow : Motion.normal) * Math.min(root.amp, 1.4))
       easing.type: Easing.BezierSpline
       easing.bezierCurve: root.open ? Motion.spring : Motion.accel
     }
