@@ -232,6 +232,8 @@ Item {
     ItoCrest {
       anchors.fill: parent
       kind: root.emblem
+      live: root.opened
+      amp: root.amp
       bone: root.bone
       blood: root.cfg ? root.cfg.blood : "#c4162a"
       ink: root.ink

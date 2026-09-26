@@ -1049,7 +1049,7 @@ Panel {
       z: 1000
       HoverHandler { id: cardHover }
     }
-    Ito.ItoPanelFrame { cfg: itoCfg; emblem: "web"; opened: root.opened; alert: !!root.info && root.info.ip !== undefined && !root.info.ip; memos: ["Something on the line is breathing.", "The signal goes round and round.", "Nobody answers. It answers anyway.", "Every road leads back to the water."] }
+    Ito.ItoPanelFrame { cfg: itoCfg; emblem: "signal"; opened: root.opened; alert: !!root.info && root.info.ip !== undefined && !root.info.ip; memos: ["Something on the line is breathing.", "The signal goes round and round.", "Nobody answers. It answers anyway.", "Every road leads back to the water."] }
     Ito.ItoEnter { opened: root.opened; amp: itoCfg.motionAmp }
     Ito.ItoAutoClose {
         opened: root.opened

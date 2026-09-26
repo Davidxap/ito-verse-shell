@@ -11,6 +11,9 @@ Item {
   property color blood: "#c4162a"
   property color ink: "#0b0d0e"
 
+  // degrees the pupil has turned; the caller drives it (0 leaves it still)
+  property real spin: 0
+
   implicitWidth: 84
   implicitHeight: 32
 
@@ -53,16 +56,6 @@ Item {
       PathAngleArc { centerX: root.cx; centerY: root.cy; radiusX: root.irisR; radiusY: root.irisR; startAngle: 0; sweepAngle: 360 }
     }
 
-    // the spiral pupil
-    ShapePath {
-      fillColor: "transparent"
-      strokeColor: Qt.rgba(root.bone.r, root.bone.g, root.bone.b, 0.95)
-      strokeWidth: 1
-      capStyle: ShapePath.RoundCap
-      joinStyle: ShapePath.RoundJoin
-      PathPolyline { path: root.spiral }
-    }
-
     // the upper lid, firm
     ShapePath {
       fillColor: "transparent"
@@ -100,6 +93,25 @@ Item {
           }
           return out
         }
+      }
+    }
+  }
+
+  // the pupil turns on its own layer, so turning it never redraws the eye
+  Item {
+    anchors.fill: parent
+    rotation: root.spin
+    Shape {
+      anchors.fill: parent
+      preferredRendererType: Shape.CurveRenderer
+      antialiasing: true
+      ShapePath {
+        fillColor: "transparent"
+        strokeColor: Qt.rgba(root.bone.r, root.bone.g, root.bone.b, 0.95)
+        strokeWidth: 1
+        capStyle: ShapePath.RoundCap
+        joinStyle: ShapePath.RoundJoin
+        PathPolyline { path: root.spiral }
       }
     }
   }

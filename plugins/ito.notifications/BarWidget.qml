@@ -176,7 +176,7 @@ Ui.BarWidget {
         z: 1000
         HoverHandler { id: cardHover }
       }
-      Ito.ItoPanelFrame { cfg: cfg; emblem: "bell"; opened: popup.opened; alert: root.silenced; memos: ["Nothing has called.", "The phone rings once. No one is there.", "Someone left a word in the wall."] }
+      Ito.ItoPanelFrame { cfg: cfg; emblem: "phone"; opened: popup.opened; alert: root.silenced; memos: ["Nothing has called.", "The phone rings once. No one is there.", "Someone left a word in the wall."] }
       Ito.ItoEnter { opened: popup.opened; amp: cfg.motionAmp }
       Ito.ItoAutoClose {
         opened: popup.opened

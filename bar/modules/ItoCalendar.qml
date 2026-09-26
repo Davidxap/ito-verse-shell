@@ -154,7 +154,7 @@ PanelWindow {
     transformOrigin: root.pos === "bottom" ? Item.Bottom : Item.Top
     scale: 0.95 + 0.05 * root.reveal
 
-    ItoPanelFrame { cfg: root.palette; target: card; emblem: "hourglass"; opened: root.open; memos: ["Time keeps its own count.", "Today has happened before.", "Another lap of the same hour.", "The days turn, and you with them."] }
+    ItoPanelFrame { cfg: root.palette; target: card; emblem: "clock"; opened: root.open; memos: ["Time keeps its own count.", "Today has happened before.", "Another lap of the same hour.", "The days turn, and you with them."] }
 
     ColumnLayout {
       id: content
