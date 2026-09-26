@@ -18,6 +18,8 @@ Item {
   property string memo: ""
   readonly property real amp: cfg && cfg.motionAmp !== undefined ? cfg.motionAmp : 1
   property url artBase: Qt.resolvedUrl("ito-art/")
+  // A short popup (the player) has no free corner for the blood and the spiral.
+  readonly property bool roomy: height >= 260
   readonly property bool on: cfg ? cfg.get("panelFrame", true) !== false : true
 
   // The card the shell draws around a popup's content is two levels up: content holder -> card.
@@ -67,6 +69,7 @@ Item {
   // blood, bottom left
   ItoImage {
     palette: root.cfg
+    visible: root.roomy
     source: root.artBase + "misc/blood-splatter.png"
     width: 52; height: 60
     anchors { bottom: parent.bottom; left: parent.left; bottomMargin: 4; leftMargin: 4 }
@@ -93,6 +96,7 @@ Item {
   // a spiral, faint, low in the corner where nothing else lives
   ItoImage {
     palette: root.cfg
+    visible: root.roomy
     source: root.artBase + "system/menu-uzumaki.png"
     width: 34; height: 34
     anchors { bottom: parent.bottom; right: parent.right; bottomMargin: 16; rightMargin: 16 }
@@ -187,8 +191,9 @@ Item {
   // An eye that watches from the top edge, half-lidded and dim; the pointer near the head of the popup opens it.
   Item {
     id: eye
-    width: 84; height: 42
-    anchors { horizontalCenter: parent.horizontalCenter; top: parent.top; topMargin: 3 }
+    // 2.6 : 1, like the eye artwork, small enough to sit inside the frame without touching the rule
+    width: 68; height: 26
+    anchors { horizontalCenter: parent.horizontalCenter; top: parent.top; topMargin: 8 }
     readonly property bool awake: headHover.hovered && root.amp > 0
     opacity: awake ? 1 : 0.55
     Behavior on opacity { NumberAnimation { duration: 240 * Math.min(root.amp, 1.4) } }
@@ -196,7 +201,7 @@ Item {
     transform: Scale {
       origin.x: eye.width / 2
       origin.y: eye.height / 2
-      yScale: eye.awake ? 1 : 0.62
+      yScale: eye.awake ? 1 : 0.7
       Behavior on yScale { NumberAnimation { duration: 260 * Math.min(root.amp, 1.4); easing.type: Easing.OutCubic } }
     }
     // Drawn, not pictured: an almond lid, a bloodshot iris and a spiral for a pupil. Painted once and again only when
@@ -220,24 +225,24 @@ Item {
         c.closePath()
         c.fillStyle = Qt.rgba(root.ink.r, root.ink.g, root.ink.b, 1)
         c.fill()
-        c.lineWidth = 1.3
+        c.lineWidth = 1.1
         c.strokeStyle = Qt.rgba(boneC.r, boneC.g, boneC.b, 0.85)
         c.stroke()
         // iris
-        c.beginPath(); c.arc(cx, cy, h * 0.36, 0, Math.PI * 2)
+        c.beginPath(); c.arc(cx, cy, h * 0.3, 0, Math.PI * 2)
         c.strokeStyle = bloodC; c.lineWidth = 1.6; c.stroke()
         // veins from the corners
         c.strokeStyle = Qt.rgba(bloodC.r, bloodC.g, bloodC.b, 0.55); c.lineWidth = 0.8
         for (var v = -1; v <= 1; v += 2) {
           c.beginPath(); c.moveTo(v > 0 ? w - 3 : 3, cy)
-          c.lineTo(cx + v * h * 0.48, cy - 3); c.moveTo(v > 0 ? w - 3 : 3, cy)
-          c.lineTo(cx + v * h * 0.48, cy + 3); c.stroke()
+          c.lineTo(cx + v * h * 0.62, cy - 2); c.moveTo(v > 0 ? w - 3 : 3, cy)
+          c.lineTo(cx + v * h * 0.62, cy + 2); c.stroke()
         }
         // pupil: a spiral
         c.strokeStyle = Qt.rgba(boneC.r, boneC.g, boneC.b, 0.9); c.lineWidth = 1
         c.beginPath()
         for (var a = 0; a < 3.2 * Math.PI * 2; a += 0.2) {
-          var r = 1 + a * 0.55
+          var r = 0.6 + a * 0.36
           var x = cx + Math.cos(a) * r, y = cy + Math.sin(a) * r
           if (a === 0) c.moveTo(x, y); else c.lineTo(x, y)
         }
