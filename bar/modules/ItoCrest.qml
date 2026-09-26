@@ -72,7 +72,7 @@ Item {
   ItoEye {
     visible: root.kind === "eye"
     anchors.centerIn: parent
-    width: 84; height: 32
+    width: 84 * root.u; height: 32 * root.u
     bone: root.bone; blood: root.blood; ink: root.ink
   }
 

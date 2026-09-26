@@ -215,8 +215,9 @@ Item {
   Item {
     id: eye
     // small enough to sit inside the frame without touching the rule
-    width: 96; height: 32
-    anchors { horizontalCenter: parent.horizontalCenter; top: parent.top; topMargin: 7 }
+    // The room the popup leaves under it is ItoConfig.panelHeadroom: keep the two in step.
+    width: 92; height: 28
+    anchors { horizontalCenter: parent.horizontalCenter; top: parent.top; topMargin: 6 }
     readonly property bool awake: headHover.hovered && root.amp > 0
     opacity: awake ? 1 : 0.85
     Behavior on opacity { NumberAnimation { duration: 240 * Math.min(root.amp, 1.4) } }
