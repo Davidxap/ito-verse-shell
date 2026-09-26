@@ -80,7 +80,7 @@ Item {
     radius: 3
     color: "transparent"
     border.width: 1
-    border.color: Qt.rgba(root.bone.r, root.bone.g, root.bone.b, 0.6)
+    border.color: root.alert && root.cfg ? Qt.rgba(root.cfg.blood.r, root.cfg.blood.g, root.cfg.blood.b, 0.75) : Qt.rgba(root.bone.r, root.bone.g, root.bone.b, 0.6)
   }
   Rectangle {
     anchors { fill: parent; margins: 5 }
@@ -100,17 +100,38 @@ Item {
     smooth: true
   }
 
-  // a crack creeps in from the left edge while something is wrong; it fades in and out, and is absent otherwise
-  Image {
-    source: root.artBase + "decor/cracks.png"
-    height: Math.min(root.height * 0.5, 230)
-    width: height * 327 / 536
-    fillMode: Image.PreserveAspectFit
-    anchors { left: parent.left; bottom: parent.bottom; leftMargin: 2; bottomMargin: 8 }
-    opacity: root.alert ? 0.85 : 0
+  // A crack runs up the left edge while something is wrong: a hairline drawn in the accent, so it follows the theme
+  // (a picture of one would not). It is painted when it appears or the size or colour changes, and never animates.
+  Canvas {
+    id: crack
+    width: 46
+    height: Math.min(root.height * 0.55, 240)
+    anchors { left: parent.left; bottom: parent.bottom; leftMargin: 2; bottomMargin: 10 }
+    opacity: root.alert ? 1 : 0
     visible: opacity > 0.01
-    smooth: true
     Behavior on opacity { NumberAnimation { duration: 420 * Math.min(root.amp, 1.4) } }
+    readonly property color line: root.cfg ? root.cfg.blood : "#c4162a"
+    onLineChanged: requestPaint()
+    onHeightChanged: requestPaint()
+    onVisibleChanged: if (visible) requestPaint()
+    onPaint: {
+      var c = getContext("2d")
+      c.reset()
+      var h = height
+      // the main fault: a jagged run from the foot upwards, drifting a little in from the edge
+      var pts = [[2, h], [9, h * 0.86], [5, h * 0.74], [16, h * 0.6], [10, h * 0.47], [21, h * 0.33], [15, h * 0.2], [24, h * 0.06]]
+      c.lineJoin = "miter"; c.lineCap = "round"
+      c.strokeStyle = Qt.rgba(line.r, line.g, line.b, 0.9); c.lineWidth = 1.4
+      c.beginPath(); c.moveTo(pts[0][0], pts[0][1])
+      for (var k = 1; k < pts.length; k++) c.lineTo(pts[k][0], pts[k][1])
+      c.stroke()
+      // three short branches, thinner
+      c.lineWidth = 0.9; c.strokeStyle = Qt.rgba(line.r, line.g, line.b, 0.7)
+      var br = [[5, h * 0.74, 1, h * 0.7], [16, h * 0.6, 32, h * 0.56], [10, h * 0.47, 3, h * 0.41], [21, h * 0.33, 38, h * 0.3]]
+      for (var b = 0; b < br.length; b++) {
+        c.beginPath(); c.moveTo(br[b][0], br[b][1]); c.lineTo(br[b][2], br[b][3]); c.stroke()
+      }
+    }
   }
 
   // a note left at the foot
@@ -163,14 +184,21 @@ Item {
   }
   onOpenedChanged: if (opened && amp > 0 && on) flash.restart()
 
-  // An eye that looks over the top edge and opens when the pointer comes near the head of the popup.
+  // An eye that watches from the top edge, half-lidded and dim; the pointer near the head of the popup opens it.
   Item {
     id: eye
     width: 84; height: 42
     anchors { horizontalCenter: parent.horizontalCenter; top: parent.top; topMargin: 3 }
-    opacity: headHover.hovered && root.amp > 0 ? 1 : 0
-    visible: opacity > 0.01
+    readonly property bool awake: headHover.hovered && root.amp > 0
+    opacity: awake ? 1 : 0.55
     Behavior on opacity { NumberAnimation { duration: 240 * Math.min(root.amp, 1.4) } }
+    // the lid: squashed from the middle while it sleeps, full height once it is looked at
+    transform: Scale {
+      origin.x: eye.width / 2
+      origin.y: eye.height / 2
+      yScale: eye.awake ? 1 : 0.62
+      Behavior on yScale { NumberAnimation { duration: 260 * Math.min(root.amp, 1.4); easing.type: Easing.OutCubic } }
+    }
     // Drawn, not pictured: an almond lid, a bloodshot iris and a spiral for a pupil. Painted once and again only when
     // the palette changes.
     Canvas {

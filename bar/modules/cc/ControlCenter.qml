@@ -528,15 +528,25 @@ PanelWindow {
         printErrors: false
       }
       Text {
+        id: credit
         anchors.right: parent.right
         anchors.rightMargin: 26 + 110
         y: parent.height - 36
-        text: "Ito-verse " + String(versionFile.loaded ? versionFile.text() : "").trim() + "  ·  by davidxap"
+        text: "Ito-verse " + String(versionFile.loaded ? versionFile.text() : "").trim() + "  ·  by davidxap  ·  github.com/Davidxap"
         color: root.pal.bone
-        opacity: 0.35
+        opacity: creditArea.containsMouse ? 0.85 : 0.4
         font.family: "Noto Serif"
         font.pixelSize: 10
         font.letterSpacing: 1
+        font.underline: creditArea.containsMouse
+        Behavior on opacity { NumberAnimation { duration: Math.round(Motion.fast * root.amp) } }
+        MouseArea {
+          id: creditArea
+          anchors { fill: parent; margins: -4 }
+          hoverEnabled: true
+          cursorShape: Qt.PointingHandCursor
+          onClicked: Quickshell.execDetached(["xdg-open", "https://github.com/Davidxap/ito-verse-shell"])
+        }
       }
 
       Text {

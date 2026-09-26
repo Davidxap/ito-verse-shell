@@ -143,8 +143,9 @@ Ui.BarWidget {
       bar: root.bar
       open: popup.opened && root.player !== null
       focusTarget: keys
+     
       contentWidth: panel.fittedContentWidth(Commons.Style.space(380))
-      contentHeight: panel.fittedContentHeight(column.childrenRect.height)
+      contentHeight: Math.round(104 + column.spacing + (popup.length > 0 ? 30 + column.spacing : 0) + 46 + panel.verticalContentInset)
 
       // a see-through layer over the whole popup that only watches where the pointer is
       Item {
@@ -194,7 +195,7 @@ Ui.BarWidget {
                 id: coverArt
                 anchors { fill: parent; margins: 3 }
                 source: popup.mp ? String(popup.mp.trackArtUrl || "") : ""
-                fillMode: Image.PreserveAspectCrop
+                fillMode: Image.PreserveAspectFit
                 asynchronous: true
                 cache: true
                 visible: status === Image.Ready
