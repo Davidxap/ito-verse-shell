@@ -727,7 +727,7 @@ Panel {
       z: 1000
       HoverHandler { id: cardHover }
     }
-    Ito.ItoPanelFrame { cfg: itoCfg }
+    Ito.ItoPanelFrame { cfg: itoCfg; opened: root.opened; alert: root.outputMuted; memo: "It hears you too." }
     Ito.ItoEnter { opened: root.opened; amp: itoCfg.motionAmp }
     Ito.ItoAutoClose {
         opened: root.opened

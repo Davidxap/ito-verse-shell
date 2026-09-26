@@ -11,6 +11,12 @@ Item {
   id: root
 
   property var cfg: null
+  // Set by the panel: `opened` (for the flash on opening), `alert` (something is wrong: the frame cracks), and
+  // `memo` (one small line at the foot, in the voice of a note found in a drawer).
+  property bool opened: false
+  property bool alert: false
+  property string memo: ""
+  readonly property real amp: cfg && cfg.motionAmp !== undefined ? cfg.motionAmp : 1
   property url artBase: Qt.resolvedUrl("ito-art/")
   readonly property bool on: cfg ? cfg.get("panelFrame", true) !== false : true
 
@@ -94,6 +100,32 @@ Item {
     smooth: true
   }
 
+  // a crack creeps in from the left edge while something is wrong; it fades in and out, and is absent otherwise
+  Image {
+    source: root.artBase + "decor/cracks.png"
+    height: Math.min(root.height * 0.5, 230)
+    width: height * 327 / 536
+    fillMode: Image.PreserveAspectFit
+    anchors { left: parent.left; bottom: parent.bottom; leftMargin: 2; bottomMargin: 8 }
+    opacity: root.alert ? 0.85 : 0
+    visible: opacity > 0.01
+    smooth: true
+    Behavior on opacity { NumberAnimation { duration: 420 * Math.min(root.amp, 1.4) } }
+  }
+
+  // a note left at the foot
+  Text {
+    visible: root.memo !== ""
+    text: root.memo
+    anchors { bottom: parent.bottom; horizontalCenter: parent.horizontalCenter; bottomMargin: 5 }
+    color: Qt.rgba(root.bone.r, root.bone.g, root.bone.b, 0.38)
+    font.family: "Noto Serif"
+    font.pixelSize: 9
+    font.italic: true
+    font.letterSpacing: 0.6
+    renderType: Text.NativeRendering
+  }
+
   // torn corners, top left and bottom right
   ItoImage {
     palette: root.cfg
@@ -112,4 +144,49 @@ Item {
     opacity: 0.9
     smooth: true
   }
+
+  // Opening flickers like a television changing channel: a burst of static that thins out in a fifth of a second.
+  Image {
+    id: staticFlash
+    anchors { fill: parent; margins: 1 }
+    source: root.artBase + "decor/static.png"
+    fillMode: Image.Tile
+    opacity: 0
+    visible: opacity > 0.01
+    smooth: false
+  }
+  SequentialAnimation {
+    id: flash
+    NumberAnimation { target: staticFlash; property: "opacity"; from: 0.5; to: 0.05; duration: 70 }
+    NumberAnimation { target: staticFlash; property: "opacity"; to: 0.28; duration: 40 }
+    NumberAnimation { target: staticFlash; property: "opacity"; to: 0; duration: 110 }
+  }
+  onOpenedChanged: if (opened && amp > 0 && on) flash.restart()
+
+  // An eye that looks over the top edge and opens when the pointer comes near the head of the popup.
+  Item {
+    id: eye
+    width: 84; height: 42
+    anchors { horizontalCenter: parent.horizontalCenter; top: parent.top; topMargin: 3 }
+    opacity: headHover.hovered && root.amp > 0 ? 1 : 0
+    visible: opacity > 0.01
+    Behavior on opacity { NumberAnimation { duration: 240 * Math.min(root.amp, 1.4) } }
+    clip: true
+    Image {
+      // the sheet stacks three eyes; the middle one is the red one, open
+      source: root.artBase + "decor/eyes.png"
+      width: 84; height: 84 * 536 / 529
+      y: -(height / 3)
+      fillMode: Image.PreserveAspectFit
+      smooth: true
+    }
+  }
+  // the head of the popup: the top 64 px
+  Item {
+    id: head
+    anchors { top: parent.top; left: parent.left; right: parent.right }
+    height: 64
+    HoverHandler { id: headHover; enabled: root.on }
+  }
 }
+
