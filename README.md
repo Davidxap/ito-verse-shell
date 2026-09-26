@@ -43,6 +43,15 @@ The full-quality video (1080p, 60 fps): [docs/media/tour.mp4](docs/media/tour.mp
 - **The seal and what stands beside it.** Five seals and thirteen decorations (veins, thorns, curls, hair, drips,
   eyes, cracks, stitches, holes, teeth, chain, static, fog), or your own pictures.
 - **Media effects.** Blood, Spiral, Eye, Fog, Static, or your own picture or GIF behind the play buttons.
+- **Popups drawn as manga panels.** Audio, network, Bluetooth, power, display, the calendar, the forecast, the media
+  player, notification history and AI usage all open in an inked frame: a ruled double edge, torn corners, a spatter of
+  blood, a burst of static as they open, and a small emblem at the head that says what they watch (sound waves, a web, a
+  rune, a flame, an hourglass, a spiral, a bell, a mind, the sky). One note at the foot, drawn each time from a few
+  original lines. They open beside the bar on whichever edge it is on, and shrink to fit the screen.
+- **Motion that costs nothing at rest.** One setting (Off, Calm, Lively) governs every entrance; nothing animates while
+  the shell is idle (about 0.5 % of one core).
+- **A media player, a notification history, a forecast and a calendar.** Right-click the media rings or the bell; click the
+  weather, the clock or the AI reading. Every popup also answers to `omarchy-shell` so a key can open it.
 - **Nine motions for the marks** (spin, pulse, breathe, heartbeat, flicker, sway, glitch, ripple, or none) and a Light
   section for glow, vibrance, speed and strength.
 - **Your look, saved.** Everything is remembered by itself; **Setup → My setups** keeps named copies you can load
@@ -53,6 +62,12 @@ The full-quality video (1080p, 60 fps): [docs/media/tour.mp4](docs/media/tour.mp
   Shibumi's, anyone's) and puts a widget on the bar with **Add**.
 - **A Health page that fixes things and writes its own report.** Every check says what it means and how to fix it,
   most with a Fix button; the report is written so that any AI assistant can act on it.
+
+## Popups and their emblems
+
+Each popup carries a small drawn sign at its head, in the theme's colours, for what it watches:
+
+![The emblems: eye, waves, web, rune, flame, spiral, hourglass, bell, mind, and the sky](docs/screenshots/popup-emblems.png)
 
 ## Screenshots
 
@@ -151,6 +166,16 @@ Full instructions, updating and uninstalling: [docs/INSTALLATION.md](docs/INSTAL
 | [docs/COMPONENTS.md](docs/COMPONENTS.md), [docs/THEME_ARCHITECTURE.md](docs/THEME_ARCHITECTURE.md) | How it is built |
 | [docs/ICON_SPEC.md](docs/ICON_SPEC.md) | Drawing icons of your own |
 | [CONTRIBUTING.md](CONTRIBUTING.md), [CHANGELOG.md](CHANGELOG.md) | Working on it, and what changed |
+
+## Compatibility
+
+| | Status |
+|---|---|
+| **Arch Linux** | Supported. Developed and tested here. |
+| **Omarchy** (with Hyprland) | Supported: Omarchy 4.0.4, Quickshell 0.3.x, Hyprland 0.56, Qt 6.11. The bar is a plugin of Omarchy's shell. |
+| **Bar on any edge and any shape** | Supported and tested: top, bottom, left and right; Islands, Full, Fit, Dock and Notch. Popups follow the bar and fit the screen. |
+| **Dark and light themes** | Supported (Follow theme mode). |
+| **Ryoku** | **Not yet.** Ryoku is an independent desktop with its own shell and plugin format (bar styles in `barstyles/<id>/Scene.qml`, widgets through `Ryoku.PluginKit`), so this bar cannot run there as it is. Planned: an adapter that reuses the art, the palette logic and the popups. Nothing here claims it works today. |
 
 ## What it actually is
 

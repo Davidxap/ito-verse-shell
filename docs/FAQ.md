@@ -5,6 +5,15 @@ No. The bar runs as a plugin inside Omarchy's shell engine (`qs.Ui`, `qs.Commons
 shell. Omarchy on Arch Linux with Hyprland is the supported setup. Most widgets talk to the machine directly through
 `ito-host`, so they are not tied to Omarchy's commands, but the bar needs the Omarchy host.
 
+**Does it work with Ryoku?**
+Not yet, and it would be dishonest to say otherwise. Ryoku is an independent desktop with its own shell: a bar there is a
+"bar style" (`barstyles/<id>/Scene.qml`) and widgets go through `Ryoku.PluginKit`. Ito-verse's bar is a plugin of Omarchy's
+shell engine, so it cannot run inside Ryoku as it is. An adapter that reuses the art, the palette logic and the popups is
+planned.
+
+**Does it work with the bar on the side or at the bottom?**
+Yes. The four edges and the five shapes are tested. Popups open beside the bar and shrink to fit the screen.
+
 **Does it work on light themes?**
 Yes. In *Follow theme* mode the shell places every colour of its art between the theme's background and its foreground, so a
 dark theme gets light lines on a dark plate and a light theme gets dark lines on a light plate, with the theme's accent for

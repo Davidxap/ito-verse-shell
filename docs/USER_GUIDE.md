@@ -52,6 +52,35 @@ The shape of the bar.
   plate, effects, seal, workspaces and readings back to the defaults. *Reset layout* puts every widget back where it
   started. (For a gentler way to move widgets, use the Icons page.)
 
+## Popups
+
+The popups (audio, network, Bluetooth, power, display, the calendar, the forecast, the media player, the notification history
+and the AI usage panel) share one look and one set of rules:
+
+- **The frame.** An inked panel: a ruled double edge, torn corners, a spatter of blood and a screentone patch, a burst of
+  static as it opens, an emblem at the head and a short note at the foot. Switch it off with **Bars → Details → Manga frame on
+  popups**; the plain card comes back.
+- **The emblem** says what the popup watches: sound waves (audio), a web (network), a rune (Bluetooth), a flame (power),
+  an eye (display), a spiral (media player), an hourglass (calendar), a bell (notifications), a mind (AI usage), and the
+  sky for the forecast (sun, moon, cloud, rain, storm, snow, fog). Move the pointer near the head and it brightens.
+- **Where they open.** Beside the bar, on whichever edge it is on, and they shrink to fit a small screen.
+- **Motion.** They follow **Effects → Motion** (off, calm, lively).
+
+| Popup | Open it | From a key |
+|---|---|---|
+| Audio | Click the volume reading | `omarchy-shell omarchy.audio toggle` |
+| Network | Click the network icon | `omarchy-shell omarchy.network toggle` |
+| Bluetooth | Click the Bluetooth icon | `omarchy-shell omarchy.bluetooth toggle` |
+| Media player | Right-click the media rings | `omarchy-shell ito.player toggle` |
+| Calendar | Click the clock or the date | `omarchy-shell ito.calendar toggle` |
+| Forecast | Click the weather | `omarchy-shell ito.weather toggle` |
+| Notification history | Right-click the bell (a click toggles Do Not Disturb) | `omarchy-shell ito.notifycenter toggle` |
+| AI usage | Click the AI reading | `omarchy-shell ito.aiusage toggle` |
+
+Every one also answers to `open` and `close`. The media player shows the cover, the title, a progress line you can click to
+seek, shuffle and repeat when the player supports them, and the controls. The notification history lists the last ten
+notifications Omarchy kept, with the Do Not Disturb switch and a way to clear them.
+
 ## Icons
 
 ![Icons](screenshots/cc-icons.png)

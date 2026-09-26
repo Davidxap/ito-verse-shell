@@ -17,6 +17,8 @@ If a step does not do what it says, jump to [Get help](#12-something-is-wrong-ge
 11. [Switch to another shell, and back](#11-switch-to-another-shell-and-back)
 12. [Something is wrong: get help](#12-something-is-wrong-get-help)
 13. [Open the panel with a key](#13-open-the-panel-with-a-key)
+14. [Use the popups](#14-use-the-popups)
+15. [Make everything move less, or more](#15-make-everything-move-less-or-more)
 
 ---
 
@@ -189,3 +191,26 @@ omarchy-shell ito.controlcenter page effects    # jump to a page
 
 Pages: `bars`, `widgets` (Icons), `logo`, `effects`, `workspaces`, `colors`, `plugins`, `shells` (Setup), `health`.
 Bind `toggle` to a key in your Hyprland config the way you bind any command.
+
+## 14. Use the popups
+
+Goal: play music from the bar and read your notifications.
+
+1. **Media player.** Start something in a player (Spotify, a browser, mpv). Three small rings appear on the bar. **Right-click**
+   any of them: a panel opens with the cover, the title, a progress line (click it to jump) and the controls. A left click on
+   the rings still does previous, play or pause, and next.
+2. **Notifications.** A click on the bell toggles Do Not Disturb. **Right-click** it to read the last ten notifications, switch
+   Do Not Disturb from inside the panel, or clear them.
+3. **Calendar and forecast.** Click the clock or the date for the month; click the weather for the hours and days ahead.
+4. **AI usage.** Click the AI reading to see each provider's limits and what each model has used.
+5. Every popup closes by itself a few seconds after the pointer leaves it (Icons → Readings → Close popups after), and every
+   one answers to a key: see the table in the [User guide](USER_GUIDE.md#popups).
+
+## 15. Make everything move less, or more
+
+Goal: quieter, or livelier.
+
+1. Open **Effects → Motion**.
+2. **Off** makes every entrance instant: popups, labels, the Control Centre, the workspace marks.
+3. **Calm** (the default) is short and quiet; **Lively** is a little longer with more travel.
+4. The popups have their own frame: **Bars → Details → Manga frame on popups** turns it off and brings back the plain card.

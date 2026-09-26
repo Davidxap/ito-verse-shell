@@ -97,8 +97,11 @@ Ui.BarWidget {
         strength: cfg.fxStrength
         color: cfg.blood
         visible: root.deco.art !== ""
-        width: root.deco.art === "" ? 0 : Math.round(20 * root.k * root.deco.wide)
-        height: Math.round((root.vertical ? 22 : 44) * root.k)
+        // Beside the seal the ornament stands upright. On a vertical bar it goes above and below the seal instead, so it is
+        // turned on its side and given the bar's width to lie along (upright in a 22 px box it shrank to a sliver).
+        width: root.deco.art === "" ? 0
+          : root.vertical ? Math.round(Math.min(root.barSize - 8, 44 * root.k)) : Math.round(20 * root.k * root.deco.wide)
+        height: root.vertical ? Math.round(Math.min(26, 17 * root.k * root.deco.wide)) : Math.round(44 * root.k)
 
         Ito.ItoGlow {
           anchors.centerIn: parent
@@ -111,7 +114,10 @@ Ui.BarWidget {
 
         Ito.ItoImage {
           palette: cfg
-          anchors.fill: parent
+          anchors.centerIn: parent
+          width: root.vertical ? parent.height : parent.width
+          height: root.vertical ? parent.width : parent.height
+          rotation: root.vertical ? 90 : 0
           source: Marks.decoSource(root.art.toString(), root.deco, Quickshell.env("HOME"))
         }
       }
@@ -196,7 +202,10 @@ Ui.BarWidget {
 
         Ito.ItoImage {
           palette: cfg
-          anchors.fill: parent
+          anchors.centerIn: parent
+          width: root.vertical ? parent.height : parent.width
+          height: root.vertical ? parent.width : parent.height
+          rotation: root.vertical ? 90 : 0
           mirror: true
           source: Marks.decoSource(root.art.toString(), root.deco, Quickshell.env("HOME"))
         }

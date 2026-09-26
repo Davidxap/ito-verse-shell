@@ -22,13 +22,26 @@ Native Ito-verse widgets, each talking to the machine directly (no Omarchy CLI i
 | `ito.spiral` | The application menu button, drawn as Tomie's spiral. |
 | `ito.workspaces` | Hyprland workspaces in eight drawn styles (Seals, Rings, Tomie, Remina, Uzumaki, Marks, Halo, Flauros) or four pictures of your own; the active one in blood. |
 | `ito.tray` | The system tray, one sheet icon. |
-| `ito.notifications` | The bell: still when idle, blood when something is waiting, an eye when muted. Toggles Do Not Disturb (through `ito-host dnd`, so it works without Omarchy's notification service). |
-| `ito.media` | Previous/play-pause/next for whatever MPRIS player is active; draws nothing when none is. |
+| `ito.notifications` | The bell: still when idle, blood when something is waiting, an eye when muted. Toggles Do Not Disturb (through `ito-host dnd`, so it works without Omarchy's notification service); right-click opens the history. |
+| `ito.media` | Previous/play-pause/next for whatever MPRIS player is active; draws nothing when none is. Right-click opens the player. |
 | `ito.indicators` | Stay-awake, night light and screen-recording toggles, each with several drawn cameos to choose from. |
 | `ito.cpu`, `ito.mem`, `ito.disk` | Live load/RAM/disk usage, engraved chip/RAM/drive artwork. RAM and disk read as `17/32G` in the Amount style; the totals are detected from the machine. |
 | `ito.clock`, `ito.date` | The time and the date, plain serif numerals either side of the seal. |
 | `ito.weather` | Current sky from `wttr.in`, polled over `curl`. |
 | `ito.ai` | Local AI-tool token usage, read from whichever tracker is on the machine. |
+
+## The popup kit (`bar/modules/`)
+
+The popups share a small kit, so a new one costs a few lines:
+
+| File | What it does |
+|---|---|
+| `ItoPanelFrame.qml` | The manga frame: paper, ruled edge, torn corners, blood and screentone, the static burst, the emblem and the note. Takes the shell's card, or any Item through `target`. |
+| `ItoCrest.qml`, `ItoEye.qml` | The emblems, drawn as vector curves in the theme's colours. |
+| `ItoEnter.qml` | The entrance: a short growth from the bar edge, following the Motion setting. |
+| `ItoAutoClose.qml` | Closes a popup a few seconds after the pointer leaves it. |
+| `ItoLayout.js` | How large a popup may be beside the bar on any edge (Omarchy's own measure fails with this engine's full-screen bar window). |
+| `ItoCalendar.qml` | The calendar, opened by the clock and the date. |
 
 ## Dressed clones (`plugins/ito.audio`, `ito.network`, `ito.bluetooth`, `ito.display`, `ito.power`)
 

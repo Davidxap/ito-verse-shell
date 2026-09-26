@@ -2,15 +2,32 @@
 
 ## Unreleased
 
-- **Motion** setting (Effects): off, calm or lively. Labels, popups, the Control Centre and the workspace marks follow it;
+**Popups**
+- Every popup is drawn as a manga panel: ruled double edge, torn corners, blood and screentone, a burst of static as it opens,
+  an emblem for what it watches (waves, web, rune, flame, hourglass, spiral, bell, mind, the sky) and a note at the foot chosen
+  from several original lines. Switch: Bars > "Manga frame on popups".
+- New: a **media player** (cover, title, seekable progress, shuffle, repeat, controls; right-click the media rings), a
+  **notification history** (right-click the bell), and a redesigned **calendar**, **forecast** and **AI usage** panel.
+- Popups open beside the bar on any edge (top, bottom, left, right) and fit the screen. Fixed: on a side bar the audio,
+  network and other popups came out 120 px wide.
+- Fixed: the forecast's icons were unsized, so they came out huge and the hourly row ran off the edge.
+- IPC for keybindings: `ito.player`, `ito.calendar`, `ito.weather`, `ito.notifycenter`, `ito.aiusage` (each `open`, `close`,
+  `toggle`).
+
+**Motion and cost**
+- **Motion** setting (Effects): off, calm or lively. Popups, labels, the Control Centre and the workspace marks follow it;
   numbers glide to their new value.
-- Popups are drawn as manga panels (ruled frame, torn corners, blood, screentone) with a burst of static on opening, an eye
-  that opens at the head, a crack when something is wrong and a short note at the foot. Switch: Bars > "Manga frame on popups".
-- Media player popup: right-click the media rings (or `omarchy-shell ito.player toggle`) for the cover, the title, a progress
-  line you can seek on, shuffle, repeat and the controls.
+- The idle cost of the shell dropped from about 3 % to 0.5 % of one core: the seal only breathes while an effect is on.
+
+**Look**
 - Labels over the bar follow the theme; "Tint labels with the accent" brings the accent back.
-- The idle cost of the shell dropped from about 3% to 0.5% of one core: the seal only breathes while an effect is on.
-- Removed old sheet-derived icons that carried text and were not used by the shell.
+- Removed old sheet-derived icons that carried text and were not used by the shell. The "Eyes" decoration and effect now use
+  original artwork committed to the repository instead of untracked third-party art.
+- The Control Centre footer credits the author with a link.
+
+**Compatibility**
+- Tested: bar on top, bottom, left and right; Islands, Full, Fit, Dock and Notch; motion off, calm and lively; frame on and off.
+- Ryoku: not supported yet (see the README's Compatibility table).
 
 ## 0.1.0-beta
 

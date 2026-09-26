@@ -14,6 +14,15 @@ sudo, no network and installs no packages. `scripts/deploy.sh` and `scripts/shel
   pictures), `zenity` (or `kdialog`/`yad`, the file dialog), `wl-clipboard` (to copy the Health report), `librsvg` (only for SVG
   pictures).
 
+## Compatibility
+
+| | Status |
+|---|---|
+| Arch Linux | Supported (developed and tested here) |
+| Omarchy with Hyprland | Supported (4.0.4, Quickshell 0.3.x, Hyprland 0.56, Qt 6.11) |
+| Bar on top, bottom, left or right | Supported and tested, with every shape (Islands, Full, Fit, Dock, Notch) |
+| Ryoku | Not yet. Ryoku has its own shell and plugin format, so this bar does not run there as it is; an adapter is planned |
+
 Install them with your package manager. On Arch the packages are named `noto-fonts`, `noto-fonts-cjk`, `rsync`, `jq`,
 `python-pillow`, `python-numpy`, `zenity`, `wl-clipboard` and `librsvg`.
 
