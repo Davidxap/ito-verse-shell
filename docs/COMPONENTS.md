@@ -66,13 +66,12 @@ Omarchy's own `shell.json` (which the engine rewrites on its own whenever a widg
 popup opens, and would silently discard anything written to it). Read and write it with
 `bar/modules/bin/ito-config`, or through `ItoConfig.qml` from QML.
 
-## Art (`bar/modules/ito-art/`, `assets/`)
+## Art (`bar/modules/ito-art/`)
 
 `bar/modules/ito-art/` is what the running bar actually reads (see `docs/ICON_SPEC.md` for the exact
-files and sizes). The original design sheet the very first icon
-pass was extracted from (`scripts/extract-sheet.py`); most icons in `ito-art/` today are drawn
-directly by the generators in `scripts/` (`gen-engraved.py`, `gen-hardware.py`, `gen-decor.py`, ...)
-rather than cut from that sheet.
+files and sizes). Most icons in `ito-art/` are drawn directly by the generators in `scripts/`
+(`gen-engraved.py`, `gen-hardware.py`, `gen-decor.py`, ...). The only art kept outside it is
+`assets/native/cursor/`, the source of the mouse cursor theme (`scripts/gen-cursors.py`).
 
 ## Tools (`scripts/`, `bar/modules/bin/`)
 
@@ -90,5 +89,5 @@ See the README's "Everyday tools" table for the tools meant to be run directly
 | `gen-palette.py` | Generates `colors.toml` / `shell.toml` from `palette.toml`, validating contrast. |
 | `gen-engraved.py`, `gen-hardware.py`, `gen-decor.py`, `gen-marks.py`, `gen-tomie-icons.py`, `gen-indicator-icons.py`, `gen-cursors.py`, `gen-gtk.py` | Icon/cursor/GTK-theme generators; each is its own icon family. |
 | `gen-itobar-marker.py` | Writes the bar engine's suite-marker signature. |
-| `extract-sheet.py`, `gen-assets.py` | Historical: extract/derive art from the original design sheet. |
+| `gen-assets.py` | The tint helper `gen-cursors.py` uses to recolour the cursor art. |
 | `lab/` | Renders QML scenes off-screen, for iterating on an icon or effect without a live bar. |

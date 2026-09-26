@@ -231,7 +231,7 @@ The full list, with licences, is in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES
   media effects, custom pictures and GIFs, saved setups, the Health page and its report, `ito-host` and the tools.
 - **Inspired by** Junji Ito's manga (*Uzumaki*, *Tomie*, *Gyo*, *Amigara Fault*) and by the Silent Hill games.
   This is a fan work; it is not affiliated with or endorsed by their authors or publishers.
-- **Some source images were found online and edited** (the art in `assets/` and `bar/modules/ito-art/` that was cut from a
+- **Some source images were found online and edited** (the art in `assets/native/cursor/` and `bar/modules/ito-art/` that was cut from a
   design sheet, which is not included here). They stay the
   property of their authors; see [ART_LICENSE.md](ART_LICENSE.md). Rights holders can ask for credit or removal.
 

@@ -30,4 +30,4 @@ is used; nothing else needs changing. The shell recolours them to the installed 
 ## Delivering them
 Copy the files over the ones with the same names, run `scripts/deploy.sh`, and check the bar at 29 px. If an icon looks bigger
 or smaller than the workspace marks, its ink share is off: that is the first thing to fix.
-Do not run `scripts/gen-art.py` afterwards: it regenerates from the sheet and would overwrite them.
+(The old generator that rebuilt the icons from the design sheet has been removed, so nothing can overwrite them.)

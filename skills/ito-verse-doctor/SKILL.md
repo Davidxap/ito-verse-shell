@@ -48,6 +48,6 @@ The full list, with the log message each one matches, is `docs/TROUBLESHOOTING.m
 ## 4. Rules when working on the shell
 - Deploy with `scripts/deploy.sh` (it restarts cleanly when files changed). Never copy files into a running shell by hand.
 - Never create a virtual output (`hyprctl output create headless`) without removing it in the same command.
-- Do not run `scripts/gen-art.py`: it would overwrite the redrawn icons.
+- The redrawn icons in `bar/modules/ito-art/` are the source of truth; there is no generator that rebuilds them from a sheet.
 - One restart at a time: `ito-restart status` must end at `{"shells":1,"launchers":1,...}`.
 - An error with no note in the table: send the `--text` report, do not guess.
