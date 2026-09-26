@@ -523,6 +523,7 @@ Panel {
   Component {
     id: brightnessArtComponent
     Ito.ItoArt {
+      Ito.ItoHover { target: parent; hovered: button.tooltipHovered; kind: "flicker"; amp: itoCfg.motionAmp; glow: itoCfg.blood; light: itoCfg.light }
       readonly property url instruments: Qt.resolvedUrl("../../bar/modules/ito-art/instruments/")
       sources: [instruments + "display-0.png", instruments + "display-1.png",
                 instruments + "display-2.png", instruments + "display-3.png"]

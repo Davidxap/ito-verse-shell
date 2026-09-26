@@ -687,6 +687,7 @@ Panel {
   Component {
     id: btArtComponent
     Ito.ItoArt {
+      Ito.ItoHover { target: parent; hovered: button.tooltipHovered; kind: "signal"; amp: itoCfg.motionAmp; glow: itoCfg.blood; light: itoCfg.light }
       readonly property url instruments: Qt.resolvedUrl("../../bar/modules/ito-art/instruments/")
       sources: [!root.adapter || !root.adapter.enabled ? instruments + "bt-off.png"
                 : root.connectedDevices.length > 0 ? instruments + "bt-linked.png"

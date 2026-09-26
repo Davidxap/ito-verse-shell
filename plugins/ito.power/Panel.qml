@@ -323,6 +323,7 @@ Panel {
   Component {
     id: powerArtComponent
     Row {
+      Ito.ItoHover { target: parent; hovered: button.tooltipHovered; kind: "pulse"; amp: itoCfg.motionAmp; glow: itoCfg.blood; light: itoCfg.light }
       anchors.centerIn: parent
       spacing: 4
       Text {

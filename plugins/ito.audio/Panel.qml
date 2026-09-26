@@ -701,6 +701,7 @@ Panel {
   Component {
     id: audioArt
     Ito.ItoArt {
+      Ito.ItoHover { target: parent; hovered: button.tooltipHovered; kind: "equalizer"; amp: itoCfg.motionAmp; glow: itoCfg.blood; light: itoCfg.light }
       readonly property url instruments: Qt.resolvedUrl("../../bar/modules/ito-art/instruments/")
       sources: !root.hasOutput || root.outputMuted
         ? [instruments + "vol-mute.png"]

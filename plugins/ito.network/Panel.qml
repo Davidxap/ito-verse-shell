@@ -1020,6 +1020,7 @@ Panel {
   Component {
     id: wifiArtComponent
     Ito.ItoArt {
+      Ito.ItoHover { target: parent; hovered: button.tooltipHovered; kind: "signal"; amp: itoCfg.motionAmp; glow: itoCfg.blood; light: itoCfg.light }
       sources: root.netSources
       value: root.netLevel
       size: root.glyphSize

@@ -162,7 +162,8 @@ Ui.BarWidget {
       horizontalItemAlignment: Grid.AlignHCenter
       verticalItemAlignment: Grid.AlignVCenter
 
-      Ito.ItoHover { parent: button; target: skyGlyph; hovered: button.tooltipHovered; kind: "lift"; amp: cfg.motionAmp; glow: cfg.blood; light: cfg.light }
+      Ito.ItoHover { parent: button; target: skyGlyph; hovered: button.tooltipHovered; kind: root.kind === "moon" || root.kind === "fog" ? "breathe" : "lift"; amp: cfg.motionAmp; glow: cfg.blood; light: cfg.light }
+      Ito.ItoSkyFx { parent: skyGlyph.parent; x: skyGlyph.x; y: skyGlyph.y; width: skyGlyph.width; height: skyGlyph.height; z: 2; kind: root.kind; live: button.tooltipHovered; amp: cfg.motionAmp; bone: cfg.bone; blood: cfg.blood }
       Ito.ItoImage {
         id: skyGlyph
         visible: root.showIcon

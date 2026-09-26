@@ -11,6 +11,8 @@ import QtQuick
 //          wiggle    a short shake                             (the eye that watches, the tape)
 //          flicker   a candle in a draught                     (the coffee cup, the flame)
 //          breathe   it swells and settles while the pointer stays (the moon, the fog)
+//          equalizer it dances up and down like a sound meter    (the volume)
+//          signal    three beeps, each a little larger            (the network, Bluetooth)
 //
 // Place it in the same widget as the icon and give it the icon as `target`. It costs nothing while the pointer is
 // elsewhere: nothing runs, and the halo is not even visible. `amp` is the Motion setting: with 0 there is only the
@@ -55,8 +57,9 @@ Item {
 
   onHoveredChanged: {
     place()
-    ring.stop(); spin.stop(); pulse.stop(); wiggle.stop(); flicker.stop(); breathe.stop(); lift.stop(); settle.stop()
+    ring.stop(); spin.stop(); pulse.stop(); wiggle.stop(); flicker.stop(); breathe.stop(); lift.stop(); settle.stop(); eq.stop(); signalBeat.stop()
     if (!target) return
+    if (!hovered || kind !== "equalizer") target.transform = []
     if (!hovered || amp <= 0) { settle.start(); return }
     if (kind === "ring") { target.transformOrigin = Item.Top; ring.start() }
     else if (kind === "spin") spin.start()
@@ -64,6 +67,8 @@ Item {
     else if (kind === "wiggle") wiggle.start()
     else if (kind === "flicker") flicker.start()
     else if (kind === "breathe") breathe.start()
+    else if (kind === "equalizer") { target.transform = eqScale; eq.start() }
+    else if (kind === "signal") signalBeat.start()
     else lift.start()
   }
 
@@ -124,5 +129,27 @@ Item {
     loops: Animation.Infinite
     NumberAnimation { target: root.target; property: "scale"; to: 1.12; duration: 900 * root.d; easing.type: Easing.InOutSine }
     NumberAnimation { target: root.target; property: "scale"; to: 1.03; duration: 900 * root.d; easing.type: Easing.InOutSine }
+  }
+
+  // the meter: the icon is stretched up and down from its middle, at a rate that never quite repeats
+  Scale { id: eqScale; origin.x: root.target ? root.target.width / 2 : 0; origin.y: root.target ? root.target.height / 2 : 0; yScale: 1 }
+  SequentialAnimation {
+    id: eq
+    loops: Animation.Infinite
+    NumberAnimation { target: eqScale; property: "yScale"; to: 1.22; duration: 130 * root.d; easing.type: Easing.OutQuad }
+    NumberAnimation { target: eqScale; property: "yScale"; to: 0.72; duration: 110 * root.d; easing.type: Easing.InOutQuad }
+    NumberAnimation { target: eqScale; property: "yScale"; to: 1.12; duration: 90 * root.d; easing.type: Easing.OutQuad }
+    NumberAnimation { target: eqScale; property: "yScale"; to: 0.85; duration: 150 * root.d; easing.type: Easing.InOutQuad }
+    NumberAnimation { target: eqScale; property: "yScale"; to: 1.3; duration: 100 * root.d; easing.type: Easing.OutQuad }
+    NumberAnimation { target: eqScale; property: "yScale"; to: 0.9; duration: 120 * root.d; easing.type: Easing.InOutQuad }
+  }
+  SequentialAnimation {
+    id: signalBeat
+    NumberAnimation { target: root.target; property: "scale"; to: 1.1; duration: 110 * root.d; easing.type: Easing.OutQuad }
+    NumberAnimation { target: root.target; property: "scale"; to: 0.98; duration: 90 * root.d }
+    NumberAnimation { target: root.target; property: "scale"; to: 1.18; duration: 120 * root.d; easing.type: Easing.OutQuad }
+    NumberAnimation { target: root.target; property: "scale"; to: 1.0; duration: 100 * root.d }
+    NumberAnimation { target: root.target; property: "scale"; to: 1.26; duration: 130 * root.d; easing.type: Easing.OutQuad }
+    NumberAnimation { target: root.target; property: "scale"; to: 1.08; duration: 200 * root.d; easing.type: Easing.InOutQuad }
   }
 }
