@@ -1,5 +1,6 @@
 import QtQuick
 import Quickshell
+import Quickshell.Io
 import qs.Ui as Ui
 import "../../bar/modules" as Ito
 
@@ -92,6 +93,14 @@ Ui.BarWidget {
 
       Behavior on opacity { NumberAnimation { duration: 140 } }
     }
+  }
+
+  // `omarchy-shell ito.calendar toggle` (also open, close) for a keybinding.
+  IpcHandler {
+    target: "ito.calendar"
+    function open(): void { root.calendarOpen = true }
+    function close(): void { root.calendarOpen = false }
+    function toggle(): void { root.calendarOpen = !root.calendarOpen }
   }
 
   // The clock and the date open the same calendar; this is the clock's copy of it.

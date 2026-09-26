@@ -181,6 +181,14 @@ Ui.BarWidget {
     }
   }
 
+  // `omarchy-shell ito.weather toggle` (also open, close) for a keybinding.
+  IpcHandler {
+    target: "ito.weather"
+    function open(): void { root.popupOpen = true }
+    function close(): void { root.popupOpen = false }
+    function toggle(): void { root.popupOpen = !root.popupOpen }
+  }
+
   // ------------------------------------------------------------------ forecast
   PanelWindow {
     id: panel
