@@ -487,7 +487,7 @@ def build_report() -> str:
     add("4. Rules: restart only with `ito-restart` (never `pkill quickshell`, it also kills the terminal; never a bare "
         "`omarchy-launch-shell`). One restart at a time; `ito-restart status` must end at `shells:1, launchers:1`. "
         "Deploy repository files with `scripts/deploy.sh`, never by copying into the live folder. "
-        "Never create a Hyprland headless output without removing it. Do not run `scripts/gen-art.py`.")
+        "Never create a Hyprland headless output without removing it.")
     add("5. An error with no note below: quote the log line to the user and ask before changing anything.")
     add(f"6. Tools live in `{BIN}`; the repository (if present) is `{root or 'not found on this machine'}`.")
     add("")
