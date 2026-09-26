@@ -14,7 +14,16 @@ Item {
   id: root
 
   property string kind: "cloud"
+  // the icon it plays over: it is placed over it (in this item's parent) when the pointer arrives, and never takes part in the
+  // widget's own layout, which it once did and shifted everything by a cell
+  property Item glyph: null
   property bool live: false
+  onLiveChanged: if (live) place()
+  function place() {
+    if (!glyph || !parent) return
+    var p = glyph.mapToItem(parent, 0, 0)
+    x = p.x; y = p.y; width = glyph.width; height = glyph.height
+  }
   property real amp: 1
   property color bone: "#c7ccd1"
   property color blood: "#c4162a"

@@ -413,6 +413,27 @@ def all_checks():
                      why="A value like that can blank colours or glows. The shell clamps most of them, but the panel and the bar can then disagree.",
                      fix="Fix puts those sliders back to their defaults; the rest of your look is kept.", fixId="lookreset"))
 
+    # ---- a moving wallpaper behind a see-through bar
+    live = False
+    try:
+        bgdir = HOME / ".local/state/omarchy/current/theme/backgrounds"
+        # only when the theme in use really ships a video: having the wallpaper plugin installed is not enough
+        if bgdir.is_dir() and any(f.suffix.lower() in (".mp4", ".webm", ".mkv", ".gif") for f in bgdir.iterdir()):
+            live = True
+    except (OSError, ValueError):
+        pass
+    try:
+        see_through = bool(style.get("fxGlass")) or float(style.get("surfaceOpacity", 1)) < 0.98
+    except (TypeError, ValueError):
+        see_through = False
+    out.append(check("livewall", "Moving wallpaper", not (live and see_through),
+                     "The plate is solid, or the wallpaper does not move.",
+                     "The wallpaper moves and the bar's plate is see-through (glass or opacity below 100%).",
+                     why="The wallpaper's motion shows through the plate and reads as the bar flickering or shimmering. It also keeps the "
+                         "GPU busy behind the bar all day.",
+                     fix="Fix makes the plate solid (opacity 100%, glass off). Everything else in your look stays.", fixId="solidplate",
+                     level="warn"))
+
     # ---- the programs the panel calls on
     import importlib.util
     missing_tools = []
@@ -620,6 +641,7 @@ FIXES = {
     "state": "apply the default design (writes the state block)",
     "switch": "switch the shell back to Ito-verse when the engine fell back to another bar",
     "lookreset": "put the sliders that are outside their range (glow, vibrance, speed, strength, icon size...) back to default",
+    "solidplate": "make the bar's plate solid (opacity 100%, glass off), so a moving wallpaper no longer shows through it",
     "pictures": "rebuild your pictures' adapted copies; go back to the default for any that are gone",
     "deploy": "copy the repository's files back into the live folder (scripts/deploy.sh)",
 }
@@ -677,6 +699,10 @@ def fix(fid: str):
             return False, "shell-switch was not found; run scripts/shell-switch ito from the repository."
         run([tool, "ito"], detached=True)
         return True, "Switching back to Ito-verse; the bar returns in a few seconds."
+    if fid == "solidplate":
+        run([str(BIN / "ito-config"), "set", "surfaceOpacity", "1"])
+        run([str(BIN / "ito-config"), "set", "fxGlass", "false"])
+        return True, "The plate is solid now; the wallpaper's motion no longer shows through it."
     if fid == "lookreset":
         try:
             data = json.loads((MODULES / "ito-style.json").read_text())

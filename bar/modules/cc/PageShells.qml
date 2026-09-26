@@ -47,7 +47,8 @@ ColumnLayout {
   Process {
     id: setupLoad
     property string name: ""
-    command: [page.profileTool, "load", name]
+    property string only: ""                       // "", "look" or "layout": a setup has both, and either can come back alone
+    command: only === "" ? [page.profileTool, "load", name] : [page.profileTool, "load", name, "--only", only]
   }
   Process {
     id: setupDelete
@@ -188,19 +189,27 @@ ColumnLayout {
             Text { text: "Saved " + modelData.saved; color: page.bone; opacity: 0.45; font.family: "Noto Serif"; font.pixelSize: 10 }
           }
 
-          CcCard {
-            Layout.preferredWidth: 78
-            Layout.preferredHeight: 30
-            radius: 15
-            host: page.cc
-            pal: page.pal
-            showCaption: false
-            hint: "Put the bar back the way this setup was. It restarts for a few seconds."
-            onActivated: if (!setupLoad.running) { setupLoad.name = modelData.name; setupLoad.running = true; page.cc.close() }
-            Text { anchors.centerIn: parent; text: "Load"; color: page.pal.lit; font.family: "Noto Serif"; font.pixelSize: 11 }
+          Repeater {
+            model: [
+              { "label": "Load", "only": "", "w": 62, "tip": "Put the bar back the way this setup was: its look and its layout. It restarts for a few seconds." },
+              { "label": "Look", "only": "look", "w": 56, "tip": "Bring back only the colours, effects, marks and pictures. The bar's shape and widgets stay as they are." },
+              { "label": "Layout", "only": "layout", "w": 66, "tip": "Bring back only the bar's edge, shape and widgets. The look stays as it is. It restarts for a few seconds." }
+            ]
+            CcCard {
+              required property var modelData
+              Layout.preferredWidth: modelData.w
+              Layout.preferredHeight: 30
+              radius: 15
+              host: page.cc
+              pal: page.pal
+              showCaption: false
+              hint: modelData.tip
+              onActivated: if (!setupLoad.running) { setupLoad.name = ""; setupLoad.only = modelData.only; setupLoad.name = modelData.name; setupLoad.running = true; if (modelData.only !== "look") page.cc.close() }
+              Text { anchors.centerIn: parent; text: modelData.label; color: page.pal.lit; font.family: "Noto Serif"; font.pixelSize: 11 }
+            }
           }
           CcCard {
-            Layout.preferredWidth: 78
+            Layout.preferredWidth: 62
             Layout.preferredHeight: 30
             radius: 15
             host: page.cc
