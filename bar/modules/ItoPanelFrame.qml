@@ -62,7 +62,7 @@ Item {
   Rectangle {
     anchors.fill: parent
     radius: 3
-    color: Qt.rgba(root.ink.r, root.ink.g, root.ink.b, 0.97)
+    color: Qt.rgba(root.ink.r, root.ink.g, root.ink.b, 1)
   }
 
   // mist thickening towards the foot, the way Silent Hill's fog lies low

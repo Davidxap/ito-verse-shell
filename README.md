@@ -69,6 +69,17 @@ Each popup carries a small drawn sign at its head, in the theme's colours, for w
 
 ![The emblems: eye, waves, web, rune, flame, spiral, hourglass, bell, mind, and the sky](docs/screenshots/popup-emblems.png)
 
+| | |
+|---|---|
+| ![The calendar, with an hourglass](docs/screenshots/popup-calendar.png) | ![The forecast, with the sky for its emblem](docs/screenshots/popup-forecast.png) |
+
+![The media player, with a spiral](docs/screenshots/popup-player.png)
+
+On a bar at the side of the screen the seal's decoration lies across the bar, above and below the seal, and the popups open
+beside it:
+
+![A vertical bar](docs/screenshots/bar-vertical.png)
+
 ## Screenshots
 
 Captured on the [Tomie theme](#the-tomie-theme), at native resolution.
