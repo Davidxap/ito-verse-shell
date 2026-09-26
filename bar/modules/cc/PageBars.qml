@@ -280,6 +280,16 @@ ColumnLayout {
       Layout.fillWidth: true
       host: page.cc
       pal: page.pal
+      label: "Manga frame on popups"
+      hint: "Popups (audio, network, Bluetooth...) are drawn as inked manga panels: ruled frame, torn corners, blood and screentone. Off, they keep the plain card."
+      on: page.pal.get("panelFrame", true) !== false
+      onActivated: page.act.set("panelFrame", on ? "false" : "true")
+    }
+
+    CcToggle {
+      Layout.fillWidth: true
+      host: page.cc
+      pal: page.pal
       label: "Tint labels with the accent"
       hint: "The small labels that appear over the bar (workspace, seal...) take the accent colour. Off, they follow the theme."
       on: page.pal.get("tooltipBlood", false) === true
@@ -295,7 +305,7 @@ ColumnLayout {
       pal: page.pal
       showCaption: false
       hint: "Put corners, height, spacing, shadow and floating back to how they shipped."
-      onActivated: page.act.unset(["barRadius", "barSize", "barGap", "barShadow", "barFloat", "tooltipBlood"])
+      onActivated: page.act.unset(["barRadius", "barSize", "barGap", "barShadow", "barFloat", "tooltipBlood", "panelFrame"])
 
       Text {
         anchors.centerIn: parent
