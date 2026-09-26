@@ -33,10 +33,12 @@ Ui.BarWidget {
   // What stands beside the seal (Logo page): the veins, thorns, curls, hair, drips, eyes, cracks, stitches, or nothing.
   readonly property var deco: Marks.decoration(cfg)
 
-  // A slow, barely-there breathing in the veins even at rest -- the seal is meant to feel alive, not
-  // only lit on demand. A plain number animation, not a Canvas: nothing here costs a repaint.
+  // A slow, barely-there breathing in the veins so the seal feels alive. It runs while an effect is on (pointer
+  // over the seal, panel open, or "Always"), and when Motion is not off. At rest it holds still: an animation
+  // that never stops keeps the render thread awake all day, which was most of the shell's idle cost.
   property real idleGlow: 0.07
   SequentialAnimation on idleGlow {
+    running: root.fxOn && cfg.motionAmp > 0
     loops: Animation.Infinite
     NumberAnimation { to: 0.11; duration: 2600; easing.type: Easing.InOutSine }
     NumberAnimation { to: 0.05; duration: 2600; easing.type: Easing.InOutSine }
