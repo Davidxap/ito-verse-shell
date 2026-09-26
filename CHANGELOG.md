@@ -14,6 +14,17 @@
 - IPC for keybindings: `ito.player`, `ito.calendar`, `ito.weather`, `ito.notifycenter`, `ito.aiusage` (each `open`, `close`,
   `toggle`).
 
+**Icons and the bar**
+- **Hover:** every icon gets a halo of the accent and a gesture that fits it (bell rings, chip beats, disk turns, volume dances,
+  network beeps); the weather shows the sky (rain falls, lightning, rising heat, snow, mist). Follows the Motion setting.
+- New emblems: a clock (with a real second hand), a signal and a telephone with a coiled cord; all emblems move while their popup is
+  open. The notification icons are redrawn: a bell with an Uzumaki spiral and an eye for a clapper.
+- **Tray:** the drawer takes its room at once, so its icons no longer show outside the island for two frames (it read as a second island and a flicker).
+- **Setups** can be loaded whole, as look only, or as layout only (`ito-profile load NAME --only look|layout`).
+- **AI usage:** a limit whose window has reset now reads 0% and asks for a fresh reading, instead of showing the old 100% until the timer runs.
+- **Popups** never fall below 124 px: the bar engine rewrote shorter ones without end. Fixed: an empty adapted picture (a write cut short) is rebuilt.
+- Health notices a moving wallpaper behind a see-through plate (it reads as shimmering) and offers a solid plate.
+
 **Motion and cost**
 - **Motion** setting (Effects): off, calm or lively. Popups, labels, the Control Centre and the workspace marks follow it;
   numbers glide to their new value.

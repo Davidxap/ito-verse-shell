@@ -60,8 +60,8 @@ and the AI usage panel) share one look and one set of rules:
 - **The frame.** An inked panel: a ruled double edge, torn corners, a spatter of blood and a screentone patch, a burst of
   static as it opens, an emblem at the head and a short note at the foot. Switch it off with **Bars → Details → Manga frame on
   popups**; the plain card comes back.
-- **The emblem** says what the popup watches: sound waves (audio), a web (network), a rune (Bluetooth), a flame (power),
-  an eye (display), a spiral (media player), an hourglass (calendar), a bell (notifications), a mind (AI usage), and the
+- **The emblem** says what the popup watches: sound waves (audio), a signal (network), a rune (Bluetooth), a flame (power),
+  an eye (display), a spiral (media player), a clock (calendar), a telephone (notifications), a mind (AI usage), and the
   sky for the forecast (sun, moon, cloud, rain, storm, snow, fog). Move the pointer near the head and it brightens.
 - **Where they open.** Beside the bar, on whichever edge it is on, and they shrink to fit a small screen.
 - **Motion.** They follow **Effects → Motion** (off, calm, lively).
@@ -187,7 +187,9 @@ Every plugin the shell can find, wherever it came from: Ito-verse, Omarchy, Shib
 
 - **My setups.** Everything you change is remembered by itself. Type a name and press **Save setup** to keep a named
   copy: your colours, effects, widgets and where they sit, and your own pictures. **Load** puts the bar back the way the
-  setup was (it restarts for a few seconds); **Delete** removes the copy, not the bar.
+  setup was (it restarts for a few seconds). **Look** brings back only the colours, effects, marks and pictures and leaves the
+  bar's shape and widgets alone; **Layout** brings back only the edge, shape and widgets and leaves the look. **Delete**
+  removes the copy, not the bar.
 - **Shells.** Every shell it finds: Omarchy's default bar, Shibumi, Caelestia, Ito-verse. **Switch** stops this shell and
   starts that one. Installing Ito-verse keeps the shell you were on as its own entry, so going back is one click.
 - **About.** Who made it, where, and the licences.

@@ -46,8 +46,11 @@ The full-quality video (1080p, 60 fps): [docs/media/tour.mp4](docs/media/tour.mp
 - **Popups drawn as manga panels.** Audio, network, Bluetooth, power, display, the calendar, the forecast, the media
   player, notification history and AI usage all open in an inked frame: a ruled double edge, torn corners, a spatter of
   blood, a burst of static as they open, and a small emblem at the head that says what they watch (sound waves, a web, a
-  rune, a flame, an hourglass, a spiral, a bell, a mind, the sky). One note at the foot, drawn each time from a few
+  rune, a flame, a clock, a spiral, a telephone, a mind, the sky). One note at the foot, drawn each time from a few
   original lines. They open beside the bar on whichever edge it is on, and shrink to fit the screen.
+- **Icons that answer.** Hover any icon on the bar and a halo of the accent rises behind it, with a gesture that fits what it is:
+  the bell rings, the chip beats, the disk turns, the volume dances like a sound meter, the network beeps, and the weather plays
+  what the sky is doing (rain falls, lightning strikes, heat rises, snow drifts, mist slides).
 - **Motion that costs nothing at rest.** One setting (Off, Calm, Lively) governs every entrance; nothing animates while
   the shell is idle (about 0.5 % of one core).
 - **A media player, a notification history, a forecast and a calendar.** Right-click the media rings or the bell; click the
@@ -55,7 +58,7 @@ The full-quality video (1080p, 60 fps): [docs/media/tour.mp4](docs/media/tour.mp
 - **Nine motions for the marks** (spin, pulse, breathe, heartbeat, flicker, sway, glitch, ripple, or none) and a Light
   section for glow, vibrance, speed and strength.
 - **Your look, saved.** Everything is remembered by itself; **Setup → My setups** keeps named copies you can load
-  back in a click.
+  back in a click, all of it or only the look, or only the layout.
 - **Other shells, one click away.** Omarchy's default bar, Shibumi, Caelestia and Ito-verse, switched from the
   Setup page. Installing Ito-verse keeps the shell you were on.
 - **Any plugin can go on the bar.** The Plugins page lists every plugin the shell finds (ours, Omarchy's,
