@@ -291,20 +291,42 @@ def bell(state: str):
     shape = left + [(x, y) for x, y in ellipse(320, 470, 224, 34, math.pi, math.tau, 40)] + right[::-1]
     solid(img, shape, INK)
     hatch_poly(img, shape, 68, 12, 3, 0.85, region=fade(230, 240, 320, 255, 0))
+    # an Uzumaki spiral turns on the body of the bell, in the same thin pen as the shading; blood when there is news
+    spiral = []
+    turns = 3.4
+    for i in range(0, 241):
+        f = i / 240
+        a = f * turns * math.tau - math.pi / 2
+        r = 12 + f * 118
+        spiral.append((320 + math.cos(a) * r * 0.92, 300 + math.sin(a) * r * 1.02))
+    gp.ink(img, spiral, 5, 8, BLOOD if state == "unread" else DIM, wobble=1.2, pressure=True)
     pen(img, left, 18, col)
     pen(img, right, 18, col)
     pen(img, ellipse(320, 470, 224, 34, 0, math.pi, 40), 15, col, echo=False)          # the front lip of the rim
     pen(img, ellipse(320, 470, 224, 34, math.pi, math.tau, 40), 12, DIM, echo=False)
     dot(img, 320, 66, 22, col)
-    clap = ellipse(320, 548, 46, 32, 0, math.pi, 30)
-    pen(img, clap, 15, col, echo=False)
+    # the clapper is an eye: it hangs from the bell and watches whoever looks at it
+    lid_top = bez((262, 556), (290, 520), (350, 520), (378, 556))
+    lid_bot = bez((378, 556), (350, 592), (290, 592), (262, 556))
+    solid(img, lid_top + lid_bot, INK)
+    pen(img, lid_top, 13, col, echo=False)
+    pen(img, lid_bot, 11, DIM if state != "unread" else col, echo=False)
+    iris = ellipse(320, 556, 19, 19)
+    solid(img, iris, INK)
+    pen(img, iris, 8, BLOOD if state == "unread" else col, closed=True, echo=False)
+    dot(img, 320, 556, 7, BLOOD if state == "unread" else col)
+    if state == "unread":
+        # it is ringing: arcs of blood either side, and a drop from the eye
+        for side in (-1, 1):
+            for k, rr in enumerate((70, 112)):
+                pts = [(320 + side * (232 + math.cos(math.radians(a)) * rr * 0.6), 300 + math.sin(math.radians(a)) * rr * 1.3)
+                       for a in range(-50, 51, 5)]
+                gp.ink(img, pts, 9 - k * 2, 12 - k * 2, BLOOD, wobble=1.3, pressure=False)
+        solid(img, [(320, 606), (334, 634), (320, 646), (306, 634)], BLOOD)
+        dot(img, 480, 112, 44, BLOOD)
+        pen(img, ellipse(480, 112, 44, 44), 6, (255, 130, 140), closed=True, echo=False)
     if state == "crack":
         gp.ink(img, [(262, 96), (300, 170), (272, 228), (318, 300), (290, 352)], 12, 20, BLOOD, wobble=1.4, pressure=True)
-    if state == "unread":
-        blood(img, ellipse(320, 290, 100, 100), None, hatchy=False)
-        pen(img, ellipse(320, 290, 100, 100), 9, (255, 130, 140), closed=True, echo=False)
-        dot(img, 478, 130, 54, BLOOD)
-        pen(img, ellipse(478, 130, 54, 54), 6, (255, 130, 140), closed=True, echo=False)
     if state == "muted":
         gp.ink(img, [(110, 90), (540, 560)], 20, 26, BLOOD, wobble=1.4, pressure=False)
     return finish(img, seed=31)

@@ -50,6 +50,12 @@ Ui.BarWidget {
 
   property bool pinned: false
   readonly property bool open: pinned || hover.hovered || closeDelay.running
+  // The room the drawer occupies in the bar: taken when it opens, given back once its icons have faded out.
+  property bool spaceOpen: false
+  onOpenChanged: {
+    if (open) { spaceOpen = true; spaceTimer.stop() } else spaceTimer.restart()
+  }
+  Timer { id: spaceTimer; interval: 260; onTriggered: root.spaceOpen = false }
 
   // Pinned open by a click, but only for as long as the pointer stays around: a drawer left open behind
   // the pointer looks like the tray is broken, so it lets go a few seconds after the pointer leaves.
@@ -78,16 +84,18 @@ Ui.BarWidget {
     anchors.verticalCenter: root.vertical ? undefined : parent.verticalCenter
     anchors.horizontalCenter: root.vertical ? parent.horizontalCenter : undefined
 
+    // The drawer takes its room at once and gives it back only after the icons have faded. It used to grow a little at a
+    // time, and the island's plate, which follows the widget's width a beat behind, was still narrow while the icons were
+    // already showing: they appeared outside the island for two frames, which read as a second island and a flicker.
     Item {
       id: drawer
       clip: true
-      height: root.vertical ? (root.open ? items.implicitHeight : 0) : root.barSize
-      width: root.vertical ? root.barSize : (root.open ? items.implicitWidth : 0)
-      opacity: root.open ? 1 : 0
+      height: root.vertical ? (root.spaceOpen ? items.implicitHeight : 0) : root.barSize
+      width: root.vertical ? root.barSize : (root.spaceOpen ? items.implicitWidth : 0)
 
-      Behavior on width { NumberAnimation { duration: Motion.normal; easing.type: Easing.BezierSpline; easing.bezierCurve: Motion.decel } }
-      Behavior on height { NumberAnimation { duration: Motion.normal; easing.type: Easing.BezierSpline; easing.bezierCurve: Motion.decel } }
-      Behavior on opacity { NumberAnimation { duration: Motion.normal; easing.type: Easing.BezierSpline; easing.bezierCurve: Motion.soft } }
+      Behavior on opacity { NumberAnimation { duration: Math.round(Motion.normal * cfg.motionAmp); easing.type: Easing.BezierSpline; easing.bezierCurve: Motion.soft } }
+      opacity: root.open ? 1 : 0
+      visible: root.spaceOpen || opacity > 0.01          // nothing is drawn (or recoloured) while the drawer is shut
 
       Grid {
         id: items
@@ -98,6 +106,12 @@ Ui.BarWidget {
         height: root.vertical ? implicitHeight : parent.height
         verticalItemAlignment: Grid.AlignVCenter
         spacing: 0
+        transform: Translate {
+          x: root.vertical ? 0 : (root.open ? 0 : 14)
+          y: root.vertical ? (root.open ? 0 : -14) : 0
+          Behavior on x { NumberAnimation { duration: Math.round(Motion.normal * cfg.motionAmp); easing.type: Easing.BezierSpline; easing.bezierCurve: Motion.decel } }
+          Behavior on y { NumberAnimation { duration: Math.round(Motion.normal * cfg.motionAmp); easing.type: Easing.BezierSpline; easing.bezierCurve: Motion.decel } }
+        }
 
         Repeater {
           model: SystemTray.items
