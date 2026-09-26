@@ -171,14 +171,50 @@ Item {
     opacity: headHover.hovered && root.amp > 0 ? 1 : 0
     visible: opacity > 0.01
     Behavior on opacity { NumberAnimation { duration: 240 * Math.min(root.amp, 1.4) } }
-    clip: true
-    Image {
-      // the sheet stacks three eyes; the middle one is the red one, open
-      source: root.artBase + "decor/eyes.png"
-      width: 84; height: 84 * 536 / 529
-      y: -(height / 3)
-      fillMode: Image.PreserveAspectFit
-      smooth: true
+    // Drawn, not pictured: an almond lid, a bloodshot iris and a spiral for a pupil. Painted once and again only when
+    // the palette changes.
+    Canvas {
+      id: eyeCanvas
+      anchors.fill: parent
+      readonly property color boneC: root.bone
+      readonly property color bloodC: root.cfg ? root.cfg.blood : "#c4162a"
+      onBoneCChanged: requestPaint()
+      onBloodCChanged: requestPaint()
+      onPaint: {
+        var c = getContext("2d")
+        c.reset()
+        var w = width, h = height, cx = w / 2, cy = h / 2
+        // lid
+        c.beginPath()
+        c.moveTo(2, cy)
+        c.quadraticCurveTo(cx, -h * 0.35, w - 2, cy)
+        c.quadraticCurveTo(cx, h * 1.35, 2, cy)
+        c.closePath()
+        c.fillStyle = Qt.rgba(root.ink.r, root.ink.g, root.ink.b, 1)
+        c.fill()
+        c.lineWidth = 1.3
+        c.strokeStyle = Qt.rgba(boneC.r, boneC.g, boneC.b, 0.85)
+        c.stroke()
+        // iris
+        c.beginPath(); c.arc(cx, cy, h * 0.36, 0, Math.PI * 2)
+        c.strokeStyle = bloodC; c.lineWidth = 1.6; c.stroke()
+        // veins from the corners
+        c.strokeStyle = Qt.rgba(bloodC.r, bloodC.g, bloodC.b, 0.55); c.lineWidth = 0.8
+        for (var v = -1; v <= 1; v += 2) {
+          c.beginPath(); c.moveTo(v > 0 ? w - 3 : 3, cy)
+          c.lineTo(cx + v * h * 0.48, cy - 3); c.moveTo(v > 0 ? w - 3 : 3, cy)
+          c.lineTo(cx + v * h * 0.48, cy + 3); c.stroke()
+        }
+        // pupil: a spiral
+        c.strokeStyle = Qt.rgba(boneC.r, boneC.g, boneC.b, 0.9); c.lineWidth = 1
+        c.beginPath()
+        for (var a = 0; a < 3.2 * Math.PI * 2; a += 0.2) {
+          var r = 1 + a * 0.55
+          var x = cx + Math.cos(a) * r, y = cy + Math.sin(a) * r
+          if (a === 0) c.moveTo(x, y); else c.lineTo(x, y)
+        }
+        c.stroke()
+      }
     }
   }
   // the head of the popup: the top 64 px
