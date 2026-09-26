@@ -727,6 +727,7 @@ Panel {
       z: 1000
       HoverHandler { id: cardHover }
     }
+    Ito.ItoEnter { opened: root.opened; amp: itoCfg.motionAmp }
     Ito.ItoAutoClose {
         opened: root.opened
         hovered: cardHover.hovered
