@@ -104,6 +104,7 @@ Which widgets are on the bar, where, and how they read.
   - **◀ ▶** to send it to the neighbouring column and **▲ ▼** to move it one place along its column,
   - for widgets with a reading, a **"Shows: Icon + text ↻"** line: click it to cycle icon and number, icon only,
     number only.
+  **Drag a widget by its grip (⋮⋮) to any place in any column**; a line shows where it will land. The arrows do the same in small steps.
   The seal has a dot instead of a switch: it always stays on so the Control Centre can always be reached.
 - **Not on the bar.** Widgets that are in no column: click one to add it (it lands on the right; move it from there).
 - **Network icon.** Auto (the port on a cable, the signal arcs on Wi-Fi), always arcs, always the port.

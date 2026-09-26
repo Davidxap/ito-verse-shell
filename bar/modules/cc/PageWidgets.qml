@@ -16,6 +16,47 @@ ColumnLayout {
 
   spacing: 10
 
+  // ---------------------------------------------------------------- dragging a widget between the columns
+  // The three columns, so a drag can tell which one the pointer is over; and where a drop would land, for the guide line.
+  property var columns: ({})
+  property string dragId: ""
+  property string dragRegion: ""             // the column the dragged row belongs to (raised above its neighbours)
+  property string dropRegion: ""
+  property string dropBeforeId: ""           // the widget it would go in front of, "" for the end of the column
+  property int dropIndex: 0
+
+  function locate(sceneX, sceneY, movingId) {
+    var names = ["left", "center", "right"], best = "", bestGap = 1e9
+    for (var n = 0; n < names.length; n++) {
+      var col = columns[names[n]]
+      if (!col) continue
+      var p = col.mapFromItem(null, sceneX, sceneY)
+      var gap = p.x < 0 ? -p.x : (p.x > col.width ? p.x - col.width : 0)
+      if (gap < bestGap) { bestGap = gap; best = names[n] }
+    }
+    if (best === "") return null
+    var c = columns[best], q = c.mapFromItem(null, sceneX, sceneY), idx = 0, before = ""
+    for (var i = 0; i < c.children.length; i++) {
+      var r = c.children[i]
+      if (r.wid === undefined || r.wid === movingId || !r.visible) continue
+      if (r.y + r.height / 2 < q.y) idx++
+      else if (before === "") before = r.wid
+    }
+    return { "region": best, "index": idx, "before": before }
+  }
+
+  function dragMoved(id, sx, sy) {
+    var at = locate(sx, sy, id)
+    if (!at) return
+    dropRegion = at.region; dropBeforeId = at.before; dropIndex = at.index
+  }
+
+  function dragDone(id, sx, sy) {
+    var at = locate(sx, sy, id)
+    dragId = ""; dragRegion = ""; dropRegion = ""; dropBeforeId = ""
+    if (at) page.act.moveWidgetTo(id, at.region, at.index)
+  }
+
   readonly property var modeNames: ({ "both": "Icon + text", "icon": "Icon only", "text": "Text only" })
 
   // ---------------------------------------------------------------- readings
@@ -97,7 +138,7 @@ ColumnLayout {
     Layout.topMargin: 6
     pal: page.pal
     label: "YOUR BAR"
-    note: "Three columns, the way the bar is laid out: left, centre, right; top to bottom is the order along the bar. The switch turns a widget on or off (it keeps its place); the arrows move it."
+    note: "Three columns, the way the bar is laid out: left, centre, right; top to bottom is the order along the bar. Drag a widget by its grip to any place in any column, or use the arrows. The switch turns a widget on or off (it keeps its place)."
 
 
     RowLayout {
@@ -119,6 +160,8 @@ ColumnLayout {
           Layout.preferredWidth: 1
           Layout.alignment: Qt.AlignTop
           spacing: 6
+          z: page.dragRegion === modelData.region ? 50 : 0
+          Component.onCompleted: page.columns[modelData.region] = col
 
           Text {
             text: col.modelData.title
@@ -143,7 +186,7 @@ ColumnLayout {
 
           Text {
             visible: col.ids.length === 0
-            text: "Nothing here. Use ◀ ▶ on a widget to bring it."
+            text: page.dragId !== "" && page.dropRegion === col.modelData.region ? "Drop it here." : "Nothing here. Drag a widget in, or use ◀ ▶ on one."
             wrapMode: Text.WordWrap
             Layout.fillWidth: true
             color: page.bone
@@ -392,8 +435,8 @@ ColumnLayout {
     property string tip: ""
     property bool usable: true
     signal tapped()
-    width: 24
-    height: 26
+    width: 22
+    height: 24
     radius: 7
     color: nh.hovered && usable ? Qt.rgba(page.pal.blood.r, page.pal.blood.g, page.pal.blood.b, 0.3) : "transparent"
     opacity: usable ? 1 : 0.22
@@ -419,24 +462,87 @@ ColumnLayout {
     readonly property bool canMode: info && info.reading === true
     readonly property bool locked: info && info.locked === true
 
+    // being dragged: it follows the pointer (it keeps its place in the list until it is dropped)
+    property real dragX: 0
+    property real dragY: 0
+    readonly property bool dragging: page.dragId === wid
+    z: dragging ? 100 : 0
+    transform: Translate { x: row.dragX; y: row.dragY }
+    // where a drop would land: a line above this row, or below it if it is the last of the column
+    readonly property bool guideAbove: page.dragId !== "" && !dragging && page.dropRegion === region && page.dropBeforeId === wid
+    readonly property bool guideBelow: page.dragId !== "" && !dragging && page.dropRegion === region && page.dropBeforeId === ""
+                                       && position === count - 1
+
     Layout.fillWidth: true
-    Layout.preferredHeight: 52
+    Layout.preferredHeight: 66
     radius: 12
     visible: !!info && page.cc.match(info.name + " " + info.note + " widget")
-    color: rowHover.hovered ? Qt.rgba(page.bone.r, page.bone.g, page.bone.b, 0.07) : Qt.rgba(page.bone.r, page.bone.g, page.bone.b, 0.03)
+    color: dragging ? Qt.rgba(page.pal.ink.r * 0.85 + page.bone.r * 0.15, page.pal.ink.g * 0.85 + page.bone.g * 0.15, page.pal.ink.b * 0.85 + page.bone.b * 0.15, 0.98)
+         : (rowHover.hovered ? Qt.rgba(page.bone.r, page.bone.g, page.bone.b, 0.07) : Qt.rgba(page.bone.r, page.bone.g, page.bone.b, 0.03))
+    opacity: 1
     border.width: 1
-    border.color: on ? Qt.rgba(page.pal.blood.r, page.pal.blood.g, page.pal.blood.b, 0.4) : Qt.rgba(page.bone.r, page.bone.g, page.bone.b, 0.1)
+    border.color: dragging ? page.pal.lit : on ? Qt.rgba(page.pal.blood.r, page.pal.blood.g, page.pal.blood.b, 0.4) : Qt.rgba(page.bone.r, page.bone.g, page.bone.b, 0.1)
 
     HoverHandler {
       id: rowHover
       onHoveredChanged: page.cc.hint = hovered && row.info ? row.info.note : ""
     }
 
+    // the guide line for a drop
+    Rectangle {
+      visible: row.guideAbove || row.guideBelow
+      x: 6; width: parent.width - 12; height: 3; radius: 1.5
+      y: row.guideAbove ? -5 : parent.height + 2
+      color: page.pal.blood
+    }
+
+    // the grip: hold it and drag the widget to any place in any column
+    Item {
+      id: grip
+      x: 2; width: 18; height: parent.height
+      visible: !row.locked
+      Text {
+        anchors.centerIn: parent
+        text: "⋮⋮"
+        rotation: 0
+        color: page.bone
+        opacity: gripHover.hovered || row.dragging ? 0.9 : 0.35
+        font.pixelSize: 15
+      }
+      HoverHandler {
+        id: gripHover
+        cursorShape: row.dragging ? Qt.ClosedHandCursor : Qt.OpenHandCursor
+        onHoveredChanged: page.cc.hint = hovered ? "Hold and drag to move this widget anywhere on the bar." : ""
+      }
+      // follow the pointer while the drag lasts: how far it is from where it was pressed, and where a drop would land
+      // (read on a short timer: the handler's own change signals arrived too rarely to move the row smoothly)
+      Timer {
+        running: dragger.active
+        interval: 16
+        repeat: true
+        onTriggered: {
+          var c = dragger.centroid
+          row.dragX = c.scenePosition.x - c.scenePressPosition.x
+          row.dragY = c.scenePosition.y - c.scenePressPosition.y
+          page.dragMoved(row.wid, c.scenePosition.x, c.scenePosition.y)
+        }
+      }
+      DragHandler {
+        id: dragger
+        target: null
+        cursorShape: Qt.ClosedHandCursor
+        onActiveChanged: {
+          if (active) { page.dragId = row.wid; page.dragRegion = row.region }
+          else { row.dragX = 0; row.dragY = 0; page.dragDone(row.wid, centroid.scenePosition.x, centroid.scenePosition.y) }
+        }
+      }
+    }
+
     // the switch: a track with a knob, blood when the widget is on
     Rectangle {
       id: track
-      x: 10
-      anchors.verticalCenter: parent.verticalCenter
+      x: 24
+      y: 11
       width: 34
       height: 18
       radius: 9
@@ -461,8 +567,8 @@ ColumnLayout {
       TapHandler { onTapped: page.act.setWidget(row.wid, !row.on) }
     }
     Text {
-      x: 10
-      anchors.verticalCenter: parent.verticalCenter
+      x: 24
+      y: 9
       width: 34
       visible: row.locked
       horizontalAlignment: Text.AlignHCenter
@@ -471,46 +577,45 @@ ColumnLayout {
       font.pixelSize: 16
     }
 
-    Column {
-      anchors.verticalCenter: parent.verticalCenter
-      anchors.left: track.right
-      anchors.leftMargin: 10
-      anchors.right: arrows.left
-      anchors.rightMargin: 4
-      spacing: 2
-      Text {
-        width: parent.width
-        elide: Text.ElideRight
-        text: row.info ? row.info.name : row.wid
-        color: page.bone
-        opacity: row.on ? 1 : 0.55
-        font.family: "Noto Serif"
-        font.pixelSize: 13
-      }
-      // what it shows: a plain link-like chip for the widgets that have a reading
-      Text {
-        width: parent.width
-        elide: Text.ElideRight
-        text: row.locked ? "Always on" : (row.canMode && row.on ? "Shows: " + page.modeNames[row.mode] + "  ↻" : (row.on ? "On" : "Off"))
-        color: row.canMode && row.on && !row.locked ? page.pal.lit : page.bone
-        opacity: row.canMode && row.on && !row.locked ? 0.95 : 0.45
-        font.family: "Noto Serif"
-        font.pixelSize: 10
-        MouseArea {
-          anchors.fill: parent
-          enabled: row.canMode && row.on && !row.locked
-          cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
-          hoverEnabled: true
-          onEntered: page.cc.hint = "Click to change what it shows: icon and number, icon only, or number only."
-          onExited: page.cc.hint = ""
-          onClicked: page.act.cycleContent(row.wid)
-        }
+    // line one: the whole name, with all the room there is
+    Text {
+      x: 68
+      y: 9
+      width: parent.width - 76
+      elide: Text.ElideRight
+      text: row.info ? row.info.name : row.wid
+      color: page.bone
+      opacity: row.on ? 1 : 0.55
+      font.family: "Noto Serif"
+      font.pixelSize: 13
+      font.weight: Font.DemiBold
+    }
+    // line two, on the left: what it shows (a plain link-like chip for the widgets that have a reading)
+    Text {
+      x: 24
+      y: 40
+      width: parent.width - arrows.width - 34
+      elide: Text.ElideRight
+      text: row.locked ? "Always on" : (row.canMode && row.on ? page.modeNames[row.mode] + "  ↻" : (row.on ? "On" : "Off"))
+      color: row.canMode && row.on && !row.locked ? page.pal.lit : page.bone
+      opacity: row.canMode && row.on && !row.locked ? 0.95 : 0.45
+      font.family: "Noto Serif"
+      font.pixelSize: 10
+      MouseArea {
+        anchors.fill: parent
+        enabled: row.canMode && row.on && !row.locked
+        cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
+        hoverEnabled: true
+        onEntered: page.cc.hint = "Click to change what it shows: icon and number, icon only, or number only."
+        onExited: page.cc.hint = ""
+        onClicked: page.act.cycleContent(row.wid)
       }
     }
 
     Row {
       id: arrows
-      anchors.verticalCenter: parent.verticalCenter
+      anchors.bottom: parent.bottom
+      anchors.bottomMargin: 6
       anchors.right: parent.right
       anchors.rightMargin: 6
       spacing: 0

@@ -48,7 +48,8 @@ Goal: put the clock on the left, hide the disk.
 
 1. **Icons → Your bar** (open by default). You see three columns: **Left**, **Centre**, **Right**. Top to bottom is the
    order along the bar.
-2. **Hide the disk:** find *Disk* and click its **switch**. It turns off and keeps its place; switch it back on any time.
+2. **Move anything anywhere:** hold a widget's grip (**⋮⋮**) and drag it to the place you want, in any column; a line shows where it will land.
+   The arrows below do the same in small steps. **Hide the disk:** find *Disk* and click its **switch**. It turns off and keeps its place; switch it back on any time.
 3. **Move the clock:** find *Clock* and use the arrows on its row. **◀** sends it to the column on its left (from the
    centre to the left side), **▶** to the column on its right, **▲ ▼** move it one place along its column.
 4. Widgets that show a number have a line *Shows: Icon + text ↻*. Click it to cycle *icon and number → icon only → number

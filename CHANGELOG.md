@@ -15,6 +15,7 @@
   `toggle`).
 
 **Icons and the bar**
+- **Customising the bar:** drag a widget by its grip to any place in any column of Icons > Your bar (a line shows the drop). The rows show the whole widget name (in the narrow columns it was cut to one or two letters), and the ▲ ▼ arrows now trade places with the next widget you can see (they used to trade with the engine's hidden slots, so they often seemed to do nothing).
 - **Hover:** every icon gets a halo of the accent and a gesture that fits it (bell rings, chip beats, disk turns, volume dances,
   network beeps); the weather shows the sky (rain falls, lightning, rising heat, snow, mist). Follows the Motion setting.
 - New emblems: a clock (with a real second hand), a signal and a telephone with a coiled cord; all emblems move while their popup is

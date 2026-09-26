@@ -105,15 +105,34 @@ Item {
     return ""
   }
 
-  // One step along its own side: trades places with the widget next to it. dir is -1 (earlier) or +1 (later).
+  // One step along its own side: trades places with the next widget of ours beside it. dir is -1 (earlier) or +1 (later).
+  // The slots between hold blanks and the engine's own hidden widgets (G1, G2...), which are never drawn: trading with one
+  // of those changed nothing on the bar, so the arrows seemed to do nothing. Only a widget you can see counts.
   function nudgeWidget(id, dir) {
     var s = slotsNow(), region = regionOf(id)
     if (!s || region === "" || !layout) return false
     var slots = s[region], at = slots.indexOf("G:" + id)
     for (var i = at + dir; i >= 0 && i < slots.length; i += dir) {
-      if (String(slots[i]) !== "") return layout.swapGroups("G:" + id, String(slots[i]))
+      if (String(slots[i]).indexOf("G:") === 0) return layout.swapGroups("G:" + id, String(slots[i]))
     }
     return false
+  }
+
+  // Put a widget in any column at any place: `index` counts the widgets of ours that are there (not counting this one),
+  // so 0 is the first on that side and a number past the last puts it at the end. This is what dragging uses.
+  function moveWidgetTo(id, region, index) {
+    var s = slotsNow()
+    if (!s || !layout || !s[region]) return false
+    var slots = s[region], seen = []
+    for (var i = 0; i < slots.length; i++) {
+      var g = String(slots[i])
+      if (g.indexOf("G:") === 0 && g !== "G:" + id) seen.push(i)
+    }
+    var at
+    if (index <= 0) at = seen.length ? seen[0] : slots.length
+    else if (index >= seen.length) at = seen.length ? seen[seen.length - 1] + 1 : slots.length
+    else at = seen[index]
+    return layout.insertGroupAt("G:" + id, region, at)
   }
 
   // To the next side: from the left it enters the centre at its start, from the right it enters at its end.
