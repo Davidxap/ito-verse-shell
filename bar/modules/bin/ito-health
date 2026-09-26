@@ -383,6 +383,12 @@ def all_checks():
     mark = str(style.get("menuMark", ""))
     if mark.startswith("custom:") and not norm(cache / (mark[7:] + ".png")):
         gone.append("the menu mark is your picture but it cannot be found")
+    try:
+        empties = sorted(f.name for f in cache.glob("*.png") if f.stat().st_size == 0)
+    except OSError:
+        empties = []
+    if empties:                                    # a copy cut short while it was written; the bar cannot decode it
+        gone.append("an adapted picture is empty (" + ", ".join(empties) + ")")
     out.append(check("pictures", "Your pictures", not gone, "Everything you chose of your own is in place.",
                      "; ".join(gone).capitalize() + ".",
                      why="Something you selected points at a picture that is not there, so it shows blank or nothing.",

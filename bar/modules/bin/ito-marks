@@ -205,10 +205,13 @@ def ensure(src: Path, **opts) -> Path:
         saved.write_text(json.dumps(opts))
     elif saved.exists():
         opts = {k: (tuple(v) if k == "crop" and v else v) for k, v in json.loads(saved.read_text()).items()}
-    fresh = dst.exists() and dst.stat().st_mtime >= src.stat().st_mtime
+    # An empty copy (a write that was cut short) is not a copy: it used to count as fresh for ever.
+    fresh = dst.exists() and dst.stat().st_size > 0 and dst.stat().st_mtime >= src.stat().st_mtime
     if forced or not fresh:
         CACHE.mkdir(parents=True, exist_ok=True)
-        adapt(src, **opts).save(dst)
+        tmp = dst.with_name(dst.name + ".tmp")
+        adapt(src, **opts).save(tmp, format="PNG")                # written whole, then moved into place
+        tmp.replace(dst)
     return dst
 
 
