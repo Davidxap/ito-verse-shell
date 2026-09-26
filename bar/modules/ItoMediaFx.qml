@@ -165,7 +165,7 @@ Item {
       return target * eased
     }
 
-    // "Eyes" is the inked eye out of the Uzumaki panel; "Angel" is the fine-line eye of the emblem (a ring and a dot in an
+    // "Eyes" is an original watching eye with a spiral pupil (scripts/eyeart.py); "Angel" is the fine-line eye of the emblem (a ring and a dot in an
     // almond). Both are sprites (scripts/gen-eyefx.py), only made to move: a blink is the lid coming down (the picture
     // squashed from top and bottom), a look is a small sideways start and stop, and when the music surges some
     // of them turn bloodshot.

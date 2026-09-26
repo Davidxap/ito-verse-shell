@@ -133,7 +133,7 @@ def _panel(name, width):
 
 
 def eyes():
-    """Three of the Uzumaki panel's eyes, stacked and watching, the middle one bloodshot, thin blood lines between."""
+    """Three watching eyes with spiral pupils, stacked, the middle one bloodshot, thin blood lines between."""
     img = canvas()
     ys = (130, 320, 510)
     for (name, w), cy in zip((("eyes", 600), ("eyes-red", 540), ("eyes", 480)), ys):

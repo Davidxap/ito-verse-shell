@@ -1,4 +1,4 @@
-"""An eye drawn in code: the stand-in gen-eyefx.py uses when the Uzumaki panel is not on this machine.
+"""Eyes drawn in code. watcher() is the eye the "Eyes" effect and decoration use; remina() is the planet-eye of the Remina mark.
 
   remina  the eye of the planet on the Remina mark: a flat white almond, a red iris ringed in ink, a black slit
           pupil, one small highlight. Same geometry as gen-marks.py remina().
@@ -66,3 +66,66 @@ def remina(size: int, iris=BLOOD, veins=False, open_: float = 1.0, glow=False) -
     d = ImageDraw.Draw(img)
     d.line(shape + [shape[0]], fill=INK + (255,), width=max(3, int(W * 0.03)), joint="curve")
     return img.resize((size, size), Image.LANCZOS)
+
+
+def watcher(width: int = 640, red: bool = False) -> Image.Image:
+    """An eye that watches, drawn from scratch: a wide almond with a heavy upper lid and its crease, lashes, hatching
+    under the lid, a ringed iris with a spiral for a pupil and one highlight. `red` is the bloodshot twin: blood
+    in the iris and veins running in from both corners. 2.6 : 1, the shape ItoMediaFx and the seal decoration expect.
+    Original artwork (no reference image is used), so it can ship with the repository."""
+    import math
+    k = SS
+    W, H = width * k, round(width / 2.6) * k
+    img = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    cx, cy = W / 2, H / 2
+    ink = INK + (255,)
+    bone = BONE + (255,)
+    accent = (BLOOD if red else BONE) + (255,)
+    lw = max(2, round(W * 0.011))
+
+    left, right = (W * 0.04, cy + H * 0.04), (W * 0.96, cy - H * 0.02)
+    top = bez(left, (W * 0.24, -H * 0.02), (W * 0.72, H * 0.02), right, 80)
+    low = bez(right, (W * 0.72, H * 1.04), (W * 0.26, H * 1.0), left, 80)
+    shape = top + low
+    d.polygon(shape, fill=(232, 234, 236, 255) if not red else (226, 214, 214, 255))
+
+    # hatching under the upper lid: the shade the lid throws on the eye
+    for i in range(26):
+        t = 0.08 + 0.84 * i / 25
+        px, py = top[round(t * 80)]
+        ln = H * (0.10 + 0.07 * math.sin(t * math.pi))
+        d.line([(px, py + lw), (px + (cx - px) * 0.05, py + ln)], fill=(20, 22, 26, 200), width=max(1, lw // 2))
+
+    # iris, ringed, with the spiral
+    r = H * 0.29
+    d.ellipse((cx - r, cy - r, cx + r, cy + r), fill=ink)
+    d.ellipse((cx - r, cy - r, cx + r, cy + r), outline=accent, width=lw)
+    pts = []
+    a = 0.0
+    while a < 3.4 * 2 * math.pi:
+        rr = r * 0.08 + a * r * 0.043
+        pts.append((cx + math.cos(a) * rr, cy + math.sin(a) * rr))
+        a += 0.12
+    d.line(pts, fill=accent, width=max(2, lw // 2 + 1), joint="curve")
+    d.ellipse((cx - r * 0.42, cy - r * 0.62, cx - r * 0.2, cy - r * 0.4), fill=bone)
+
+    # the lids: a firm line, a second one above it, lashes at the outer corner
+    d.line(top, fill=ink, width=lw * 2, joint="curve")
+    d.line(low, fill=ink, width=lw + 2, joint="curve")
+    crease = [(x, y - H * 0.1 * math.sin((i / 80) * math.pi)) for i, (x, y) in enumerate(top)]
+    d.line(crease[8:-8], fill=ink, width=max(2, lw - 1), joint="curve")
+    for i in range(7):
+        t = 0.62 + 0.05 * i
+        px, py = top[round(t * 80)]
+        d.line([(px, py), (px + W * 0.02 * (i + 1) * 0.5, py - H * (0.14 + 0.02 * i))], fill=ink, width=max(2, lw - 1))
+
+    if red:
+        for sx, sgn in ((left, 1), (right, -1)):
+            for j in range(5):
+                y0 = sx[1] + (j - 2) * H * 0.035
+                ex = sx[0] + sgn * W * (0.14 + 0.03 * j)
+                ey = cy + (j - 2) * H * 0.06
+                d.line([(sx[0] + sgn * W * 0.02, y0), ((sx[0] + ex) / 2, (y0 + ey) / 2 + H * 0.02 * (j % 2 * 2 - 1)), (ex, ey)],
+                       fill=BLOOD + (200,), width=max(1, lw // 2))
+    return img.resize((W // k, H // k), Image.LANCZOS)

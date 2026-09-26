@@ -85,7 +85,7 @@ var decorations = [
   { key: "curls", wide: 1.25,    art: "decor/curls.png",      name: "Curls",    note: "Two Uzumaki spirals on one stem." },
   { key: "hair", wide: 1.3,     art: "decor/hair.png",       name: "Hair",     note: "Long strands of black hair, one caught in a curl." },
   { key: "drips", wide: 1.05,    art: "decor/drips.png",      name: "Drips",    note: "Blood running down in three trails that end in drops." },
-  { key: "eyes", wide: 1.6,     art: "decor/eyes.png",       name: "Eyes",     note: "Three eyes from the Uzumaki panel, stacked and watching; the middle one bloodshot." },
+  { key: "eyes", wide: 1.6,     art: "decor/eyes.png",       name: "Eyes",     note: "Three eyes with spiral pupils, stacked and watching; the middle one bloodshot." },
   { key: "cracks", wide: 1.3,   art: "decor/cracks.png",     name: "Cracks",   note: "A crack through the plate, branching, with blood in it." },
   { key: "stitches", wide: 1.15, art: "decor/stitches.png",   name: "Stitches", note: "A seam sewn shut, one drop coming through." },
   { key: "holes", wide: 1.2,    art: "decor/holes.png",      name: "Holes",    note: "The Amigara Fault's holes, bored straight through, a rim of blood on some." },

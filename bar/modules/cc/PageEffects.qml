@@ -233,7 +233,7 @@ ColumnLayout {
         model: [
           { "key": "blood",  "name": "Blood",  "note": "A slosh of blood that rises and falls with a beat." },
           { "key": "spiral", "name": "Spiral", "note": "The Uzumaki spiral, turning." },
-          { "key": "eyes",   "name": "Eye",    "note": "One inked eye from the Uzumaki panel, opening and shutting, watching you; bloodshot when the music surges." },
+          { "key": "eyes",   "name": "Eye",    "note": "One inked eye with a spiral pupil, opening and shutting, watching you; bloodshot when the music surges." },
           { "key": "fog",    "name": "Fog",    "note": "Silent Hill's fog drifting past, with its red sun." },
           { "key": "static", "name": "Static", "note": "The pocket radio's static, hissing and tearing." },
           { "key": "custom", "name": "Your own", "note": "Your own picture or GIF, moving behind the buttons. Click to choose the file; click again to use it." }
