@@ -8,6 +8,7 @@ import QtQuick.Shapes
 //   waves      sound               web        the network
 //   rune       Bluetooth           flame      power
 //   hourglass  time                bell       notifications
+//   mind       AI usage
 //   sun moon cloud rain storm snow fog   the sky
 //
 // Everything is vector (Shapes, curve renderer), so it stays sharp at any size and screen scale, and it takes the
@@ -293,6 +294,42 @@ Item {
     ShapePath {
       strokeColor: root.line; strokeWidth: 1.2; fillColor: "transparent"; capStyle: ShapePath.RoundCap
       PathPolyline { path: [root.pt(0, -11), root.pt(0, -13.5)] }
+    }
+  }
+
+  // ---------------------------------------------------------------- mind: AI usage
+  Shape {
+    anchors.fill: parent
+    preferredRendererType: Shape.CurveRenderer
+    antialiasing: true
+    visible: root.kind === "mind"
+    // the two halves
+    ShapePath {
+      strokeColor: root.line; strokeWidth: 1.4; fillColor: "transparent"; joinStyle: ShapePath.RoundJoin
+      startX: root.cx; startY: root.cy - 10 * root.u
+      PathCubic { x: root.cx - 12 * root.u; y: root.cy - 1 * root.u; control1X: root.cx - 8 * root.u; control1Y: root.cy - 12 * root.u; control2X: root.cx - 14 * root.u; control2Y: root.cy - 8 * root.u }
+      PathCubic { x: root.cx; y: root.cy + 10 * root.u; control1X: root.cx - 11 * root.u; control1Y: root.cy + 8 * root.u; control2X: root.cx - 5 * root.u; control2Y: root.cy + 11 * root.u }
+    }
+    ShapePath {
+      strokeColor: root.line; strokeWidth: 1.4; fillColor: "transparent"; joinStyle: ShapePath.RoundJoin
+      startX: root.cx; startY: root.cy - 10 * root.u
+      PathCubic { x: root.cx + 12 * root.u; y: root.cy - 1 * root.u; control1X: root.cx + 8 * root.u; control1Y: root.cy - 12 * root.u; control2X: root.cx + 14 * root.u; control2Y: root.cy - 8 * root.u }
+      PathCubic { x: root.cx; y: root.cy + 10 * root.u; control1X: root.cx + 11 * root.u; control1Y: root.cy + 8 * root.u; control2X: root.cx + 5 * root.u; control2Y: root.cy + 11 * root.u }
+    }
+    // folds
+    ShapePath {
+      strokeColor: root.soft; strokeWidth: 1; fillColor: "transparent"; capStyle: ShapePath.RoundCap
+      PathPolyline { path: [root.pt(-3, -6), root.pt(-7, -3), root.pt(-4, 0), root.pt(-8, 3)] }
+    }
+    ShapePath {
+      strokeColor: root.soft; strokeWidth: 1; fillColor: "transparent"; capStyle: ShapePath.RoundCap
+      PathPolyline { path: [root.pt(3, -6), root.pt(7, -3), root.pt(4, 0), root.pt(8, 3)] }
+    }
+    // the one thing awake in it
+    ShapePath {
+      strokeColor: root.blood; strokeWidth: 1; fillColor: root.blood
+      startX: root.cx + 1.8 * root.u; startY: root.cy + 2 * root.u
+      PathAngleArc { centerX: root.cx; centerY: root.cy + 2 * root.u; radiusX: 1.8 * root.u; radiusY: 1.8 * root.u; startAngle: 0; sweepAngle: 360 }
     }
   }
 

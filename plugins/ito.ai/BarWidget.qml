@@ -136,16 +136,33 @@ Ui.BarWidget {
   }
 
   // ------------------------------------------------------------------ the panel
+  // `omarchy-shell ito.aiusage toggle` (also open, close) for a keybinding.
+  IpcHandler {
+    target: "ito.aiusage"
+    function open(): void { root.popupOpen = true; root.reload(false) }
+    function close(): void { root.popupOpen = false }
+    function toggle(): void { root.popupOpen = !root.popupOpen; if (root.popupOpen) root.reload(false) }
+  }
+
+  // At the corner of the screen nearest the bar, whichever edge the bar is on.
   PanelWindow {
     id: panel
+
+    readonly property string pos: root.bar && root.bar.position ? String(root.bar.position) : "top"
+    readonly property int edge: (root.bar ? root.bar.barSize : 46) + 8
+
     visible: root.popupOpen
-    anchors.top: true
-    anchors.right: true
-    margins.top: (root.bar ? root.bar.barSize : 46) + 8
-    margins.right: 12
+    anchors.top: pos !== "bottom"
+    anchors.bottom: pos === "bottom"
+    anchors.right: pos !== "left"
+    anchors.left: pos === "left"
+    margins.top: pos === "top" ? edge : 12
+    margins.bottom: pos === "bottom" ? edge : 0
+    margins.right: pos === "right" ? edge : 12
+    margins.left: pos === "left" ? edge : 0
     exclusiveZone: 0
-    implicitWidth: column.width + 36
-    implicitHeight: column.implicitHeight + 32
+    implicitWidth: card.width + 24
+    implicitHeight: card.height + 24
     color: "transparent"
 
     HoverHandler { id: panelHover }
@@ -156,276 +173,277 @@ Ui.BarWidget {
       onExpired: root.popupOpen = false
     }
 
-    Ito.ItoPlate {
-      palette: cfg
-      anchors.fill: parent
-      radius: 14
-      artBase: root.art
-      veins: 0
-      calm: 0
-      grain: 0.10
-      tone: 0
-      border: false
-    }
+    Item {
+      id: card
+      x: 12
+      y: 12
+      // narrower where the screen is (a side bar leaves less room)
+      width: Math.min(508, (panel.screen ? panel.screen.width : 1920) - panel.edge - 36)
+      height: column.implicitHeight + cfg.panelHeadroom + cfg.panelFootroom + 44
 
-    Rectangle {
-      anchors.fill: parent
-      radius: 14
-      color: "transparent"
-      border.width: 1
-      border.color: Qt.rgba(cfg.blood.r, cfg.blood.g, cfg.blood.b, 0.45)
-    }
+      Ito.ItoPanelFrame {
+        cfg: cfg; target: card; emblem: "mind"; opened: root.popupOpen
+        memos: ["The numbers keep climbing.", "Every answer asks another question.", "It thinks in circles.",
+                "Something is counting what you spend.", "The meter turns. So does the spiral."]
+      }
+      Ito.ItoEnter {
+        opened: root.popupOpen
+        amp: cfg.motionAmp
+        origin: panel.pos === "bottom" ? Item.Bottom : Item.Top
+      }
 
-    ColumnLayout {
-      id: column
-      anchors.centerIn: parent
-      width: 460
-      spacing: 12
-
-      // ---------------------------------------------------------------- hero
-      RowLayout {
-        Layout.fillWidth: true
+      ColumnLayout {
+        id: column
+        x: 24
+        y: 22 + cfg.panelHeadroom
+        width: card.width - 48
         spacing: 12
 
-        Ito.ItoFillArt {
-          art: root.art + root.aiArt
-          inside: root.art + root.aiFill
-          size: 64
-          value: Math.max(0, root.pct)
-          palette: cfg
-        }
-
-        ColumnLayout {
+        // ---------------------------------------------------------------- hero
+        RowLayout {
           Layout.fillWidth: true
-          spacing: 1
+          spacing: 12
 
-          Text {
-            text: "AI USAGE"
-            color: cfg.bone
-            font.family: "Noto Serif"
-            font.pixelSize: 12
-            font.weight: Font.DemiBold
-            font.letterSpacing: 3
+          Ito.ItoFillArt {
+            art: root.art + root.aiArt
+            inside: root.art + root.aiFill
+            size: 64
+            value: Math.max(0, root.pct)
+            palette: cfg
           }
 
-          Text {
+          ColumnLayout {
             Layout.fillWidth: true
-            text: root.pct >= 0 ? root.tightest : "No provider is reporting a limit."
-            color: cfg.bone
-            opacity: 0.58
-            font.family: "Noto Serif"
-            font.pixelSize: 11
-            elide: Text.ElideRight
-          }
-        }
-
-        Text {
-          text: root.pct >= 0 ? Math.round(root.pct * 100) + "%" : "—"
-          color: root.pct > 0.85 ? cfg.lit : cfg.bone
-          font.family: "Noto Serif"
-          font.pixelSize: 30
-          font.weight: Font.Light
-        }
-      }
-
-      // ---------------------------------------------------------------- providers
-      Repeater {
-        model: root.providers
-
-        ColumnLayout {
-          required property var modelData
-          Layout.fillWidth: true
-          spacing: 5
-
-          Rectangle { Layout.fillWidth: true; height: 1; color: cfg.blood; opacity: 0.3 }
-
-          RowLayout {
-            Layout.fillWidth: true
-            spacing: 8
+            spacing: 1
 
             Text {
-              text: modelData.name
+              text: "AI USAGE"
               color: cfg.bone
               font.family: "Noto Serif"
-              font.pixelSize: 13
+              font.pixelSize: 12
+              font.weight: Font.DemiBold
+              font.letterSpacing: 3
             }
 
             Text {
-              visible: modelData.plan !== ""
-              text: modelData.plan
-              color: cfg.blood
-              opacity: 0.85
+              Layout.fillWidth: true
+              text: root.pct >= 0 ? root.tightest : "No provider is reporting a limit."
+              color: cfg.bone
+              opacity: 0.58
               font.family: "Noto Serif"
               font.pixelSize: 11
-            }
-
-            Item { Layout.fillWidth: true }
-
-            // how old the reading is: a number nobody can trust should say so
-            Text {
-              text: modelData.fresh ? (modelData.todayLabel !== "" ? modelData.todayLabel + " today" : "")
-                : "read " + modelData.ageMinutes + " min ago"
-              color: modelData.fresh ? cfg.bone : cfg.blood
-              opacity: modelData.fresh ? 0.55 : 0.9
-              font.family: "Noto Serif"
-              font.pixelSize: 11
+              elide: Text.ElideRight
             }
           }
-
-          // the quotas, if this provider has any
-          Repeater {
-            model: modelData.quota ? modelData.limits : []
-
-            RowLayout {
-              required property var modelData
-              Layout.fillWidth: true
-              spacing: 8
-
-              Text {
-                Layout.preferredWidth: 112
-                text: modelData.label
-                color: cfg.bone
-                opacity: 0.7
-                font.family: "Noto Serif"
-                font.pixelSize: 11
-                elide: Text.ElideRight
-              }
-
-              Rectangle {
-                Layout.fillWidth: true
-                height: 6
-                radius: 3
-                color: Qt.rgba(cfg.bone.r, cfg.bone.g, cfg.bone.b, 0.14)
-
-                Rectangle {
-                  anchors.left: parent.left
-                  anchors.verticalCenter: parent.verticalCenter
-                  width: Math.max(2, parent.width * modelData.pct)
-                  height: parent.height
-                  radius: parent.radius
-                  color: modelData.pct > 0.85 ? cfg.lit : cfg.blood
-                  Behavior on width { NumberAnimation { duration: 260; easing.type: Easing.OutCubic } }
-                }
-              }
-
-              Text {
-                Layout.preferredWidth: 38
-                horizontalAlignment: Text.AlignRight
-                text: Math.round(modelData.pct * 100) + "%"
-                color: cfg.bone
-                font.family: "Noto Serif"
-                font.pixelSize: 11
-              }
-
-              Text {
-                Layout.preferredWidth: 58
-                horizontalAlignment: Text.AlignRight
-                text: modelData.minutes === null || modelData.minutes === undefined ? ""
-                  : modelData.minutes < 60 ? modelData.minutes + " min"
-                  : modelData.minutes < 2880 ? Math.round(modelData.minutes / 60) + " h"
-                  : Math.round(modelData.minutes / 1440) + " d"
-                color: cfg.bone
-                opacity: 0.45
-                font.family: "Noto Serif"
-                font.pixelSize: 11
-              }
-            }
-          }
-
-          // what each model has eaten: the part a limit never shows
-          Repeater {
-            model: modelData.models
-
-            RowLayout {
-              required property var modelData
-              Layout.fillWidth: true
-              spacing: 8
-
-              Text {
-                Layout.preferredWidth: 170
-                text: modelData.name
-                color: cfg.bone
-                opacity: 0.75
-                font.family: "Noto Serif"
-                font.pixelSize: 11
-                elide: Text.ElideRight
-              }
-
-              Rectangle {
-                Layout.fillWidth: true
-                height: 4
-                radius: 2
-                color: Qt.rgba(cfg.bone.r, cfg.bone.g, cfg.bone.b, 0.12)
-
-                Rectangle {
-                  anchors.left: parent.left
-                  anchors.verticalCenter: parent.verticalCenter
-                  width: Math.max(2, parent.width * Math.max(0.02, modelData.pct))
-                  height: parent.height
-                  radius: parent.radius
-                  color: cfg.blood
-                  opacity: 0.75
-                }
-              }
-
-              Text {
-                Layout.preferredWidth: 60
-                horizontalAlignment: Text.AlignRight
-                text: modelData.label
-                color: cfg.bone
-                opacity: 0.8
-                font.family: "Noto Serif"
-                font.pixelSize: 11
-              }
-
-              Text {
-                Layout.preferredWidth: 58
-                horizontalAlignment: Text.AlignRight
-                text: modelData.today !== "" ? modelData.today + " today" : ""
-                color: cfg.bone
-                opacity: 0.45
-                font.family: "Noto Serif"
-                font.pixelSize: 10
-              }
-            }
-          }
-        }
-      }
-
-      // ---------------------------------------------------------------- footer
-      RowLayout {
-        Layout.fillWidth: true
-        Layout.topMargin: 2
-
-        Text {
-          text: root.report.at !== "" ? "read at " + root.report.at : ""
-          color: cfg.bone
-          opacity: 0.4
-          font.family: "Noto Serif"
-          font.pixelSize: 10
-        }
-
-        Item { Layout.fillWidth: true }
-
-        Rectangle {
-          Layout.preferredWidth: 96
-          Layout.preferredHeight: 28
-          radius: 14
-          color: refreshHover.hovered ? Qt.rgba(cfg.blood.r, cfg.blood.g, cfg.blood.b, 0.3) : "transparent"
-          border.width: 1
-          border.color: Qt.rgba(cfg.bone.r, cfg.bone.g, cfg.bone.b, 0.25)
-          Behavior on color { ColorAnimation { duration: 120 } }
 
           Text {
-            anchors.centerIn: parent
-            text: probe.running ? "reading…" : "Refresh"
-            color: cfg.bone
+            text: root.pct >= 0 ? Math.round(root.pct * 100) + "%" : "—"
+            color: root.pct > 0.85 ? cfg.lit : cfg.bone
             font.family: "Noto Serif"
-            font.pixelSize: 11
+            font.pixelSize: 30
+            font.weight: Font.Light
+          }
+        }
+
+        // ---------------------------------------------------------------- providers
+        Repeater {
+          model: root.providers
+
+          ColumnLayout {
+            required property var modelData
+            Layout.fillWidth: true
+            spacing: 5
+
+            Rectangle { Layout.fillWidth: true; height: 1; color: cfg.blood; opacity: 0.3 }
+
+            RowLayout {
+              Layout.fillWidth: true
+              spacing: 8
+
+              Text {
+                text: modelData.name
+                color: cfg.bone
+                font.family: "Noto Serif"
+                font.pixelSize: 13
+              }
+
+              Text {
+                visible: modelData.plan !== ""
+                text: modelData.plan
+                color: cfg.blood
+                opacity: 0.85
+                font.family: "Noto Serif"
+                font.pixelSize: 11
+              }
+
+              Item { Layout.fillWidth: true }
+
+              // how old the reading is: a number nobody can trust should say so
+              Text {
+                text: modelData.fresh ? (modelData.todayLabel !== "" ? modelData.todayLabel + " today" : "")
+                  : "read " + modelData.ageMinutes + " min ago"
+                color: modelData.fresh ? cfg.bone : cfg.blood
+                opacity: modelData.fresh ? 0.55 : 0.9
+                font.family: "Noto Serif"
+                font.pixelSize: 11
+              }
+            }
+
+            // the quotas, if this provider has any
+            Repeater {
+              model: modelData.quota ? modelData.limits : []
+
+              RowLayout {
+                required property var modelData
+                Layout.fillWidth: true
+                spacing: 8
+
+                Text {
+                  Layout.preferredWidth: 112
+                  text: modelData.label
+                  color: cfg.bone
+                  opacity: 0.7
+                  font.family: "Noto Serif"
+                  font.pixelSize: 11
+                  elide: Text.ElideRight
+                }
+
+                Rectangle {
+                  Layout.fillWidth: true
+                  height: 6
+                  radius: 3
+                  color: Qt.rgba(cfg.bone.r, cfg.bone.g, cfg.bone.b, 0.14)
+
+                  Rectangle {
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: Math.max(2, parent.width * modelData.pct)
+                    height: parent.height
+                    radius: parent.radius
+                    color: modelData.pct > 0.85 ? cfg.lit : cfg.blood
+                    Behavior on width { NumberAnimation { duration: 260; easing.type: Easing.OutCubic } }
+                  }
+                }
+
+                Text {
+                  Layout.preferredWidth: 38
+                  horizontalAlignment: Text.AlignRight
+                  text: Math.round(modelData.pct * 100) + "%"
+                  color: cfg.bone
+                  font.family: "Noto Serif"
+                  font.pixelSize: 11
+                }
+
+                Text {
+                  Layout.preferredWidth: 58
+                  horizontalAlignment: Text.AlignRight
+                  text: modelData.minutes === null || modelData.minutes === undefined ? ""
+                    : modelData.minutes < 60 ? modelData.minutes + " min"
+                    : modelData.minutes < 2880 ? Math.round(modelData.minutes / 60) + " h"
+                    : Math.round(modelData.minutes / 1440) + " d"
+                  color: cfg.bone
+                  opacity: 0.45
+                  font.family: "Noto Serif"
+                  font.pixelSize: 11
+                }
+              }
+            }
+
+            // what each model has eaten: the part a limit never shows
+            Repeater {
+              model: modelData.models
+
+              RowLayout {
+                required property var modelData
+                Layout.fillWidth: true
+                spacing: 8
+
+                Text {
+                  Layout.preferredWidth: 170
+                  text: modelData.name
+                  color: cfg.bone
+                  opacity: 0.75
+                  font.family: "Noto Serif"
+                  font.pixelSize: 11
+                  elide: Text.ElideRight
+                }
+
+                Rectangle {
+                  Layout.fillWidth: true
+                  height: 4
+                  radius: 2
+                  color: Qt.rgba(cfg.bone.r, cfg.bone.g, cfg.bone.b, 0.12)
+
+                  Rectangle {
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: Math.max(2, parent.width * Math.max(0.02, modelData.pct))
+                    height: parent.height
+                    radius: parent.radius
+                    color: cfg.blood
+                    opacity: 0.75
+                  }
+                }
+
+                Text {
+                  Layout.preferredWidth: 60
+                  horizontalAlignment: Text.AlignRight
+                  text: modelData.label
+                  color: cfg.bone
+                  opacity: 0.8
+                  font.family: "Noto Serif"
+                  font.pixelSize: 11
+                }
+
+                Text {
+                  Layout.preferredWidth: 58
+                  horizontalAlignment: Text.AlignRight
+                  text: modelData.today !== "" ? modelData.today + " today" : ""
+                  color: cfg.bone
+                  opacity: 0.45
+                  font.family: "Noto Serif"
+                  font.pixelSize: 10
+                }
+              }
+            }
+          }
+        }
+
+        // ---------------------------------------------------------------- footer
+        RowLayout {
+          Layout.fillWidth: true
+          Layout.topMargin: 2
+
+          Text {
+            text: root.report.at !== "" ? "read at " + root.report.at : ""
+            color: cfg.bone
+            opacity: 0.4
+            font.family: "Noto Serif"
+            font.pixelSize: 10
           }
 
-          HoverHandler { id: refreshHover; cursorShape: Qt.PointingHandCursor }
-          TapHandler { onTapped: root.reload(true) }
+          Item { Layout.fillWidth: true }
+
+          Rectangle {
+            Layout.preferredWidth: 96
+            Layout.preferredHeight: 28
+            radius: 14
+            color: refreshHover.hovered ? Qt.rgba(cfg.blood.r, cfg.blood.g, cfg.blood.b, 0.3) : "transparent"
+            border.width: 1
+            border.color: Qt.rgba(cfg.bone.r, cfg.bone.g, cfg.bone.b, 0.25)
+            Behavior on color { ColorAnimation { duration: 120 } }
+
+            Text {
+              anchors.centerIn: parent
+              text: probe.running ? "reading…" : "Refresh"
+              color: cfg.bone
+              font.family: "Noto Serif"
+              font.pixelSize: 11
+            }
+
+            HoverHandler { id: refreshHover; cursorShape: Qt.PointingHandCursor }
+            TapHandler { onTapped: root.reload(true) }
+          }
         }
       }
     }
