@@ -18,7 +18,7 @@ The second beta: popups drawn as manga panels, icons that answer the pointer, a 
 
 **Popups**
 - Every popup is drawn as a manga panel: ruled double edge, torn corners, blood and screentone, a burst of static as it opens,
-  an emblem for what it watches (waves, web, rune, flame, hourglass, spiral, bell, mind, the sky) and a note at the foot chosen
+  an emblem for what it watches (waves, signal, rune, flame, clock, spiral, telephone, mind, the sky) and a note at the foot chosen
   from several original lines. Switch: Bars > "Manga frame on popups".
 - New: a **media player** (cover, title, seekable progress, shuffle, repeat, controls; right-click the media rings), a
   **notification history** (right-click the bell), and a redesigned **calendar**, **forecast** and **AI usage** panel.
@@ -40,6 +40,9 @@ The second beta: popups drawn as manga panels, icons that answer the pointer, a 
 - **AI usage:** a limit whose window has reset now reads 0% and asks for a fresh reading, instead of showing the old 100% until the timer runs.
 - **Popups** never fall below 124 px: the bar engine rewrote shorter ones without end. Fixed: an empty adapted picture (a write cut short) is rebuilt.
 - Health notices a moving wallpaper behind a see-through plate (it reads as shimmering) and offers a solid plate.
+
+- **Media effects:** the Spiral is fitted so the whole spiral shows; the Eye can use your own picture. The muted-volume icon is redrawn.
+- Everything that moves, and every icon that changed, is described in [docs/ANIMATIONS.md](docs/ANIMATIONS.md).
 
 **Motion and cost**
 - **Motion** setting (Effects): off, calm or lively. Popups, labels, the Control Centre and the workspace marks follow it;

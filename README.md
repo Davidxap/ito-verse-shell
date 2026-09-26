@@ -45,7 +45,7 @@ The full-quality video (1080p, 60 fps): [docs/media/tour.mp4](docs/media/tour.mp
 - **Media effects.** Blood, Spiral, Eye, Fog, Static, or your own picture or GIF behind the play buttons.
 - **Popups drawn as manga panels.** Audio, network, Bluetooth, power, display, the calendar, the forecast, the media
   player, notification history and AI usage all open in an inked frame: a ruled double edge, torn corners, a spatter of
-  blood, a burst of static as they open, and a small emblem at the head that says what they watch (sound waves, a web, a
+  blood, a burst of static as they open, and a small emblem at the head that says what they watch (sound waves, a signal, a
   rune, a flame, a clock, a spiral, a telephone, a mind, the sky). One note at the foot, drawn each time from a few
   original lines. They open beside the bar on whichever edge it is on, and shrink to fit the screen.
 - **Icons that answer.** Hover any icon on the bar and a halo of the accent rises behind it, with a gesture that fits what it is:
@@ -68,13 +68,17 @@ The full-quality video (1080p, 60 fps): [docs/media/tour.mp4](docs/media/tour.mp
 
 ## Popups and their emblems
 
-Each popup carries a small drawn sign at its head, in the theme's colours, for what it watches:
+Each popup carries a small drawn sign at its head, in the theme's colours, for what it watches.
 
-![The emblems: eye, waves, web, rune, flame, spiral, hourglass, bell, mind, and the sky](docs/screenshots/popup-emblems.png)
+> The popup screenshots below were taken on the **Blackturq** theme, which is why they are teal (the calendar, on **Nord**, is blue). The shell wears whichever
+> Omarchy theme is installed, so the same popups turn blue on Nord, pink on Banish, and so on: the accent is the theme's, the
+> ink and bone follow its background and foreground (the bar on Nord is shown under [Screenshots](#screenshots)).
+
+![The emblems: eye, waves, signal, rune, flame, spiral, clock, telephone, mind, and the sky](docs/screenshots/popup-emblems.png)
 
 | | |
 |---|---|
-| ![The calendar, with an hourglass](docs/screenshots/popup-calendar.png) | ![The forecast, with the sky for its emblem](docs/screenshots/popup-forecast.png) |
+| ![The calendar, with a clock, on Nord](docs/screenshots/popup-calendar.png) | ![The forecast, with the sky for its emblem](docs/screenshots/popup-forecast.png) |
 
 ![The media player, with a spiral](docs/screenshots/popup-player.png)
 
@@ -94,6 +98,11 @@ Captured on the [Tomie theme](#the-tomie-theme), at native resolution.
 | ![Workspaces](docs/screenshots/cc-workspaces.png) | ![Colors](docs/screenshots/cc-colors.png) |
 | ![Plugins](docs/screenshots/cc-plugins.png) | ![Setup](docs/screenshots/cc-setup.png) |
 | ![Health](docs/screenshots/cc-health.png) | |
+
+The bar as it is arranged now, on the **Nord** theme (each island cut out; the accent, ink and bone are Nord's, which is why it
+is blue where the popup captures above, taken on Blackturq, are teal):
+
+![The bar on Nord](docs/screenshots/bar-nord.png)
 
 The bar itself, top edge, flush against the screen:
 
@@ -173,6 +182,7 @@ Full instructions, updating and uninstalling: [docs/INSTALLATION.md](docs/INSTAL
 |---|---|
 | [docs/USER_GUIDE.md](docs/USER_GUIDE.md) | Every page of the Control Centre, control by control |
 | [docs/TUTORIALS.md](docs/TUTORIALS.md) | Step by step: make it yours, your own pictures and GIFs, move widgets, add a plugin, save a setup, switch shells, get help |
+| [docs/ANIMATIONS.md](docs/ANIMATIONS.md) | Every hover gesture, popup emblem and media effect, and the icons that were redrawn |
 | [docs/CUSTOMIZATION.md](docs/CUSTOMIZATION.md) | Reference: settings, sizes that work, popups, readings, setups |
 | [docs/INSTALLATION.md](docs/INSTALLATION.md) | Requirements, install, update, uninstall |
 | [docs/FAQ.md](docs/FAQ.md) | Short answers to the questions people ask first |

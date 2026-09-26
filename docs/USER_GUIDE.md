@@ -56,7 +56,8 @@ The shape of the bar.
 ## Popups
 
 The popups (audio, network, Bluetooth, power, display, the calendar, the forecast, the media player, the notification history
-and the AI usage panel) share one look and one set of rules:
+and the AI usage panel) share one look and one set of rules. Their colours are the installed theme's: the captures in the README
+were taken on Blackturq, so they are teal; on Nord they are blue, on a light theme they turn to dark ink on paper.
 
 - **The frame.** An inked panel: a ruled double edge, torn corners, a spatter of blood and a screentone patch, a burst of
   static as it opens, an emblem at the head and a short note at the foot. Switch it off with **Bars → Details → Manga frame on
@@ -81,6 +82,12 @@ and the AI usage panel) share one look and one set of rules:
 Every one also answers to `open` and `close`. The media player shows the cover, the title, a progress line you can click to
 seek, shuffle and repeat when the player supports them, and the controls. The notification history lists the last ten
 notifications Omarchy kept, with the Do Not Disturb switch and a way to clear them.
+
+## Animations
+
+Hover an icon and it answers with a halo and a gesture that fits it (the bell rings, the volume dances, the weather plays the sky);
+the popup emblems move while the popup is open. Follows **Effects → Motion**. The full list is in
+[ANIMATIONS.md](ANIMATIONS.md).
 
 ## Icons
 
