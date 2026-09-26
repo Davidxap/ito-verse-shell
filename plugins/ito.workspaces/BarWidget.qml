@@ -220,7 +220,7 @@ Ui.BarWidget {
         fixedHeight: root.vertical ? artItem.height + scaledVerticalPadding * 2 + 2 : root.barSize
 
         Behavior on opacity {
-          NumberAnimation { duration: Motion.normal; easing.type: Easing.BezierSpline; easing.bezierCurve: Motion.soft }
+          NumberAnimation { duration: Math.round(Motion.normal * Math.min(cfg.motionAmp, 1.4)); easing.type: Easing.BezierSpline; easing.bezierCurve: Motion.soft }
         }
 
         onPressed: function() { root.focusWorkspace(modelData) }
@@ -244,7 +244,7 @@ Ui.BarWidget {
 
             // arriving on a workspace, its mark pops out with a little overshoot and settles
             Behavior on scale {
-              NumberAnimation { duration: Motion.slow; easing.type: Easing.BezierSpline; easing.bezierCurve: Motion.spring }
+              NumberAnimation { duration: Math.round(Motion.slow * Math.min(cfg.motionAmp, 1.4)); easing.type: Easing.BezierSpline; easing.bezierCurve: Motion.spring }
             }
           }
         }
