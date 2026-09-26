@@ -126,32 +126,53 @@ Item {
       // Fitted so the whole spiral is inside the strip: it reaches the edges, and is never cut by them.
       var cx = w / 2, cy = h / 2, rx = w * 0.47, ry = h * 0.44
       var spin = root.t * 0.9 + root.surge * 3
+      var S = root.shown
+
+      // a faint ring at the rim, so the round shape reads as complete even where the arms are thin
+      ctx.beginPath()
+      for (var k = 0; k <= 96; k++) {
+        var q = k / 96 * Math.PI * 2
+        var px = cx + Math.cos(q) * rx, py = cy + Math.sin(q) * ry
+        if (k === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py)
+      }
+      ctx.lineWidth = 1
+      ctx.strokeStyle = rgba(root.bone, 0.16 * S)
+      ctx.stroke()
+
+      // three arms; each fades in from the centre and out at the rim, drawn as three pieces of one path
       var arms = [
-        { off: 0, width: 3.0, col: rgba(root.blood, 0.8 * root.shown) },
-        { off: Math.PI, width: 2.2, col: rgba(root.bone, 0.34 * root.shown) },
-        { off: Math.PI * 0.55, width: 1.2, col: rgba(root.bone, 0.16 * root.shown) }
+        { off: 0, width: 2.4, colour: root.blood, alpha: 0.85 },
+        { off: Math.PI, width: 1.8, colour: root.bone, alpha: 0.42 },
+        { off: Math.PI * 0.55, width: 0.9, colour: root.bone, alpha: 0.2 }
       ]
+      var bands = [[0, 0.16, 0.35], [0.16, 0.86, 1], [0.86, 1, 0.55]]     // from, to, share of the arm's alpha
+      var dots = []
       for (var arm = 0; arm < arms.length; arm++) {
-        ctx.beginPath()
-        var growths = []
-        for (var i = 0; i <= 170; i++) {
-          var u = i / 170
-          var wob = Math.sin(u * 19 + arm * 3 + root.t * 1.3) * (1 - u) * 0.05
-          var a = spin + arms[arm].off + u * 4.4 * Math.PI + wob
-          var f = u * (1 + 0.012 * Math.sin(u * 11 - root.t))
-          var x = cx + Math.cos(a) * f * rx
-          var y = cy + Math.sin(a) * f * ry
-          if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y)
-          if (arm === 0 && i > 20 && i % 27 === 0) growths.push([x, y, 1.2 + hash(i + arm) * 1.6])
-        }
-        ctx.lineWidth = arms[arm].width + root.surge * 1.2
-        ctx.strokeStyle = arms[arm].col
-        ctx.stroke()
-        for (var gg = 0; gg < growths.length; gg++) {
-          ctx.beginPath(); ctx.arc(growths[gg][0], growths[gg][1], growths[gg][2], 0, Math.PI * 2)
-          ctx.fillStyle = rgba(root.blood, 0.55 * root.shown); ctx.fill()
+        var A = arms[arm]
+        for (var band = 0; band < bands.length; band++) {
+          ctx.beginPath()
+          var from = Math.floor(bands[band][0] * 170), to = Math.ceil(bands[band][1] * 170)
+          for (var i = from; i <= to; i++) {
+            var u = i / 170
+            var wob = Math.sin(u * 19 + arm * 3 + root.t * 1.3) * (1 - u) * 0.035
+            var a = spin + A.off + u * 4.4 * Math.PI + wob
+            var f = u * (1 + 0.008 * Math.sin(u * 11 - root.t))
+            var x = cx + Math.cos(a) * f * rx, y = cy + Math.sin(a) * f * ry
+            if (i === from) ctx.moveTo(x, y); else ctx.lineTo(x, y)
+            if (arm === 0 && band === 1 && i % 34 === 0) dots.push([x, y, 1 + hash(i) * 1.2])
+          }
+          ctx.lineWidth = A.width + root.surge * 1.0
+          ctx.lineCap = "round"
+          ctx.strokeStyle = rgba(A.colour, A.alpha * bands[band][2] * S)
+          ctx.stroke()
         }
       }
+      // beads of blood along the main arm, and the eye of the storm
+      ctx.fillStyle = rgba(root.blood, 0.6 * S)
+      for (var d = 0; d < dots.length; d++) { ctx.beginPath(); ctx.arc(dots[d][0], dots[d][1], dots[d][2], 0, Math.PI * 2); ctx.fill() }
+      ctx.beginPath(); ctx.arc(cx, cy, 1.8, 0, Math.PI * 2)
+      ctx.fillStyle = rgba(root.blood, 0.95 * S)
+      ctx.fill()
     }
 
     // ------------------------------------------------------------------ eyes
