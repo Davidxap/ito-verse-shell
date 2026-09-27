@@ -24,6 +24,12 @@
   as a shadow or a bad crop. A picture with no real transparency (a photo, a scan) is now cropped to fill the
   circle instead, centred, the way any avatar picker does -- a picture with real transparency (a drawn icon) still
   gets the old, gentler fit, since there is nothing wrong to show through.
+- **Fixed: a shaded illustration lost its dark areas to the same badge disc.** The auto mode that adapts a picture
+  extracts ink the way a clean scan needs -- crisp lines on a plain ground, almost nothing in between -- and drops
+  the rest. A shaded manga panel or a photo has no such ground: much of it sits in the middle, and dropping "the
+  rest" there dropped half the drawing, showing the disc through what should have been part of it (this is what
+  was still wrong with Tomie after the letterbox fix -- her dark hair and clothing, not a margin). A picture with a
+  wide spread of midtones now keeps its full shading instead of having it extracted as ink.
 - **The menu mark's default is the sheet spiral again** (drawn by hand from the original design sheet) -- what the
   whole suite takes its name from. This only changes a fresh install; anyone who already chose a mark keeps it.
 - **Fixed: a widget's shadow with no pill under it.** With "Shadow under the bar" on and pills off, every widget on

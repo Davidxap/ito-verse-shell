@@ -103,6 +103,15 @@ def adapt(path: Path, mode="auto", ink=False, disc=None, crop=None, tone=False, 
         x, y, side = crop
         img = img.crop((x, y, x + side, y + side))
     has_alpha = np.array(img)[..., 3].min() < 240
+    if mode == "auto" and not tone and not has_alpha and not ink:
+        # Auto mode extracts ink: it keeps what is dark (or light) and drops the rest, which is right for a clean
+        # scan -- crisp lines on a plain ground, almost nothing in between. A shaded illustration or a photo has no
+        # such ground: half its pixels sit in the middle, and dropping "the rest" there means dropping half the
+        # picture, which then shows the badge's own dark disc through what should have been part of the drawing (a
+        # false "shadow" or a cut that makes no sense). A wide spread of midtones means keep the shading instead.
+        probe = np.asarray(img.convert("L"), dtype=float) / 255.0
+        if ((probe > 0.15) & (probe < 0.85)).mean() > 0.35:
+            tone = True
     if tone:
         # screentone dots alias when brought down; a light blur first, in proportion to the reduction
         img = img.filter(ImageFilter.GaussianBlur(max(0.6, img.width / N * 0.55)))
