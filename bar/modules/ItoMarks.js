@@ -45,6 +45,13 @@ function customArt(key) {
   return key.indexOf("custom:") === 0 ? key.substring(7) : ""
 }
 
+// Whether a mark is the user's own picture -- either one they added, or one that replaces a built-in name
+// (a mark folder file called "tomie.jpg" and so on). Drawn art can safely go through the theme shader; a
+// picture cannot, so callers use this to turn the shader off for it (ItoImage's `tintable`).
+function isCustom(key, overrides) {
+  return !!(overrides && overrides[key]) || customArt(key) !== ""
+}
+
 // Where a mark's picture is: the art folder for the built-in ones, the cache folder for the user's.
 // `home` is the user's home directory, needed only for a custom one; `overrides` maps a built-in key to a picture
 // of the user's own that replaces it (ItoConfig.markOverrides).

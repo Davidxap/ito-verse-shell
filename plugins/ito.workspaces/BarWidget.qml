@@ -234,6 +234,7 @@ Ui.BarWidget {
           Ito.ItoImage {
             id: seal
             palette: cfg
+            tintable: root.wsStyle !== "custom"
             anchors.fill: parent
             source: wsButton.art === "" ? "" : (wsButton.art.charAt(0) === "@" ? "file://" + wsButton.art.substring(1) : Qt.resolvedUrl(root.art + wsButton.art))
             fillMode: Image.PreserveAspectFit

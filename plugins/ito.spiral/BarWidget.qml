@@ -78,6 +78,7 @@ Ui.BarWidget {
       Ito.ItoImage {
         id: icon
         palette: cfg
+        tintable: !Marks.isCustom(root.mark, cfg.markOverrides)
         anchors.fill: parent
         source: root.markSource
         fillMode: Image.PreserveAspectFit

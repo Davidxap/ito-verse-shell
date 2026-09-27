@@ -114,6 +114,7 @@ Ui.BarWidget {
 
         Ito.ItoImage {
           palette: cfg
+          tintable: root.deco.art !== "@custom"
           anchors.centerIn: parent
           width: root.vertical ? parent.height : parent.width
           height: root.vertical ? parent.width : parent.height
@@ -170,6 +171,7 @@ Ui.BarWidget {
           Ito.ItoImage {
             visible: !!root.seal.custom
             palette: cfg
+            tintable: false
             anchors.centerIn: parent
             width: Math.round(sealBox.height * 0.9)
             height: width
@@ -205,6 +207,7 @@ Ui.BarWidget {
 
         Ito.ItoImage {
           palette: cfg
+          tintable: root.deco.art !== "@custom"
           anchors.centerIn: parent
           width: root.vertical ? parent.height : parent.width
           height: root.vertical ? parent.width : parent.height

@@ -24,6 +24,10 @@ the four workspace pictures (empty, in use, active, urgent) and the media effect
 *Choose picture* button and a folded *How to prepare* panel on its page with the size and format to use. Files are
 kept in `~/.config/ito/` (`marks/`, `effects/`); nothing you supply is modified.
 
+Your own picture is never recoloured to the theme: the shader that moves the shell's drawn art onto the theme's
+colours only knows how to do that to bone-and-blood line art, and would flatten a real picture's shading into a
+smear of two colours. A picture you chose keeps its own colours under every theme.
+
 ### Sizes that work
 
 | What | Best size | Allowed | Notes |

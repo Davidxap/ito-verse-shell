@@ -237,6 +237,7 @@ ColumnLayout {
             Ito.ItoImage {
               id: pic
               palette: page.pal
+              tintable: false
               anchors.fill: parent
               source: page.wsHas[slot.modelData.state] ? "file://" + page.home + "/.cache/ito/marks/_ws-" + slot.modelData.state + ".png?v=" + page.wsVersion : ""
               fillMode: Image.PreserveAspectFit
@@ -308,6 +309,7 @@ ColumnLayout {
             required property string modelData
             required property int index
             palette: page.pal
+            tintable: false
             width: 30
             height: 30
             source: page.wsHas[modelData] ? "file://" + page.home + "/.cache/ito/marks/_ws-" + modelData + ".png?v=" + page.wsVersion : ""

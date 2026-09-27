@@ -14,6 +14,15 @@
   and it lands in the gap the guide shows, the same as on top or bottom.
 - **Fixed:** the coffee-cup icon (Stay awake) sat visibly lower than the radio and flashlight beside it -- its
   drawing was bottom-heavy even though its box was centred, so it read as uncentred. It now sits level with them.
+- **Fixed: a picture of your own (menu mark, seal, seal decoration, workspace pictures) no longer gets recoloured
+  to the theme.** The shader that moves drawn bone-and-blood line art onto the theme's colours was also running on
+  real pictures, flattening their own shading into a smear of two theme colours -- this is what made a custom
+  Tomie/Remina/Uzumaki (or any other) picture look wrong. A picture now always keeps its own colours, under every
+  theme.
+- **Fixed: a widget's shadow with no pill under it.** With "Shadow under the bar" on and pills off, every widget on
+  an Islands bar cast its own small shadow anyway, with nothing shaped to justify it -- on top of the island's own
+  shadow, this read as a shadow doubled behind every icon. A widget's shadow now only draws when its pill is
+  actually visible.
 
 ## 0.2.0-beta
 

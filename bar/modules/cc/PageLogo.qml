@@ -260,6 +260,7 @@ ColumnLayout {
 
           Ito.ItoImage {
             palette: page.pal
+            tintable: !Marks.isCustom(modelData.key, page.pal.markOverrides)
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: parent.top
             anchors.topMargin: 10
@@ -436,6 +437,7 @@ ColumnLayout {
 
           Ito.ItoImage {
             palette: page.pal
+            tintable: false
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: parent.top
             anchors.topMargin: 10

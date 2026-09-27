@@ -181,10 +181,19 @@ Item {
     Loader {
       id: dynamicShadowLoader
 
+      // A shadow needs something to sit under. With pills off the "pill" colour is only the faintest ambient
+      // tint (paper at ~18%), not a tile anyone would call a pill; casting a shadow under it anyway put a small
+      // dark smear behind every widget with no shape to justify it, on top of whatever shadow the bar or the
+      // island already had -- the "every icon has its own shadow, and it doubles up" look. A shadow now only
+      // draws under a pill dark enough to actually read as one.
+      readonly property real pillAlpha: root.bar.visualTokens && root.bar.visualTokens.pill !== undefined
+        ? root.bar.visualTokens.pill.a : 0
+
       anchors.fill: parent
       active: root.dynamicV1Group && !root.dynamicV1WidgetOwnsSurface
         && root.bar.visualTokens
         && root.bar.visualTokens.shadowEnabled === true
+        && pillAlpha >= 0.3
       sourceComponent: active ? dynamicV1Shadow : null
       z: -1
     }
