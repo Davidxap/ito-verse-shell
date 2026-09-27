@@ -128,6 +128,9 @@ The seal in the middle of the bar, what stands beside it, and the menu button.
 
 - **Seal.** The kanji: Tomie (富江), Uzumaki (渦巻), Junji Ito (伊藤), Silent Hill (静丘), Remina (レミナ), or
   **your own picture** (*Choose picture for the seal*).
+- **Seal colour: Auto, On, Off.** By default (**Auto**) the seal turns blood-red while the panel is open or the pointer
+  is on it, and bone the rest of the time. **On** keeps it blood-red always; **Off** keeps it bone always, even with
+  the panel open.
 - **Menu mark.** The application-menu button: Uzumaki, Tomie, Remina, Amigara, Metatron (two versions), Halo, Flauros
   or the sheet spiral, or **your own picture** (*Choose picture for the menu mark*).
 - **Seal decoration.** What stands on both sides of the seal: veins, thorns, curls, hair, drips, eyes, cracks, stitches,

@@ -28,6 +28,7 @@ ColumnLayout {
     font.pixelSize: 12
   }
 
+  readonly property string sealLitKey: String(pal.get("sealLit", "auto"))
   readonly property var seals: Marks.seals
   readonly property var marks: Marks.menuMarks
   readonly property string home: Quickshell.env("HOME")
@@ -165,6 +166,51 @@ ColumnLayout {
       label: "Choose picture for the seal"
       hint: "Put your own picture where the seal's letters are. It is adapted to the shell's colours."
       onActivated: if (!sealPicker.running) sealPicker.running = true
+    }
+
+
+    Text {
+      Layout.topMargin: 4
+      text: "SEAL COLOUR"
+      color: page.bone
+      opacity: 0.7
+      font.family: "Noto Serif"
+      font.pixelSize: 10
+      font.letterSpacing: 3
+    }
+
+    RowLayout {
+      Layout.fillWidth: true
+      spacing: 8
+
+      Repeater {
+        model: [
+          { "key": "auto", "label": "Auto", "tip": "Blood while the pointer is over the seal or its panel is open; bone the rest of the time. The default." },
+          { "key": "on",   "label": "On",   "tip": "Always the blood colour, whether or not the panel is open." },
+          { "key": "off",  "label": "Off",  "tip": "Always the bone colour, even while the panel is open." }
+        ]
+
+        CcCard {
+          required property var modelData
+          Layout.fillWidth: true
+          Layout.preferredHeight: 38
+          radius: 19
+          host: page.cc
+          pal: page.pal
+          showCaption: false
+          hint: modelData.tip
+          current: page.sealLitKey === modelData.key
+          onActivated: page.act.set("sealLit", modelData.key)
+
+          Text {
+            anchors.centerIn: parent
+            text: modelData.label
+            color: parent.current ? page.pal.lit : page.bone
+            font.family: "Noto Serif"
+            font.pixelSize: 12
+          }
+        }
+      }
     }
 
 

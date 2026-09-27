@@ -123,12 +123,15 @@ Ui.BarWidget {
       }
 
       // The seal is typography: crisp at any size, and it follows the palette. It reddens when the panel
-      // is open or the pointer is over it.
+      // is open or the pointer is over it -- or always, or never, if the Logo page's "Seal colour" is set
+      // to On or Off instead of Auto.
       Item {
         id: sealBox
         width: Math.round(28 * root.k)
         height: Math.round(44 * root.k)
-        readonly property bool lit: root.popupOpen || button.tooltipHovered
+        readonly property string litMode: String(cfg.get("sealLit", "auto"))
+        readonly property bool lit: litMode === "on"
+          || (litMode !== "off" && (root.popupOpen || button.tooltipHovered))
 
         Ito.ItoGlow {
           anchors.centerIn: parent

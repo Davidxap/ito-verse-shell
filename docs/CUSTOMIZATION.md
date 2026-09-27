@@ -9,7 +9,7 @@ Most of this is a click away in the Control Centre (click the 富江 seal). This
 |---|---|
 | Bars | Position, shape (Islands, Full, Fit, Dock, Notch), designs, corners, height, spacing, shadow, float-off-edge, the plate's layers |
 | Icons | Your bar as three columns (left, centre, right): a switch to turn each widget on or off and arrows to move it; what each reading shows; how long popups stay open; network-icon override |
-| Logo | The seal (which kanji), what stands beside it (veins, thorns, curls, hair, drips, eyes, cracks, stitches, holes, teeth, chain, static, fog, or your own picture), the menu mark |
+| Logo | The seal (which kanji), its colour (Auto/On/Off), what stands beside it (veins, thorns, curls, hair, drips, eyes, cracks, stitches, holes, teeth, chain, static, fog, or your own picture), the menu mark |
 | Effects | Motion on the marks/seal/veins, light/vibrance/speed/strength, and the media-player effect |
 | Workspaces | The workspace drawing style, or your own four pictures (empty, in use, active, urgent) |
 | Colors | Live palette editing (see below for what's actually safe to hand-edit) |
