@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "davidxap.ito-verse-shell",
-  "name": "Ito-verse Shell",
+  "name": "Ito verse Shell",
   "version": "0.2.0-beta",
   "license": "PolyForm-Noncommercial-1.0.0",
   "author": "davidxap",
@@ -14,8 +14,8 @@
     "barWidget": "BarWidget.qml"
   },
   "barWidget": {
-    "displayName": "Install Ito-verse Shell",
-    "description": "A button that installs Ito-verse Shell from this repository, after asking.",
+    "displayName": "Install Ito verse Shell",
+    "description": "A button that installs Ito verse Shell from this repository, after asking.",
     "category": "Appearance",
     "allowMultiple": false
   }

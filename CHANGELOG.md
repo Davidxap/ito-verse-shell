@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased
+
+- **Seal colour: Auto, On, Off** (Logo page). Auto is today's behaviour (blood while the panel is open or the pointer
+  is on it, bone the rest of the time); On and Off hold the seal at one colour regardless.
+- **Drag-to-move now works on a vertical bar** (left or right), not only a horizontal one: press a widget, move it,
+  and it lands in the gap the guide shows, the same as on top or bottom.
+- **Fixed:** the coffee-cup icon (Stay awake) sat visibly lower than the radio and flashlight beside it -- its
+  drawing was bottom-heavy even though its box was centred, so it read as uncentred. It now sits level with them.
+
 ## 0.2.0-beta
 
 The second beta: popups drawn as manga panels, icons that answer the pointer, a bar you can rearrange freely, and a long list of fixes.

@@ -1,6 +1,6 @@
 # Third-party notices
 
-Ito-verse Shell stands on other people's work. This file says whose, what was used, and under which licence, so that
+Ito verse Shell stands on other people's work. This file says whose, what was used, and under which licence, so that
 each of them gets the credit they are owed. If something here is missing or wrong, open an issue and it will be fixed.
 
 ## Code that is in this repository
@@ -27,7 +27,7 @@ These are installed by you and are not part of this repository:
 
 ## Inspiration
 
-Ito-verse Shell is a fan work **inspired by** Junji Ito's manga (*Uzumaki*, *Tomie*, *Gyo*, *Amigara Fault*) and by the Silent Hill
+Ito verse Shell is a fan work **inspired by** Junji Ito's manga (*Uzumaki*, *Tomie*, *Gyo*, *Amigara Fault*) and by the Silent Hill
 games. No code, page or asset from Junji Ito's books or from Konami's games is included or was copied; the names and the
 imagery belong to their owners and are used only as inspiration. It is not affiliated with or endorsed by them, by HANCORE or
 by Omarchy.

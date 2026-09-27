@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# Installs Ito-verse Shell from the folder this file is in (a clone of the repository, or the plugin folder that
+# Installs Ito verse Shell from the folder this file is in (a clone of the repository, or the plugin folder that
 # `omarchy plugin add` made). It says what it will do and asks first; nothing changes until you answer y.
 set -uo pipefail
 here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 omarchy="$HOME/.config/omarchy"
 
-echo "Ito-verse Shell 0.2.0-beta"
+echo "Ito verse Shell 0.2.0-beta"
 echo
 echo "This will:"
 echo "  - copy the bar modules and the plugins/ito.* folders into $omarchy"
@@ -23,7 +23,7 @@ if ((${#missing[@]})); then
   exit 1
 fi
 
-read -rp "Install Ito-verse Shell? [y/N] " answer
+read -rp "Install Ito verse Shell? [y/N] " answer
 if [[ ! $answer =~ ^[Yy] ]]; then
   echo "Nothing was changed."
   read -rp "Press Enter to close. " _
@@ -34,7 +34,7 @@ mkdir -p "$HOME/.config/ito" && printf '%s\n' "$here" > "$HOME/.config/ito/repo"
 "$here/scripts/deploy.sh" || { echo "The install failed; nothing else was changed."; read -rp "Press Enter to close. " _; exit 1; }
 echo
 echo "Installed."
-read -rp "Switch to Ito-verse Shell now? [y/N] " answer
+read -rp "Switch to Ito verse Shell now? [y/N] " answer
 if [[ $answer =~ ^[Yy] ]]; then
   "$here/scripts/shell-switch" ito
 else

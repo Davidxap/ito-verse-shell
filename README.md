@@ -1,13 +1,13 @@
-# Ito-verse Shell
+# Ito verse Shell
 
 **By [davidxap](https://github.com/Davidxap)** · v0.2.0-beta · [licence](#licence)
 
-**Ito-verse Shell** is a bar and Control Centre for [Omarchy](https://omarchy.org) (Arch Linux + Hyprland),
+**Ito verse Shell** is a bar and Control Centre for [Omarchy](https://omarchy.org) (Arch Linux + Hyprland),
 **inspired by Junji Ito and Silent Hill**: ink, bone and blood. It replaces Omarchy's system colours and its bar
 with a bar of its own, drawn as fine engravings instead of flat vector icons, and gives you a Control Centre to change
 nearly everything without touching a file.
 
-![Ito-verse Shell: the bar and its Control Centre, on an early version of the Tomie theme](docs/screenshots/desktop-control-center.jpg)
+![Ito verse Shell: the bar and its Control Centre, on an early version of the Tomie theme](docs/screenshots/desktop-control-center.jpg)
 
 > **Status: beta.** This is the first version meant to be installed and used. It has been swept option by option
 > and reviewed, but it is young: if anything looks wrong, open the Control Centre → **Health**, press
@@ -152,7 +152,7 @@ Requires Omarchy already installed and running Hyprland.
 omarchy plugin add https://github.com/Davidxap/ito-verse-shell
 ```
 
-then enable the *Install Ito-verse Shell* widget, click it, and answer the questions in the terminal that opens: it says what
+then enable the *Install Ito verse Shell* widget, click it, and answer the questions in the terminal that opens: it says what
 it will do and asks before it changes anything. Or do it by hand: download the repository from GitHub (the green **Code** button, then **Download ZIP**), unzip it and open a
 terminal in the folder:
 

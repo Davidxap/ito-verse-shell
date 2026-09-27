@@ -2,9 +2,9 @@ import QtQuick
 import Quickshell
 import qs.Ui as Ui
 
-// The Marketplace entry of Ito-verse Shell: one small button on whatever bar you use now.
+// The Marketplace entry of Ito verse Shell: one small button on whatever bar you use now.
 //
-// Ito-verse Shell is a suite (a bar engine, twenty widgets, a Control Centre and tools) that lives in ~/.config/omarchy
+// Ito verse Shell is a suite (a bar engine, twenty widgets, a Control Centre and tools) that lives in ~/.config/omarchy
 // next to Omarchy's own files, so a plugin folder alone cannot carry it. This button opens a terminal that runs
 // install.sh from the plugin's own folder. install.sh says what it will do and asks before it changes anything.
 Ui.BarWidget {
@@ -20,7 +20,7 @@ Ui.BarWidget {
     id: button
     anchors.fill: parent
     bar: root.bar
-    tooltipText: "Install Ito-verse Shell (opens a terminal and asks before it changes anything)"
+    tooltipText: "Install Ito verse Shell (opens a terminal and asks before it changes anything)"
     horizontalMargin: 4
     labelVisible: false
     hasVisualContent: true
