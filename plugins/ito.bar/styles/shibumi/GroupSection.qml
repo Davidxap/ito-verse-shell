@@ -1132,13 +1132,16 @@ Item {
 
           // The same direct drag as a horizontal bar's gestureDrag: press on a widget and move, it comes away
           // and follows the pointer; let go over another widget and they trade places, let go elsewhere (or
-          // between two widgets) and it moves there instead.
+          // between two widgets) and it moves there instead. A vertical bar has no separate "Move widgets" edit
+          // mode of its own (that mode's slot grid, add/remove buttons and placeholders are a horizontal-only
+          // affair), so this stays enabled even while editing is on -- gating it the way the horizontal one does
+          // would make "Move widgets" turn dragging OFF on a vertical bar instead of doing nothing.
           DragHandler {
             id: verticalDrag
             target: null
             acceptedButtons: Qt.LeftButton
             dragThreshold: 9
-            enabled: root && root.layoutSession && !root.layoutSession.editing
+            enabled: root && root.layoutSession
               && !root.layoutProtected && verticalCell.modelData !== "" && verticalCell.groupHasContent
 
             onActiveChanged: {
