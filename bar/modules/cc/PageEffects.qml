@@ -84,7 +84,7 @@ ColumnLayout {
 
   readonly property string motionKey: String(pal.get("motion", "calm"))
   readonly property string always: String(pal.get("fxWhen", "hover"))
-  readonly property string markKey: String(pal.get("menuMark", "uzumaki"))
+  readonly property string markKey: String(pal.get("menuMark", "spiral"))
   readonly property string home: Quickshell.env("HOME")
   readonly property string sealKey: String(pal.get("seal", "tomie"))
   readonly property var sealDef: Marks.findSeal(sealKey)

@@ -25,8 +25,9 @@ Ui.BarWidget {
   readonly property string host: Qt.resolvedUrl("../../bar/modules/bin/ito-host").toString().replace("file://", "")
   readonly property color blood: cfg.blood
 
-  // The mark on the button: the Uzumaki spiral, a face, a sigil, or a picture of the user's own (Logo page).
-  readonly property string mark: String(cfg.get("menuMark", "uzumaki"))
+  // The mark on the button: the sheet spiral by default (it is what the whole suite takes its name from), a
+  // face, a sigil, or a picture of the user's own (Logo page).
+  readonly property string mark: String(cfg.get("menuMark", "spiral"))
   readonly property url markSource: Marks.source(Qt.resolvedUrl("../../bar/modules/ito-art/").toString(), mark,
                                                  Quickshell.env("HOME"), cfg.markOverrides)
   // "auto" is the mark's own effect: a round seal turns, a face keeps a heartbeat.

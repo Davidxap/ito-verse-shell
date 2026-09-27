@@ -19,6 +19,13 @@
   real pictures, flattening their own shading into a smear of two theme colours -- this is what made a custom
   Tomie/Remina/Uzumaki (or any other) picture look wrong. A picture now always keeps its own colours, under every
   theme.
+- **Fixed: a picture that is not square was letterboxed into the round badge, not filled.** A tall or wide photo
+  came out with the badge's own near-black background showing through the empty margins either side, which read
+  as a shadow or a bad crop. A picture with no real transparency (a photo, a scan) is now cropped to fill the
+  circle instead, centred, the way any avatar picker does -- a picture with real transparency (a drawn icon) still
+  gets the old, gentler fit, since there is nothing wrong to show through.
+- **The menu mark's default is the sheet spiral again** (drawn by hand from the original design sheet) -- what the
+  whole suite takes its name from. This only changes a fresh install; anyone who already chose a mark keeps it.
 - **Fixed: a widget's shadow with no pill under it.** With "Shadow under the bar" on and pills off, every widget on
   an Islands bar cast its own small shadow anyway, with nothing shaped to justify it -- on top of the island's own
   shadow, this read as a shadow doubled behind every icon. A widget's shadow now only draws when its pill is

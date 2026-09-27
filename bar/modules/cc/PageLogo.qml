@@ -32,7 +32,7 @@ ColumnLayout {
   readonly property var seals: Marks.seals
   readonly property var marks: Marks.menuMarks
   readonly property string home: Quickshell.env("HOME")
-  readonly property string markKey: String(pal.get("menuMark", "uzumaki"))
+  readonly property string markKey: String(pal.get("menuMark", "spiral"))
 
   // Pictures the user added (bin/ito-marks). Listing adapts any new one, so dropping a file in the folder
   // and pressing Refresh is all it takes.

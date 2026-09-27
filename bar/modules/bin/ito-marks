@@ -63,10 +63,16 @@ def load(path: Path) -> Image.Image:
     return Image.open(path).convert("RGBA")
 
 
-def fit(img: Image.Image, pad: float = 0.04) -> Image.Image:
-    """Into a square, centred, keeping its proportions."""
+def fit(img: Image.Image, pad: float = 0.04, cover: bool = False) -> Image.Image:
+    """Into a square. A picture with real transparency (an icon someone drew) is let show its whole shape,
+    centred, padded on whichever side is short. A photo or a scan has no transparency to preserve, so it is
+    cropped to fill the square instead, the way any avatar picker does -- letterboxing one left the badge's
+    own dark disc showing through the empty margins on both sides, which read as an unwanted shadow."""
     box = int(N * (1 - 2 * pad))
-    img = ImageOps.contain(img, (box, box), Image.LANCZOS)
+    if cover:
+        img = ImageOps.fit(img, (box, box), Image.LANCZOS)
+    else:
+        img = ImageOps.contain(img, (box, box), Image.LANCZOS)
     out = Image.new("RGBA", (N, N), (0, 0, 0, 0))
     out.paste(img, ((N - img.width) // 2, (N - img.height) // 2))
     return out
@@ -101,7 +107,7 @@ def adapt(path: Path, mode="auto", ink=False, disc=None, crop=None, tone=False, 
         # screentone dots alias when brought down; a light blur first, in proportion to the reduction
         img = img.filter(ImageFilter.GaussianBlur(max(0.6, img.width / N * 0.55)))
         disc = True if disc is None else disc
-    rgba = np.array(fit(img, 0.0 if tone else 0.04)).astype(float) / 255.0
+    rgba = np.array(fit(img, 0.0 if tone else 0.04, cover=not has_alpha)).astype(float) / 255.0
     a, rgb = rgba[..., 3], rgba[..., :3]
     lum = rgb @ np.array([0.299, 0.587, 0.114])
     red = np.clip((rgb[..., 0] - np.maximum(rgb[..., 1], rgb[..., 2]) - 0.15) / 0.35, 0, 1)
