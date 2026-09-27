@@ -143,16 +143,30 @@ ICONS = {
 }
 
 
+# fit() centres every icon by the geometric middle of its ink, which is right for a shape whose ink is spread
+# evenly (a ring, a chip). The coffee cup is not: two thin wisps of steam sit far above a solid cup and saucer, so
+# the *geometric* box is centred but the *drawing* still reads low, sitting under the radio and the flashlight
+# that share its row. This nudges it back up by the same pixels its own ink is heavier below the middle than
+# above -- worked out from the drawing, not guessed.
+NUDGE_Y = {("awake", "coffee"): -20}
+
+
 def main() -> int:
     OUT.mkdir(parents=True, exist_ok=True)
     for (ident, version), fn in ICONS.items():
+        nudge = NUDGE_Y.get((ident, version), 0)
         for state, on in (("off", False), ("on", True)):
             tmp = OUT / "t.svg"
             dst = OUT / f"{ident}-{version}-{state}.png"
             tmp.write_text(fn(on))
             subprocess.run(["rsvg-convert", "-w", "256", "-h", "256", str(tmp), "-o", str(dst)], check=True)
             tmp.unlink()
-            fit(Image.open(dst).convert("RGBA")).save(dst)
+            fitted = fit(Image.open(dst).convert("RGBA"))
+            if nudge:
+                shifted = Image.new("RGBA", fitted.size, (0, 0, 0, 0))
+                shifted.alpha_composite(fitted, (0, nudge))
+                fitted = shifted
+            fitted.save(dst)
     print(f"wrote {len(ICONS) * 2} indicator icons -> {OUT}")
     return 0
 

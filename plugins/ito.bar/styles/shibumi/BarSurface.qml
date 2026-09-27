@@ -89,6 +89,12 @@ Item {
         value: horizontalSurface.compactShell
         when: root.layoutSession !== null
       }
+      Binding {
+        target: root.layoutSession
+        property: "vertical"
+        value: false
+        when: root.layoutSession !== null
+      }
 
       // Where the dragged widget will go when it is dropped between others or in an empty part of the bar.
       Rectangle {
@@ -617,6 +623,46 @@ Item {
         ? Math.min(height - 2 * frameInset, Math.max(Commons.Style.space(80), naturalLength))
         : Math.max(0, height - 2 * frameInset)
       readonly property real shellStart: compactShell ? Math.round((height - shellLength) / 2) : frameInset
+
+      // Tell the drag session where the plate is (top/bottom this time, since the bar runs top-to-bottom), so an
+      // empty part of it can be dropped on -- the same three bindings horizontalSurface makes, along the other axis.
+      Binding {
+        target: root.layoutSession
+        property: "shellLeft"
+        value: verticalSurface.mapToItem(null, 0, verticalSurface.shellStart).y
+        when: root.layoutSession !== null
+      }
+      Binding {
+        target: root.layoutSession
+        property: "shellRight"
+        value: verticalSurface.mapToItem(null, 0, verticalSurface.shellStart + verticalSurface.shellLength).y
+        when: root.layoutSession !== null
+      }
+      Binding {
+        target: root.layoutSession
+        property: "flowShell"
+        value: verticalSurface.compactShell
+        when: root.layoutSession !== null
+      }
+      Binding {
+        target: root.layoutSession
+        property: "vertical"
+        value: true
+        when: root.layoutSession !== null
+      }
+
+      // Where the dragged widget will go, drawn across the bar's thickness instead of along its length.
+      Rectangle {
+        visible: root.layoutSession !== null && root.layoutSession.active && root.layoutSession.insertRegion !== ""
+        y: verticalSurface.mapFromItem(null, 0, root.layoutSession ? root.layoutSession.insertX : 0).y - 1.5
+        x: 4
+        width: Math.max(0, verticalSurface.thick - 8)
+        height: 3
+        radius: 1.5
+        color: root.bar.urgent
+        z: 90
+        Behavior on y { NumberAnimation { duration: 90; easing.type: Easing.OutCubic } }
+      }
 
       // The shape itself: the horizontal bar's own chrome, turned on its side, so every form (Islands, Full, Fit,
       // Dock, Notch) is drawn the same way on the left and the right as along the top.

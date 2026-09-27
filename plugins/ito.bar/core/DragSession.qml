@@ -28,6 +28,9 @@ Item {
   property real shellLeft: 0
   property real shellRight: 0
   property bool flowShell: false
+  // On a vertical bar the axis a drag travels along is Y, not X: shellLeft/shellRight then hold the top/bottom of
+  // the plate, and every "along the bar" comparison below reads Y instead of X.
+  property bool vertical: false
   property real ghostX: 0
   property real ghostY: 0
   property real ghostWidth: 0
@@ -242,6 +245,9 @@ Item {
   }
 
   // The visible widgets of the bar in the order they stand, each with where it is and where it sits in the layout.
+  // The coordinate a drag travels along: X on a horizontal bar, Y on a vertical one.
+  function axisPos(x, y) { return vertical ? y : x }
+
   function placedTargets() {
     const out = []
     for (let i = 0; i < targets.length; i++) {
@@ -252,7 +258,9 @@ Item {
         ? layoutController.groupLocation(t.groupId) : null
       if (!loc) continue
       const origin = item.mapToItem(null, 0, 0)
-      out.push({ region: loc.region, index: loc.index, left: origin.x, right: origin.x + item.width })
+      const near = axisPos(origin.x, origin.y)
+      const far = near + (vertical ? item.height : item.width)
+      out.push({ region: loc.region, index: loc.index, left: near, right: far })
     }
     out.sort(function(a, b) { return a.left - b.left })
     return out
@@ -261,28 +269,29 @@ Item {
   function computeInsert(px, py) {
     if (!layoutController || typeof layoutController.insertGroupAt !== "function") { clearInsert(); return false }
     const placed = placedTargets()
+    const p = axisPos(px, py)
     const span = Math.max(1, shellRight - shellLeft)
     // outside the plate: nothing to drop on
-    if (shellRight > shellLeft && (px < shellLeft - 6 || px > shellRight + 6)) { clearInsert(); return false }
+    if (shellRight > shellLeft && (p < shellLeft - 6 || p > shellRight + 6)) { clearInsert(); return false }
 
     let region = ""
     let index = 0
-    let markerX = px
+    let markerX = p
 
     if (!flowShell) {
       // a full-width bar: left widgets sit at the left end, right ones at the right end, the rest in the middle
       const third = span / 3
-      region = px < shellLeft + third ? "left" : (px > shellRight - third ? "right" : "center")
+      region = p < shellLeft + third ? "left" : (p > shellRight - third ? "right" : "center")
     } else {
       // content-sized: the regions run on into one another, so the neighbours decide the region
       let prev = null
       let next = null
       for (let i = 0; i < placed.length; i++) {
-        if ((placed[i].left + placed[i].right) / 2 <= px) prev = placed[i]
+        if ((placed[i].left + placed[i].right) / 2 <= p) prev = placed[i]
         else if (!next) next = placed[i]
       }
       if (prev && next && prev.region !== next.region) {
-        const towardsPrev = px - prev.right < next.left - px
+        const towardsPrev = p - prev.right < next.left - p
         region = towardsPrev ? prev.region : next.region
         index = towardsPrev ? prev.index + 1 : next.index
         markerX = towardsPrev ? prev.right + 3 : next.left - 3
@@ -309,7 +318,7 @@ Item {
     let before = null
     let after = null
     for (let i = 0; i < mine.length; i++) {
-      if ((mine[i].left + mine[i].right) / 2 <= px) after = mine[i]
+      if ((mine[i].left + mine[i].right) / 2 <= p) after = mine[i]
       else if (!before) before = mine[i]
     }
     if (before) { index = before.index; markerX = before.left - 3 }

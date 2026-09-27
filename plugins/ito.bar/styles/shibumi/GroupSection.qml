@@ -1066,10 +1066,41 @@ Item {
           width: implicitWidth
           height: implicitHeight
 
+          property var targetSession: root ? root.layoutSession : null
+          property var registeredSession: null
+          property var registeredItem: null
+
+          function clearTargetRegistration() {
+            if (registeredSession && registeredItem
+                && typeof registeredSession.unregisterTarget === "function")
+              registeredSession.unregisterTarget(registeredItem)
+            registeredSession = null
+            registeredItem = null
+          }
+
+          // Registers this widget as somewhere a drag can land on, the same way a horizontal bar's widgets do
+          // (see horizontalCell.syncTargetRegistration above); a vertical bar had none of this, so dragging on
+          // it had nothing to drop onto.
+          function syncTargetRegistration() {
+            clearTargetRegistration()
+            if (!root || !targetSession || !groupHasContent
+                || typeof targetSession.registerTarget !== "function") return
+            if (targetSession.registerTarget(verticalCell.modelData, groupSlot)) {
+              registeredSession = targetSession
+              registeredItem = groupSlot
+            }
+          }
+
+          onTargetSessionChanged: registrationTimer.restart()
+          onGroupHasContentChanged: registrationTimer.restart()
+          onModelDataChanged: registrationTimer.restart()
+          Component.onDestruction: clearTargetRegistration()
           Component.onCompleted: {
             const currentBar = lifecycleBar
             lifecycleBar = currentBar
+            registrationTimer.restart()
           }
+          Timer { id: registrationTimer; interval: 0; onTriggered: verticalCell.syncTargetRegistration() }
 
           Core.GroupSlot {
             id: groupSlot
@@ -1079,6 +1110,51 @@ Item {
             availableWidth: root ? root.availableWidth : 0
             x: Math.round((verticalCell.width - width) / 2)
             y: verticalCell.leadingGap
+            opacity: root && root.layoutSession && root.layoutSession.active
+              && root.layoutSession.sourceGroupId === verticalCell.modelData ? 0.28 : 1
+            Behavior on opacity { NumberAnimation { duration: 80 } }
+          }
+
+          // Where the widget being dragged would land if dropped here (a trade, not an insert).
+          Rectangle {
+            x: groupSlot.x - 2
+            y: groupSlot.y - 2
+            width: groupSlot.width + 4
+            height: groupSlot.height + 4
+            visible: root && root.layoutSession && root.layoutSession.active
+              && root.layoutSession.targetItem === groupSlot
+            color: root ? Qt.rgba(root.bar.urgent.r, root.bar.urgent.g, root.bar.urgent.b, 0.18) : "transparent"
+            border.width: 2
+            border.color: root ? root.bar.urgent : "transparent"
+            radius: root ? root.bar.visualTokens.pillRadius : 0
+            z: 20
+          }
+
+          // The same direct drag as a horizontal bar's gestureDrag: press on a widget and move, it comes away
+          // and follows the pointer; let go over another widget and they trade places, let go elsewhere (or
+          // between two widgets) and it moves there instead.
+          DragHandler {
+            id: verticalDrag
+            target: null
+            acceptedButtons: Qt.LeftButton
+            dragThreshold: 9
+            enabled: root && root.layoutSession && !root.layoutSession.editing
+              && !root.layoutProtected && verticalCell.modelData !== "" && verticalCell.groupHasContent
+
+            onActiveChanged: {
+              if (!root || !root.layoutSession) return
+              if (active) {
+                const point = verticalCell.mapToItem(null, centroid.position.x, centroid.position.y)
+                root.layoutSession.begin(verticalCell.modelData, groupSlot, point.x, point.y)
+              } else if (root.layoutSession.active) {
+                root.layoutSession.drop()
+              }
+            }
+            onCentroidChanged: {
+              if (!active || !root || !root.layoutSession || !root.layoutSession.active) return
+              const point = verticalCell.mapToItem(null, centroid.position.x, centroid.position.y)
+              root.layoutSession.move(point.x, point.y)
+            }
           }
         }
       }
