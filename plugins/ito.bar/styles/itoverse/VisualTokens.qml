@@ -103,12 +103,15 @@ Item {
   }
 
   // "Widget pills" layer: each of our widgets sits in its own dark pill, the way Shibumi's do. It is
-  // what makes the Floating look (no plate) readable over a busy wallpaper.
+  // what makes the Floating look (no plate) readable over a busy wallpaper. With pills off there must be
+  // nothing here at all: a faint ambient tint was still enough to read as its own little rounded background
+  // behind every single widget, on top of the shared island -- a bubble around each icon that had nothing to
+  // do with the "pills" look the user had not asked for.
   readonly property bool pillsOn: Surfaces.on(sidecar, "fxPills")
 
   readonly property color pill: pillsOn
     ? Qt.rgba(0.02, 0.024, 0.027, sidecar.get("surfacePill", 0.78))
-    : Qt.rgba(paper.r, paper.g, paper.b, 0.18)
+    : Qt.rgba(paper.r, paper.g, paper.b, 0)
   // The plate (ItoPlate) is drawn underneath, so the fork surface must not paint over it.
   readonly property color barBackground: "transparent"
   readonly property color panelBackground: Qt.rgba(paper.r, paper.g, paper.b, 0.94)

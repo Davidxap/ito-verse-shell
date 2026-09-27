@@ -81,11 +81,12 @@ elif cmd == "set":
     data[key] = coerce(key, value)
     save(data)
 elif cmd == "reset":
-    # Back to how the bar ships: only the colours and the few choices the user made deliberately at
-    # install time survive, every layer, tuning and shape key goes.
+    # Back to how the bar ships: only the colours survive, every layer, tuning and shape key goes back to its
+    # own default. It used to also force the seal to Tomie and the workspace style to numerals regardless of
+    # what the keys had been -- picking those two out of everything else for a reset "Look" does not touch was
+    # a surprise "Reset look" did not describe, and looked like data loss to someone who had chosen otherwise.
     keep = {"blood", "bloodLive"}
     data = {k: v for k, v in data.items() if k in keep}
-    data.update({"style": "numerals", "seal": "tomie", "showValues": True})
     save(data)
 elif cmd == "unset":
     # unset key key ... : back to the default of each one

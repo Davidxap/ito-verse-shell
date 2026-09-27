@@ -12,6 +12,12 @@ ColumnLayout {
   readonly property var act: cc.actions
   readonly property color bone: pal.bone
 
+  // Reset look and Reset layout each change a great deal at once and cannot be undone from here, so the first
+  // click only arms the button (a plain click elsewhere, or a few seconds, disarms it); the second one, on the
+  // same button, actually does it.
+  property string armedReset: ""
+  Timer { id: resetDisarm; interval: 4000; onTriggered: page.armedReset = "" }
+
   spacing: 10
 
   // ---------------------------------------------------------------- position
@@ -454,7 +460,7 @@ ColumnLayout {
     Layout.topMargin: 8
     pal: page.pal
     label: "LAYOUT"
-    note: "Drag any widget onto another to trade places. Reset puts things back the way they shipped."
+    note: "Drag any widget onto another to trade places. The two Reset buttons ask again before doing anything, since neither can be undone from here."
 
 
     RowLayout {
@@ -464,30 +470,35 @@ ColumnLayout {
       Repeater {
         model: [
           { "label": "Move widgets", "tip": "Enter edit mode: drag the widgets wherever you want them.", "act": "edit" },
-          { "label": "Reset look",   "tip": "Put the plate, effects, seal, workspaces and readings back to the defaults.", "act": "look" },
-          { "label": "Reset layout", "tip": "Put every widget back where it started.", "act": "layout" }
+          { "label": "Reset look",   "tip": "Put every colour, effect, seal, decoration, mark, workspace style and reading back to how the bar shipped. Your widgets and their places are not touched.", "act": "look" },
+          { "label": "Reset layout", "tip": "Put every widget back to Classic, on the shape you have now. Your colours and effects are not touched.", "act": "layout" }
         ]
 
         CcCard {
+          id: resetCard
           required property var modelData
+          readonly property bool risky: modelData.act === "look" || modelData.act === "layout"
+          readonly property bool armed: risky && page.armedReset === modelData.act
           Layout.fillWidth: true
           Layout.preferredHeight: 38
           radius: 19
           host: page.cc
           pal: page.pal
           showCaption: false
-          hint: modelData.tip
+          hint: armed ? "Click again to really " + modelData.label.toLowerCase() + "." : modelData.tip
           current: modelData.act === "edit"
           onActivated: {
-            if (modelData.act === "edit") { page.cc.close(); page.act.editLayout() }
-            else if (modelData.act === "look") page.act.resetLook()
+            if (modelData.act === "edit") { page.cc.close(); page.act.editLayout(); return }
+            if (!armed) { page.armedReset = modelData.act; resetDisarm.restart(); return }
+            page.armedReset = ""
+            if (modelData.act === "look") page.act.resetLook()
             else page.act.resetLayout()
           }
 
           Text {
             anchors.centerIn: parent
-            text: modelData.label
-            color: modelData.act === "edit" ? page.pal.lit : page.bone
+            text: resetCard.armed ? "Really?" : modelData.label
+            color: resetCard.armed ? page.pal.blood : (modelData.act === "edit" ? page.pal.lit : page.bone)
             font.family: "Noto Serif"
             font.pixelSize: 12
           }

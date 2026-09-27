@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- **Fixed: every widget had a faint background of its own, on top of the island's.** With "Widget pills" off, the
+  fallback colour behind each widget was still a visible ~18% tint instead of nothing -- a little rounded bubble
+  around every single icon, which read as backgrounds nested inside the island's own background. It is now fully
+  transparent unless pills are switched on.
+- **"Reset look" asks again before doing anything**, the same as "Reset layout" already did -- neither can be
+  undone from here, and Reset look is the wider of the two (colours, effects, seal, decoration, mark, workspace
+  style, every reading). It also no longer secretly forces the seal to Tomie and the workspace style to numerals:
+  everything it clears now goes back to its own default, with nothing singled out.
+
 - **Profiles: Designs and Setups are one thing now** (Setup page). The Bars page's "Designs" grid (Classic, Cluster,
   Compact, Floating dock, Monitor, Minimal, Zen) moved to Setup → Profiles, right above your own saved ones, as
   ready-made, non-deletable entries -- one place to pick a whole look for the bar, instead of two sections that both
