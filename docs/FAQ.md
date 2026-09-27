@@ -30,10 +30,10 @@ modifies Omarchy's own files.
 Named setups are in `~/.config/ito/profiles/`.
 
 **Do I have to press Save?**
-No. Every change is written the moment you make it. **Setup → My setups** is for named copies you want to return to.
+No. Every change is written the moment you make it. **Setup → Profiles** is for named copies you want to return to.
 
 **How do I back up my look?**
-Save a setup (Setup → My setups), and copy `~/.config/ito/` if you want it on another machine. `ito-profile load` needs
+Save a profile (Setup → Profiles), and copy `~/.config/ito/` if you want it on another machine. `ito-profile load` needs
 Ito-verse installed there.
 
 **It shows `68` next to RAM. I want `17/32G`.**

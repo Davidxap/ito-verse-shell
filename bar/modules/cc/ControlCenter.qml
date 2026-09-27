@@ -46,7 +46,7 @@ PanelWindow {
     { "key": "workspaces", "file": "PageWorkspaces.qml", "kanji": "間", "title": "Workspaces", "sub": "Style and count",           "section": "APPEARANCE" },
     { "key": "colors",     "file": "PageColors.qml",     "kanji": "色", "title": "Colors",     "sub": "Own or the theme's",        "section": "APPEARANCE" },
     { "key": "plugins",    "file": "PagePlugins.qml",    "kanji": "拡", "title": "Plugins",    "sub": "Installed and available",   "section": "SYSTEM" },
-    { "key": "shells",     "file": "PageShells.qml",     "kanji": "殻", "title": "Setup",      "sub": "Save your setup, switch shell",    "section": "SYSTEM" },
+    { "key": "shells",     "file": "PageShells.qml",     "kanji": "殻", "title": "Setup",      "sub": "Profiles, and switching shells",    "section": "SYSTEM" },
     { "key": "health",     "file": "PageHealth.qml",     "kanji": "脈", "title": "Health",     "sub": "Runtime and errors",        "section": "SYSTEM" }
   ]
 

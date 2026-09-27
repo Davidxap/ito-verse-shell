@@ -42,9 +42,6 @@ The shape of the bar.
 - **Shape.** Islands, Full, Fit, Dock or Notch: how the bar is cut. Each card draws its shape.
 - **Details.** *Corners* (square, soft, round), *Height* (slim 40, regular 46, tall 52), *Spacing* (tight, normal,
   airy), and *Shadow under the bar*.
-- **Designs.** Where every widget sits: Classic, Cluster, Compact, Floating dock, Monitor, Minimal, Zen. Any design
-  goes on any shape. The bar restarts for a moment when you apply one; your look stays as it is. *A design also sets
-  its own shape* makes a design bring its own shape instead of using yours.
 - **Look.** The plate the bar is painted on. Every layer is its own switch and they combine: grain, paper, blood,
   wood, glass, screentone, calm, torn edge, fog, borders, pills. Sliders for opacity, blood strength, grain and pill
   opacity.
@@ -197,11 +194,17 @@ Every plugin the shell can find, wherever it came from: Ito-verse, Omarchy, Shib
 
 ![Setup](screenshots/cc-setup.png)
 
-- **My setups.** Everything you change is remembered by itself. Type a name and press **Save setup** to keep a named
-  copy: your colours, effects, widgets and where they sit, and your own pictures. **Load** puts the bar back the way the
-  setup was (it restarts for a few seconds). **Look** brings back only the colours, effects, marks and pictures and leaves the
-  bar's shape and widgets alone; **Layout** brings back only the edge, shape and widgets and leaves the look. **Delete**
-  removes the copy, not the bar.
+- **Profiles.** One place for every whole-bar look, whether it is one of the seven ready-made arrangements (Classic,
+  Cluster, Compact, Floating dock, Monitor, Minimal, Zen — used to live on the Bars page as "Designs") or one you save
+  yourself.
+  - **Ready-made**: click a card to apply it (where every widget sits; the bar restarts for a moment; your colours stay
+    as they are). *A ready-made profile also sets its own shape* makes it bring its own shape instead of the one you
+    have.
+  - **Your own**: type a name and press **Save profile** to keep a copy of the bar exactly as it is now — colours,
+    effects, widgets and where they sit, your own pictures. Saving over an existing name asks once more before it
+    replaces it. **Load** puts the bar back the way it was (it restarts for a few seconds); **Look** brings back only
+    the colours, effects, marks and pictures; **Layout** brings back only the edge, shape and widgets. **Delete** asks
+    once more before it removes the copy — the bar itself never changes.
 - **Shells.** Every shell it finds: Omarchy's default bar, Shibumi, Caelestia, Ito-verse. **Switch** stops this shell and
   starts that one. Installing Ito-verse keeps the shell you were on as its own entry, so going back is one click.
 - **About.** Who made it, where, and the licences.

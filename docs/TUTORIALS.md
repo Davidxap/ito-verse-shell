@@ -144,11 +144,12 @@ Any plugin the Omarchy shell can host can go on the bar, whoever made it.
 
 Goal: try a very different look without losing this one.
 
-1. Open **Setup → My setups**. Type a name (for example *Evening*) and press **Save setup**. It stores your colours,
-   effects, widgets and their places, and your own pictures.
-2. Change anything you like.
+1. Open **Setup → Profiles**. Type a name (for example *Evening*) under "Your own" and press **Save profile**. It
+   stores your colours, effects, widgets and their places, and your own pictures.
+2. Change anything you like — or click one of the ready-made cards above (Classic, Cluster, Compact...) to try a whole
+   different arrangement; those never change or disappear, so trying one costs nothing.
 3. To come back, press **Load** on *Evening*. The bar restarts for a few seconds and is as it was.
-4. **Delete** removes a saved copy (not the bar).
+4. **Delete** asks once more, then removes a saved copy (not the bar).
 
 Everything you change is also remembered by itself, so you never *have* to save; this is for the looks you want to be
 able to return to. From a terminal: `ito-profile save "Evening"`, `ito-profile load "Evening"`.

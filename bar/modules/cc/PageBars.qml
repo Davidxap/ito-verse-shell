@@ -2,7 +2,6 @@ import QtQuick
 import QtQuick.Layouts
 import ".." as Ito
 import "../ItoSurfaces.js" as Surfaces
-import "../ItoLayouts.js" as Layouts
 
 // Bars: the shape of the bar, which design it wears, and what its plate is made of.
 ColumnLayout {
@@ -318,91 +317,18 @@ ColumnLayout {
   }
 
 
-  // ---------------------------------------------------------------- designs
-  CcSection {
-    host: page.cc
+  // Ready-made arrangements (Classic, Cluster, Compact...) moved to Setup -> Profiles, beside your own saved ones,
+  // so there is one place to pick a whole look for the bar instead of two.
+  Text {
     Layout.topMargin: 8
-    pal: page.pal
-    label: "DESIGNS"
-    note: "Where every widget sits. Any design goes on any shape, so mix them freely. The bar restarts for a moment; your look stays as it is."
-
-
-    CcToggle {
-      Layout.fillWidth: true
-      host: page.cc
-      pal: page.pal
-      label: "A design also sets its own shape"
-      hint: "Off: a design keeps the shape you chose above. On: it switches the bar to the shape it was made for (shown on its card)."
-      on: String(page.pal.get("designShape", "keep")) === "design"
-      onActivated: page.act.set("designShape", on ? "keep" : "design")
-    }
-
-
-    GridLayout {
-      Layout.fillWidth: true
-      columns: 3
-      rowSpacing: 8
-      columnSpacing: 8
-
-      Repeater {
-        model: Layouts.designs
-
-        CcCard {
-          id: design
-          required property var modelData
-          Layout.fillWidth: true
-          Layout.preferredHeight: 84
-          host: page.cc
-          pal: page.pal
-          caption: modelData.name
-          hint: modelData.note
-          visible: page.cc.match(modelData.name + " " + modelData.note + " design layout")
-          onActivated: page.act.applyDesign(modelData)
-
-          // the shape it was made for
-          Text {
-            anchors.right: parent.right
-            anchors.top: parent.top
-            anchors.margins: 8
-            text: page.act.formName(design.modelData.form)
-            color: page.bone
-            opacity: 0.4
-            font.family: "Noto Serif"
-            font.pixelSize: 9
-            font.letterSpacing: 1
-          }
-
-          // where the widgets go: left, centre and right as three little runs of beads
-          Row {
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.top: parent.top
-            anchors.topMargin: 16
-            spacing: 10
-
-            Repeater {
-              model: ["left", "center", "right"]
-
-              Row {
-                required property string modelData
-                readonly property int n: design.modelData[modelData].length
-                spacing: 2
-                visible: n > 0
-
-                Repeater {
-                  model: parent.n
-                  Rectangle {
-                    width: 5
-                    height: 5
-                    radius: 2.5
-                    color: Qt.rgba(page.bone.r, page.bone.g, page.bone.b, 0.6)
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
+    text: "Ready-made arrangements (Classic, Cluster, Compact...) are under Setup → Profiles now, next to your own."
+    color: page.bone
+    opacity: 0.5
+    font.family: "Noto Serif"
+    font.italic: true
+    font.pixelSize: 11
+    wrapMode: Text.WordWrap
+    Layout.fillWidth: true
   }
 
 

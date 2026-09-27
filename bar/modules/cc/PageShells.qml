@@ -2,19 +2,23 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Io
+import "../ItoLayouts.js" as Layouts
 
-// Setup: your saved setups (the bar as you made it, kept under a name), and every desktop shell installed on this
-// machine with the one that is running.
+// Profiles: one place for every whole-bar look. The ready-made arrangements (Classic, Cluster, Compact...) sit
+// beside the ones you have saved yourself under a name -- applying either changes the same things (where every
+// widget sits, and for a saved one, its colours too), so there is no longer a "Designs" section on the Bars page
+// and a separate "Setups" section here that both do a version of the same thing.
 //
-// Ito-verse is one shell among whatever else the person has (Omarchy's own, Shibumi, Caelestia, Waybar…).
-// bin/ito-shells finds them from three kinds of evidence — the user's own switcher, the Omarchy variant
-// files, and known shells on PATH — and switching goes back through their switcher when they have one, so
-// keybindings and GTK authority move with it.
+// Below that: every desktop shell installed on this machine, with the one that is running. Ito-verse is one shell
+// among whatever else the person has (Omarchy's own, Shibumi, Caelestia, Waybar…). bin/ito-shells finds them from
+// three kinds of evidence — the user's own switcher, the Omarchy variant files, and known shells on PATH — and
+// switching goes back through their switcher when they have one, so keybindings and GTK authority move with it.
 ColumnLayout {
   id: page
 
   property var cc: null
   readonly property var pal: cc.pal
+  readonly property var act: cc.actions
   readonly property color bone: pal.bone
 
   property var shells: []
@@ -26,6 +30,13 @@ ColumnLayout {
   readonly property string profileTool: Qt.resolvedUrl("../bin/ito-profile").toString().replace("file://", "")
   property var setups: []
   property string setupMessage: ""
+  // Delete asks once, in place: the row that is armed (a second tap on it deletes for real), and when it was
+  // armed, so it disarms itself if left alone -- a click days later should not still mean "yes, delete this."
+  property string deleteArmedFor: ""
+  Timer { id: deleteDisarm; interval: 4000; onTriggered: page.deleteArmedFor = "" }
+  // Saving over a name that already exists: the same two-tap arming, on the Save button itself.
+  property bool saveArmed: false
+  Timer { id: saveDisarm; interval: 4000; onTriggered: page.saveArmed = false }
 
   Process {
     id: setupList
@@ -87,8 +98,106 @@ ColumnLayout {
     host: page.cc
     startOpen: true
     pal: page.pal
-    label: "MY SETUPS"
-    note: "Everything you change is remembered by itself. Save a copy under a name to come back to it later: your colours, effects, widgets and where they sit, and your own pictures."
+    label: "PROFILES"
+    note: "One whole look for the bar, applied in a click: where every widget sits, and its own colours for one you saved yourself. The ready-made ones below never change; your own are copies of the bar exactly as you left it."
+
+    CcToggle {
+      Layout.fillWidth: true
+      host: page.cc
+      pal: page.pal
+      label: "A ready-made profile also sets its own shape"
+      hint: "Off: applying one keeps the shape you already have (Bars → Shape). On: it switches to the shape it was made for, shown on its card."
+      on: String(page.pal.get("designShape", "keep")) === "design"
+      onActivated: page.act.set("designShape", on ? "keep" : "design")
+    }
+
+    Text {
+      Layout.fillWidth: true
+      text: "READY-MADE"
+      color: page.bone
+      opacity: 0.55
+      font.family: "Noto Serif"
+      font.pixelSize: 10
+      font.letterSpacing: 3
+      Layout.topMargin: 4
+    }
+
+    GridLayout {
+      Layout.fillWidth: true
+      columns: 3
+      rowSpacing: 8
+      columnSpacing: 8
+
+      Repeater {
+        model: Layouts.designs
+
+        CcCard {
+          id: design
+          required property var modelData
+          Layout.fillWidth: true
+          Layout.preferredHeight: 84
+          host: page.cc
+          pal: page.pal
+          caption: modelData.name
+          hint: modelData.note + " Click to apply it now; the bar restarts for a moment."
+          visible: page.cc.match(modelData.name + " " + modelData.note + " design profile ready-made")
+          onActivated: page.act.applyDesign(modelData)
+
+          // the shape it was made for
+          Text {
+            anchors.right: parent.right
+            anchors.top: parent.top
+            anchors.margins: 8
+            text: page.act.formName(design.modelData.form)
+            color: page.bone
+            opacity: 0.4
+            font.family: "Noto Serif"
+            font.pixelSize: 9
+            font.letterSpacing: 1
+          }
+
+          // where the widgets go: left, centre and right as three little runs of beads
+          Row {
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.top: parent.top
+            anchors.topMargin: 16
+            spacing: 10
+
+            Repeater {
+              model: ["left", "center", "right"]
+
+              Row {
+                required property string modelData
+                readonly property int n: design.modelData[modelData].length
+                spacing: 2
+                visible: n > 0
+
+                Repeater {
+                  model: parent.n
+                  Rectangle {
+                    width: 5
+                    height: 5
+                    radius: 2.5
+                    color: Qt.rgba(page.bone.r, page.bone.g, page.bone.b, 0.6)
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    Text {
+      Layout.fillWidth: true
+      Layout.topMargin: 10
+      text: "YOUR OWN"
+      color: page.bone
+      opacity: 0.55
+      font.family: "Noto Serif"
+      font.pixelSize: 10
+      font.letterSpacing: 3
+    }
 
     RowLayout {
       Layout.fillWidth: true
@@ -114,10 +223,11 @@ ColumnLayout {
           maximumLength: 40
           clip: true
           selectByMouse: true
+          onTextChanged: page.saveArmed = false
           Text {
             visible: nameInput.text === "" && !nameInput.activeFocus
             anchors.verticalCenter: parent.verticalCenter
-            text: "Name this setup, for example “Evening”"
+            text: "Name this profile, for example “Evening”"
             color: page.bone
             opacity: 0.4
             font.family: "Noto Serif"
@@ -129,6 +239,7 @@ ColumnLayout {
 
       CcCard {
         id: saveButton
+        readonly property bool clash: page.setups.some(function(s) { return s.name === nameInput.text.trim() })
         Layout.preferredWidth: 140
         Layout.preferredHeight: 34
         radius: 17
@@ -136,13 +247,21 @@ ColumnLayout {
         pal: page.pal
         showCaption: false
         current: true
-        hint: "Save the bar as it is now under this name."
+        hint: page.saveArmed ? "A profile called “" + nameInput.text.trim() + "” is already there. Click again to replace it."
+          : "Save the bar as it is now under this name."
         onActivated: {
           var n = nameInput.text.trim()
           if (n === "") { page.setupMessage = "Type a name first."; return }
-          if (!setupSave.running) { setupSave.name = n; setupSave.running = true; nameInput.text = "" }
+          if (clash && !page.saveArmed) { page.saveArmed = true; saveDisarm.restart(); return }
+          if (!setupSave.running) { setupSave.name = n; setupSave.running = true; nameInput.text = ""; page.saveArmed = false }
         }
-        Text { anchors.centerIn: parent; text: "Save setup"; color: page.pal.lit; font.family: "Noto Serif"; font.pixelSize: 12 }
+        Text {
+          anchors.centerIn: parent
+          text: saveButton.clash ? (page.saveArmed ? "Replace it?" : "Save (replaces one)") : "Save profile"
+          color: page.saveArmed ? page.pal.blood : page.pal.lit
+          font.family: "Noto Serif"
+          font.pixelSize: 12
+        }
       }
     }
 
@@ -164,17 +283,34 @@ ColumnLayout {
       font.pixelSize: 11
     }
 
+    Text {
+      visible: page.setups.length > 0
+      Layout.fillWidth: true
+      wrapMode: Text.WordWrap
+      text: "Load brings back everything a profile holds (colours and layout); Look, only its colours, effects, marks and pictures; Layout, only its shape and widgets. Load and Layout restart the bar for a few seconds; Look does not."
+      color: page.bone
+      opacity: 0.45
+      font.family: "Noto Serif"
+      font.pixelSize: 10
+    }
+
     Repeater {
       model: page.setups
 
       Rectangle {
+        id: row
         required property var modelData
+        readonly property bool armed: page.deleteArmedFor === modelData.name
         Layout.fillWidth: true
         Layout.preferredHeight: 48
         radius: 12
-        color: Qt.rgba(page.bone.r, page.bone.g, page.bone.b, 0.035)
+        visible: page.cc.match(modelData.name + " profile setup")
+        color: armed ? Qt.rgba(page.pal.blood.r, page.pal.blood.g, page.pal.blood.b, 0.1)
+          : Qt.rgba(page.bone.r, page.bone.g, page.bone.b, 0.035)
         border.width: 1
-        border.color: Qt.rgba(page.bone.r, page.bone.g, page.bone.b, 0.12)
+        border.color: armed ? Qt.rgba(page.pal.blood.r, page.pal.blood.g, page.pal.blood.b, 0.5)
+          : Qt.rgba(page.bone.r, page.bone.g, page.bone.b, 0.12)
+        Behavior on color { ColorAnimation { duration: 120 } }
 
         RowLayout {
           anchors.fill: parent
@@ -185,15 +321,15 @@ ColumnLayout {
           Column {
             Layout.fillWidth: true
             spacing: 1
-            Text { text: modelData.name; color: page.bone; font.family: "Noto Serif"; font.pixelSize: 13 }
-            Text { text: "Saved " + modelData.saved; color: page.bone; opacity: 0.45; font.family: "Noto Serif"; font.pixelSize: 10 }
+            Text { text: row.modelData.name; color: page.bone; font.family: "Noto Serif"; font.pixelSize: 13 }
+            Text { text: "Saved " + row.modelData.saved; color: page.bone; opacity: 0.45; font.family: "Noto Serif"; font.pixelSize: 10 }
           }
 
           Repeater {
             model: [
-              { "label": "Load", "only": "", "w": 62, "tip": "Put the bar back the way this setup was: its look and its layout. It restarts for a few seconds." },
-              { "label": "Look", "only": "look", "w": 56, "tip": "Bring back only the colours, effects, marks and pictures. The bar's shape and widgets stay as they are." },
-              { "label": "Layout", "only": "layout", "w": 66, "tip": "Bring back only the bar's edge, shape and widgets. The look stays as it is. It restarts for a few seconds." }
+              { "label": "Load", "only": "", "w": 52 },
+              { "label": "Look", "only": "look", "w": 50 },
+              { "label": "Layout", "only": "layout", "w": 58 }
             ]
             CcCard {
               required property var modelData
@@ -203,21 +339,30 @@ ColumnLayout {
               host: page.cc
               pal: page.pal
               showCaption: false
-              hint: modelData.tip
-              onActivated: if (!setupLoad.running) { setupLoad.name = ""; setupLoad.only = modelData.only; setupLoad.name = modelData.name; setupLoad.running = true; if (modelData.only !== "look") page.cc.close() }
+              hint: "Bring this profile's " + (modelData.only === "" ? "everything" : modelData.only === "look" ? "colours only" : "shape and widgets only") + " back."
+              onActivated: if (!setupLoad.running) { setupLoad.name = ""; setupLoad.only = modelData.only; setupLoad.name = row.modelData.name; setupLoad.running = true; if (modelData.only !== "look") page.cc.close() }
               Text { anchors.centerIn: parent; text: modelData.label; color: page.pal.lit; font.family: "Noto Serif"; font.pixelSize: 11 }
             }
           }
           CcCard {
-            Layout.preferredWidth: 62
+            Layout.preferredWidth: row.armed ? 76 : 62
             Layout.preferredHeight: 30
             radius: 15
             host: page.cc
             pal: page.pal
             showCaption: false
-            hint: "Delete this saved setup. The bar itself does not change."
-            onActivated: if (!setupDelete.running) { setupDelete.name = modelData.name; setupDelete.running = true }
-            Text { anchors.centerIn: parent; text: "Delete"; color: page.bone; font.family: "Noto Serif"; font.pixelSize: 11 }
+            hint: row.armed ? "Click again to delete it for good." : "Delete this saved profile. The bar itself does not change."
+            onActivated: {
+              if (!row.armed) { page.deleteArmedFor = row.modelData.name; deleteDisarm.restart(); return }
+              if (!setupDelete.running) { setupDelete.name = row.modelData.name; setupDelete.running = true; page.deleteArmedFor = "" }
+            }
+            Text {
+              anchors.centerIn: parent
+              text: row.armed ? "Really delete?" : "Delete"
+              color: row.armed ? page.pal.blood : page.bone
+              font.family: "Noto Serif"
+              font.pixelSize: 11
+            }
           }
         }
       }

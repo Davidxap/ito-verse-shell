@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- **Profiles: Designs and Setups are one thing now** (Setup page). The Bars page's "Designs" grid (Classic, Cluster,
+  Compact, Floating dock, Monitor, Minimal, Zen) moved to Setup → Profiles, right above your own saved ones, as
+  ready-made, non-deletable entries -- one place to pick a whole look for the bar, instead of two sections that both
+  did a version of the same thing under overlapping names ("Look"/"Layout" meant different things on each page).
+  Saving over an existing name, and deleting a saved profile, now ask once more before doing it; the Load/Look/Layout
+  buttons have one persistent line explaining what each brings back, instead of only a hover tooltip.
 - **Seal colour: Auto, On, Off** (Logo page). Auto is today's behaviour (blood while the panel is open or the pointer
   is on it, bone the rest of the time); On and Off hold the seal at one colour regardless.
 - **Drag-to-move now works on a vertical bar** (left or right), not only a horizontal one: press a widget, move it,

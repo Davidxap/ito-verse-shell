@@ -7,14 +7,14 @@ Most of this is a click away in the Control Centre (click the 富江 seal). This
 
 | Page | What it changes |
 |---|---|
-| Bars | Position, shape (Islands, Full, Fit, Dock, Notch), designs, corners, height, spacing, shadow, float-off-edge, the plate's layers |
+| Bars | Position, shape (Islands, Full, Fit, Dock, Notch), corners, height, spacing, shadow, float-off-edge, the plate's layers |
 | Icons | Your bar as three columns (left, centre, right): a switch to turn each widget on or off and arrows to move it; what each reading shows; how long popups stay open; network-icon override |
 | Logo | The seal (which kanji), its colour (Auto/On/Off), what stands beside it (veins, thorns, curls, hair, drips, eyes, cracks, stitches, holes, teeth, chain, static, fog, or your own picture), the menu mark |
 | Effects | Motion on the marks/seal/veins, light/vibrance/speed/strength, and the media-player effect |
 | Workspaces | The workspace drawing style, or your own four pictures (empty, in use, active, urgent) |
 | Colors | Live palette editing (see below for what's actually safe to hand-edit) |
 | Plugins | Every plugin the shell could show, filterable to Ito-verse's own |
-| Setup | Save the bar as you made it under a name and load it back later (`bin/ito-profile`); switch to another installed shell (same as `scripts/shell-switch`) |
+| Setup | Profiles: the seven ready-made arrangements, and your own saved under a name (`bin/ito-profile`); switch to another installed shell (same as `scripts/shell-switch`) |
 | Health | Full diagnosis, with a Fix button per problem and a Copy-report button |
 
 ## Your own pictures and effects
@@ -49,10 +49,12 @@ The shell picks them up at once; delete them to go back to the built-in eye. The
 *Icons -> Readings* sets how numbers read everywhere: Percent (`RAM 68%`), Amount (`RAM 17/32G`, `DISK 210/930G`, used out of total; loudness,
 load and the rest stay a percentage), Number, or Off. *Name each reading* puts the small label in front, as Shibumi does.
 
-## Setups
+## Profiles
 
-*Setup -> My setups* saves the bar as it is (colours, effects, widgets and their places, your pictures) under a
-name and loads it back. Everything is also remembered automatically; a setup is a copy to return to.
+*Setup -> Profiles* has the seven ready-made arrangements (Classic, Cluster, Compact, Floating dock, Monitor, Minimal,
+Zen) and your own, saved under a name. Saving keeps the bar as it is (colours, effects, widgets and their places, your
+pictures); loading it (or a ready-made one) brings that back. Everything is also remembered automatically; a profile
+is a copy to return to.
 
 ## Popups
 

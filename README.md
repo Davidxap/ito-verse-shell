@@ -57,8 +57,9 @@ The full-quality video (1080p, 60 fps): [docs/media/tour.mp4](docs/media/tour.mp
   weather, the clock or the AI reading. Every popup also answers to `omarchy-shell` so a key can open it.
 - **Nine motions for the marks** (spin, pulse, breathe, heartbeat, flicker, sway, glitch, ripple, or none) and a Light
   section for glow, vibrance, speed and strength.
-- **Your look, saved.** Everything is remembered by itself; **Setup → My setups** keeps named copies you can load
-  back in a click, all of it or only the look, or only the layout.
+- **Profiles: one place for every whole-bar look.** Seven ready-made arrangements (Classic, Cluster, Compact...) sit
+  beside the ones you save yourself under **Setup → Profiles** — everything is remembered by itself, and a saved one
+  can come back whole, colours only, or layout only.
 - **Other shells, one click away.** Omarchy's default bar, Shibumi, Caelestia and Ito-verse, switched from the
   Setup page. Installing Ito-verse keeps the shell you were on.
 - **Any plugin can go on the bar.** The Plugins page lists every plugin the shell finds (ours, Omarchy's,
